@@ -1,5 +1,11 @@
 import { H2 } from "@/components/H2";
+import { BLANK_ITEM, Item } from "@/components/Item";
+import { padArray } from "@/libs/utils";
 import Link from "next/link";
+
+const items: Item[] = [
+  { name: "Giraffe", model: "/models/giraffe.glb", price: 50 },
+];
 
 export default function Store() {
   return (
@@ -11,11 +17,9 @@ export default function Store() {
         >
           ABOUT
         </Link>
-
         <H2 className="bg-white col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
           STORE
         </H2>
-
         <Link
           href="/"
           className="bg-white text-black hover:underline hover:bg-black hover:text-white p-1 w-full text-xs h-full flex items-center justify-center"
@@ -26,8 +30,10 @@ export default function Store() {
 
       <main className="flex flex-col min-h-full h-full">
         <div className="grid content-start gap-px bg-black grid-cols-2 sm:grid-cols-4 xl:grid-cols-8">
-          {Array.from({ length: 16 }).map((_, item) => (
-            <article key={item} className="aspect-3/4 bg-white p-2"></article>
+          {padArray(items, 8, BLANK_ITEM).map((item, id) => (
+            <article key={id} className="aspect-3/4 bg-white p-2">
+              <Item item={item} />
+            </article>
           ))}
         </div>
 
