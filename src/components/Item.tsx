@@ -2,7 +2,7 @@
 
 import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useState } from "react";
 import type { Group } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
@@ -32,8 +32,14 @@ const Model = ({ item }: { item: Item }) => {
 };
 
 export const Item = ({ item }: { item: Item }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full">
+    <div
+      className="flex flex-col items-center justify-center w-full h-full relative cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Canvas
         className="w-full h-full"
         camera={{ position: [-0.25, 0.25, 0.25] }}
@@ -52,12 +58,20 @@ export const Item = ({ item }: { item: Item }) => {
         ) : null}
         <OrbitControls />
       </Canvas>
-      <div className="w-full h-6 flex items-center justify-between ">
-        <p className="font-mono text-xs uppercase">{item.name}</p>
-        {item.price > 0 && (
-          <p className="font-mono text-xs uppercase">
-            CHF {item.price.toFixed(2)}
-          </p>
+      <div className="w-full h-6 flex items-center justify-between absolute bottom-2 px-2">
+        {isHovered ? (
+          <button className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer">
+            I want it !
+          </button>
+        ) : (
+          <>
+            <p className="font-mono text-xs uppercase">{item.name}</p>
+            {item.price > 0 && (
+              <p className="font-mono text-xs uppercase">
+                CHF {item.price.toFixed(2)}
+              </p>
+            )}
+          </>
         )}
       </div>
     </div>

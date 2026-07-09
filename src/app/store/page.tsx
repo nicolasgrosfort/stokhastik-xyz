@@ -5,6 +5,7 @@ import Link from "next/link";
 
 const items: Item[] = [
   { name: "Giraffe", model: "/models/giraffe.glb", price: 50 },
+  { name: "Rock", model: "/models/arve.glb", price: 30 },
 ];
 
 export default function Store() {
@@ -31,7 +32,7 @@ export default function Store() {
       <main className="flex flex-col min-h-full h-full">
         <div className="grid content-start gap-px bg-black grid-cols-2 sm:grid-cols-4 xl:grid-cols-8">
           {padArray(items, 8, BLANK_ITEM).map((item, id) => (
-            <article key={id} className="aspect-3/4 bg-white p-2">
+            <article key={id} className="aspect-3/4 bg-white ">
               <Item item={item} />
             </article>
           ))}
