@@ -5,15 +5,23 @@ export default function Store() {
   return (
     <div className="min-h-screen grid grid-rows-[auto_1fr_auto] bg-black">
       <header className="sticky top-0 z-10 grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-px bg-black border-b border-px border-black">
-        <div className="bg-white flex items-center justify-center">About</div>
-        <H2 className="bg-white col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0">
-          Store
+        <Link
+          href="#"
+          className="bg-white text-black hover:underline hover:bg-black hover:text-white p-1 w-full text-xs h-full flex items-center justify-center"
+        >
+          ABOUT
+        </Link>
+
+        <H2 className="bg-white col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
+          STORE
         </H2>
-        <div className="bg-white flex items-center justify-center">
-          <Link href="/" className="text-black hover:underline">
-            Back
-          </Link>
-        </div>
+
+        <Link
+          href="/"
+          className="bg-white text-black hover:underline hover:bg-black hover:text-white p-1 w-full text-xs h-full flex items-center justify-center"
+        >
+          BACK
+        </Link>
       </header>
 
       <main className="flex flex-col min-h-full h-full">
