@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="h-full flex flex-col items-center justify-center gap-2">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-2">
       <H1>Stokhastik</H1>
       <p>Stokhastik is a space to host prototypes and research progress.</p>
       <div className="flex gap-2">
