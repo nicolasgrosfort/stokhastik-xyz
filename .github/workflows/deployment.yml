@@ -1,0 +1,36 @@
+name: Deploy to "stokhastik.xyz"
+on:
+  workflow_dispatch:
+concurrency: ftp_deploy_production
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build Next.js
+        run: yarn build
+
+      - name: List output files
+        run: find out/ -print
+
+      - name: Deploy on FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          server-dir: /
+          local-dir: out/
