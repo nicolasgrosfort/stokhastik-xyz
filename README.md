@@ -1,3 +1,3 @@
 # Stokhastik
 
-A space for prototyping and research for my Media Design Master Thesis.
+A space made for prototyping and research.
