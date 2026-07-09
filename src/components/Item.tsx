@@ -1,5 +1,6 @@
 "use client";
 
+import QRCode from "@/components/QRCode";
 import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
@@ -33,35 +34,55 @@ const Model = ({ item }: { item: Item }) => {
 
 export const Item = ({ item }: { item: Item }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isWanted, setIsWanted] = useState(false);
+
+  const handleClickWanted = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsWanted(true);
+  };
+
+  const handleClickToggleWanted = () => {
+    setIsWanted((prev) => !prev);
+  };
 
   return (
     <div
       className="flex flex-col items-center justify-center w-full h-full relative cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClickToggleWanted}
     >
-      <Canvas
-        className="w-full h-full"
-        camera={{ position: [-0.25, 0.25, 0.25] }}
-      >
-        <ambientLight intensity={2} />
-        {item.model ? (
-          <Suspense
-            fallback={
-              <Html center>
-                <p className="font-mono text-xs uppercase">Loading...</p>
-              </Html>
-            }
+      {isWanted ? (
+        <QRCode />
+      ) : (
+        <>
+          <Canvas
+            className="w-full h-full"
+            camera={{ position: [-0.25, 0.25, 0.25] }}
           >
-            <Model item={item} />
-          </Suspense>
-        ) : null}
-        <OrbitControls />
-      </Canvas>
+            <ambientLight intensity={2} />
+            {item.model ? (
+              <Suspense
+                fallback={
+                  <Html center>
+                    <p className="font-mono text-xs uppercase">Loading...</p>
+                  </Html>
+                }
+              >
+                <Model item={item} />
+              </Suspense>
+            ) : null}
+            <OrbitControls />
+          </Canvas>
+        </>
+      )}
       <div className="w-full h-6 flex items-center justify-between absolute bottom-2 px-2">
         {isHovered ? (
-          <button className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer">
-            I want it !
+          <button
+            className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer"
+            onClick={handleClickWanted}
+          >
+            {isWanted ? "Actually, no..." : "I want it!"}
           </button>
         ) : (
           <>
