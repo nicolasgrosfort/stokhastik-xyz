@@ -1,7 +1,7 @@
 "use client";
 
 import QRCode from "@/components/QRCode";
-import { Environment, Html, OrbitControls } from "@react-three/drei";
+import { Environment, Html, PresentationControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
 import type { Group } from "three";
@@ -11,27 +11,41 @@ export type Item = {
   name: string;
   model: string;
   price: number;
-  position: [number, number, number];
+  position: number;
+  rotation: number;
 };
 
 export const BLANK_ITEM: Item = {
   name: "SOON",
   model: "",
   price: 0,
-  position: [0, 0, 0],
+  position: 0,
+  rotation: 0,
 };
 
-const Model = ({ item }: { item: Item }) => {
+const Model = ({
+  item,
+  stopRotation,
+}: {
+  item: Item;
+  stopRotation?: boolean;
+}) => {
   const result = useLoader(GLTFLoader, item.model);
   const ref = useRef<Group>(null);
 
   useFrame((_, delta) => {
-    if (ref.current) {
-      ref.current.rotation.y += delta * 0.1;
+    if (ref.current && !stopRotation) {
+      ref.current.rotation.y += delta * 0.5;
     }
   });
 
-  return <primitive ref={ref} object={result.scene} />;
+  return (
+    <primitive
+      ref={ref}
+      object={result.scene}
+      rotation={[0, item.rotation, 0]}
+    />
+  );
 };
 
 export const Item = ({ item }: { item: Item }) => {
@@ -54,10 +68,9 @@ export const Item = ({ item }: { item: Item }) => {
         <>
           <Canvas
             className="w-full h-full"
-            camera={{ position: item.position, fov: 50 }}
+            camera={{ position: [0, 0, item.position], fov: 50 }}
           >
-            <directionalLight position={[5, 5, 5]} intensity={1.5} />
-            <Environment preset="forest" />
+            <Environment preset="city" />
             {item.model ? (
               <Suspense
                 fallback={
@@ -66,10 +79,16 @@ export const Item = ({ item }: { item: Item }) => {
                   </Html>
                 }
               >
-                <Model item={item} />
+                <PresentationControls
+                  enabled
+                  global
+                  snap
+                  polar={[-Math.PI / 2, Math.PI / 2]}
+                >
+                  <Model item={item} stopRotation={isHovered} />
+                </PresentationControls>
               </Suspense>
             ) : null}
-            <OrbitControls />
           </Canvas>
         </>
       )}

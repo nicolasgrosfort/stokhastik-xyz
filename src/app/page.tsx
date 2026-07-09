@@ -9,19 +9,19 @@ export default function Home() {
       <div className="flex gap-2">
         <Link
           href="/shrine"
-          className="text-blue-500 hover:underline font-mono"
+          className="text-blue-400 hover:underline font-mono font-bold uppercase"
         >
           Shrine
         </Link>
         <Link
           href="/garden"
-          className="text-green-500 hover:underline font-mono"
+          className="text-green-400 hover:underline font-mono font-bold uppercase"
         >
           Garden
         </Link>
         <Link
           href="/store"
-          className="text-orange-500 hover:underline font-mono"
+          className="text-orange-400 hover:underline font-mono font-bold uppercase"
         >
           Store
         </Link>

@@ -8,13 +8,15 @@ const items: Item[] = [
     name: "Giraffe",
     model: "/models/giraffe.glb",
     price: 50,
-    position: [0.5, 0.5, 0.5],
+    position: 1,
+    rotation: Math.PI * 0.4,
   },
   {
     name: "Rock",
     model: "/models/arve.glb",
     price: 30,
-    position: [4, 4, 4],
+    position: 5,
+    rotation: Math.PI * 1.25,
   },
 ];
 
@@ -29,7 +31,7 @@ export default function Store() {
           ABOUT
         </Link>
         <H2 className="bg-white col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
-          STORE
+          STOKHASTIK <span className="text-xs text-orange-400">STORE</span>
         </H2>
         <Link
           href="/"
