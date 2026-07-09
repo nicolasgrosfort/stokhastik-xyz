@@ -4,8 +4,18 @@ import { padArray } from "@/libs/utils";
 import Link from "next/link";
 
 const items: Item[] = [
-  { name: "Giraffe", model: "/models/giraffe.glb", price: 50 },
-  { name: "Rock", model: "/models/arve.glb", price: 30 },
+  {
+    name: "Giraffe",
+    model: "/models/giraffe.glb",
+    price: 50,
+    position: [0.5, 0.5, 0.5],
+  },
+  {
+    name: "Rock",
+    model: "/models/arve.glb",
+    price: 30,
+    position: [4, 4, 4],
+  },
 ];
 
 export default function Store() {

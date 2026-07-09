@@ -1,7 +1,7 @@
 "use client";
 
 import QRCode from "@/components/QRCode";
-import { Html, OrbitControls } from "@react-three/drei";
+import { Environment, Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
 import type { Group } from "three";
@@ -11,12 +11,14 @@ export type Item = {
   name: string;
   model: string;
   price: number;
+  position: [number, number, number];
 };
 
 export const BLANK_ITEM: Item = {
   name: "SOON",
   model: "",
   price: 0,
+  position: [0, 0, 0],
 };
 
 const Model = ({ item }: { item: Item }) => {
@@ -36,21 +38,15 @@ export const Item = ({ item }: { item: Item }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isWanted, setIsWanted] = useState(false);
 
-  const handleClickWanted = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsWanted(true);
-  };
-
   const handleClickToggleWanted = () => {
     setIsWanted((prev) => !prev);
   };
 
   return (
     <div
-      className="flex flex-col items-center justify-center w-full h-full relative cursor-pointer"
+      className="flex flex-col items-center justify-center w-full h-full relative "
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClickToggleWanted}
     >
       {isWanted ? (
         <QRCode />
@@ -58,9 +54,10 @@ export const Item = ({ item }: { item: Item }) => {
         <>
           <Canvas
             className="w-full h-full"
-            camera={{ position: [-0.25, 0.25, 0.25] }}
+            camera={{ position: item.position, fov: 50 }}
           >
-            <ambientLight intensity={2} />
+            <directionalLight position={[5, 5, 5]} intensity={1.5} />
+            <Environment preset="forest" />
             {item.model ? (
               <Suspense
                 fallback={
@@ -80,7 +77,7 @@ export const Item = ({ item }: { item: Item }) => {
         {isHovered ? (
           <button
             className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer"
-            onClick={handleClickWanted}
+            onClick={handleClickToggleWanted}
           >
             {isWanted ? "Actually, no..." : "I want it!"}
           </button>

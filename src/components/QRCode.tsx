@@ -27,8 +27,6 @@ const defaultData: Data = {
 
 function makeSvgResponsive(svgEl: SVGElement, size: number) {
   svgEl.setAttribute("viewBox", `0 0 ${size} ${size}`);
-  svgEl.removeAttribute("width");
-  svgEl.removeAttribute("height");
   svgEl.style.width = "100%";
   svgEl.style.height = "auto";
   svgEl.style.display = "block";
