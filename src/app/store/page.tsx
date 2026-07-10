@@ -5,6 +5,7 @@ import Link from "next/link";
 
 const items: Item[] = [
   {
+    id: "1",
     name: "Giraffe",
     model: "/models/giraffe.glb",
     price: 50,
@@ -15,6 +16,7 @@ const items: Item[] = [
       "A giraffe is an African even-toed ungulate mammal, the tallest living terrestrial animal and the largest ruminant.",
   },
   {
+    id: "2",
     name: "Rock",
     model: "/models/arve.glb",
     price: 30,

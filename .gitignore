@@ -43,3 +43,6 @@ next-env.d.ts
 
 # php
 vendor/
+
+# data
+/*/data/status.json

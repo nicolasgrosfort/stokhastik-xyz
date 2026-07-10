@@ -8,6 +8,7 @@ import type { Group } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 export type Item = {
+  id?: string;
   name: string;
   model: string;
   position: number;
@@ -97,7 +98,12 @@ export const Item = ({ item }: { item: Item }) => {
         </>
       )}
       <div className="w-full h-6 flex items-center justify-between absolute bottom-2 px-2">
-        {isWanted && <BuyButton />}
+        {isWanted && (
+          <>
+            <BuyButton />
+            <StatusButton />
+          </>
+        )}
         {isHovered ? (
           <button
             className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer"
@@ -144,4 +150,22 @@ export const BuyButton = () => {
   };
 
   return <button onClick={handleBuy}>Buy</button>;
+};
+
+export const StatusButton = () => {
+  const handleStatus = async () => {
+    const contactApi =
+      process.env.NODE_ENV === "production" ? "/api/status.php" : "/api/status";
+    const res = await fetch(contactApi, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    console.log("Status fetched successfully", data);
+  };
+
+  return <button onClick={handleStatus}>Check Status</button>;
 };
