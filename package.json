@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "setup": "yarn && cd api && composer install",
+    "dev": "concurrently \"next dev\" \"php -S localhost:8080 -t api\"",
+    "build": "next build && cp -r api out",
     "start": "npx serve@latest out",
     "lint": "eslint"
   },
@@ -25,6 +26,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^10.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",

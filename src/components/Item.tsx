@@ -93,6 +93,7 @@ export const Item = ({ item }: { item: Item }) => {
         </>
       )}
       <div className="w-full h-6 flex items-center justify-between absolute bottom-2 px-2">
+        {isWanted && <BuyButton />}
         {isHovered ? (
           <button
             className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer"
@@ -113,4 +114,30 @@ export const Item = ({ item }: { item: Item }) => {
       </div>
     </div>
   );
+};
+
+export const BuyButton = () => {
+  const handleBuy = async () => {
+    const contactApi =
+      process.env.NODE_ENV === "production" ? "/api/buy.php" : "/api/buy";
+    const res = await fetch(contactApi, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: "123",
+        firstname: "Nicolas",
+        lastname: "Grosfort",
+        email: "grosfort.nicols@gmail.com",
+        message: "Hello, I would like to buy this item.",
+        honeypot: "",
+      }),
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    console.log("Message sent successfully");
+  };
+
+  return <button onClick={handleBuy}>Buy</button>;
 };
