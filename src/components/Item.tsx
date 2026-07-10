@@ -10,9 +10,11 @@ import { GLTFLoader } from "three/examples/jsm/Addons.js";
 export type Item = {
   name: string;
   model: string;
-  price: number;
   position: number;
   rotation: number;
+  price: number;
+  description?: string;
+  status: "available" | "booked" | "sold" | "coming-soon";
 };
 
 export const BLANK_ITEM: Item = {
@@ -21,6 +23,8 @@ export const BLANK_ITEM: Item = {
   price: 0,
   position: 0,
   rotation: 0,
+  description: "",
+  status: "coming-soon",
 };
 
 const Model = ({

@@ -10,6 +10,9 @@ const items: Item[] = [
     price: 50,
     position: 1,
     rotation: Math.PI * 0.4,
+    status: "available",
+    description:
+      "A giraffe is an African even-toed ungulate mammal, the tallest living terrestrial animal and the largest ruminant.",
   },
   {
     name: "Rock",
@@ -17,6 +20,9 @@ const items: Item[] = [
     price: 30,
     position: 5,
     rotation: Math.PI * 1.25,
+    status: "available",
+    description:
+      "A rock is a naturally occurring solid aggregate of minerals or mineraloid matter.",
   },
 ];
 
