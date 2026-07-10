@@ -28,10 +28,21 @@ const items: Item[] = [
   },
   {
     id: "3",
-    name: "Arbre",
+    name: "Tree",
     model: "/models/arbre.glb",
     price: 20,
     position: 6,
+    rotation: Math.PI * 1.25,
+    status: "available",
+    description:
+      "A rock is a naturally occurring solid aggregate of minerals or mineraloid matter.",
+  },
+  {
+    id: "4",
+    name: "Chocolate",
+    model: "/models/chocolat.glb",
+    price: 60,
+    position: 1,
     rotation: Math.PI * 1.25,
     status: "available",
     description:
