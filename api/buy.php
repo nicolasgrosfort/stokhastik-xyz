@@ -4,6 +4,7 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/lib/utils.php';
 
 header("Content-Type: application/json");
 
@@ -50,6 +51,14 @@ if (file_exists($file) && time() - filemtime($file) < 10) {
 }
 
 touch($file);
+
+$statusFile = __DIR__ . '/data/status.json';
+
+if (!updateStatus($statusFile, $id, 'booked')) {
+    http_response_code(409);
+    echo json_encode(["success" => false, "error" => "ID unavailable"]);
+    exit;
+}
 
 
 $mail = new PHPMailer(true);
