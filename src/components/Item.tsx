@@ -1,7 +1,7 @@
 "use client";
 
 import QRCode from "@/components/QRCode";
-import { Environment, Html, PresentationControls } from "@react-three/drei";
+import { Environment, Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
 import type { Group } from "three";
@@ -84,16 +84,10 @@ export const Item = ({ item }: { item: Item }) => {
                   </Html>
                 }
               >
-                <PresentationControls
-                  enabled
-                  global
-                  snap
-                  polar={[-Math.PI / 2, Math.PI / 2]}
-                >
-                  <Model item={item} stopRotation={isHovered} />
-                </PresentationControls>
+                <Model item={item} stopRotation={isHovered} />
               </Suspense>
             ) : null}
+            <OrbitControls />
           </Canvas>
         </>
       )}
