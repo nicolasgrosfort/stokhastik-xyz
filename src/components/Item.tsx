@@ -3,6 +3,7 @@
 import QRCode from "@/components/QRCode";
 import { Environment, Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { AnimatePresence, motion } from "motion/react";
 import { Suspense, useRef, useState } from "react";
 import type { Group } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
@@ -19,7 +20,7 @@ export type Item = {
 };
 
 export const BLANK_ITEM: Item = {
-  name: "SOON",
+  name: "",
   model: "",
   price: 0,
   position: 0,
@@ -72,8 +73,11 @@ export const Item = ({ item }: { item: Item }) => {
       ) : (
         <>
           <Canvas
-            className="w-full h-full"
+            className="w-full h-full cursor-move"
             camera={{ position: [0, 0, item.position], fov: 50 }}
+            style={{
+              background: isHovered ? "rgba(0, 0, 0, 0.1)" : "transparent",
+            }}
           >
             <Environment preset="city" />
             {item.model ? (
@@ -98,23 +102,28 @@ export const Item = ({ item }: { item: Item }) => {
             <StatusButton />
           </>
         )}
-        {isHovered ? (
-          <button
-            className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer"
-            onClick={handleClickToggleWanted}
-          >
-            {isWanted ? "Actually, no..." : "I want it!"}
-          </button>
-        ) : (
-          <>
-            <p className="font-mono text-xs uppercase">{item.name}</p>
-            {item.price > 0 && (
-              <p className="font-mono text-xs uppercase">
-                CHF {item.price.toFixed(2)}
-              </p>
-            )}
-          </>
-        )}
+        <AnimatePresence>
+          {isHovered ? (
+            <motion.button
+              key="toggle-wanted"
+              className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer"
+              onClick={handleClickToggleWanted}
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+            >
+              {isWanted ? "Actually, no..." : "I want it!"}
+            </motion.button>
+          ) : (
+            <>
+              <p className="font-mono text-xs uppercase">{item.name}</p>
+              {item.price > 0 && (
+                <p className="font-mono text-xs uppercase">
+                  CHF {item.price.toFixed(2)}
+                </p>
+              )}
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
