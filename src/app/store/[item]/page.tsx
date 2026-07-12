@@ -17,9 +17,9 @@ export default async function ItemPage({
   }
 
   return (
-    <div className="bg-background text-foreground p-2 h-full w-full">
-      <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-[1fr_auto] grid-cols-1 items-center justify-between h-full w-full">
-        <div className="w-full h-full">
+    <div className="bg-background text-foreground p-2 h-full w-full min-h-0">
+      <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-[minmax(0,1fr)_auto] grid-cols-1 h-full w-full min-h-0">
+        <div className="w-full h-full min-h-0">
           <Model item={item} />
         </div>
         <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1">

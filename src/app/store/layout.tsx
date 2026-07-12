@@ -7,7 +7,7 @@ export default function StoreLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-full h-full grid grid-rows-[auto_1fr_auto] bg-foreground flex-1">
+    <div className="min-h-full h-full grid grid-rows-[auto_minmax(0,1fr)_auto] bg-foreground flex-1">
       <header className="sticky top-0 z-10 grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-px bg-foreground border-b border-px border-foreground">
         <Link
           href="/store"
@@ -29,7 +29,7 @@ export default function StoreLayout({
         </Link>
       </header>
 
-      <main className="flex flex-col min-h-full h-full">{children}</main>
+      <main className="flex flex-col h-full min-h-0">{children}</main>
 
       <footer className="sticky bottom-0 z-10 bg-background border-t border-px border-foreground p-2">
         <p className="font-mono text-xs text-center">
