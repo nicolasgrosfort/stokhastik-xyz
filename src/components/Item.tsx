@@ -36,12 +36,15 @@ export const Item = ({ item }: { item: Item }) => {
 
   return (
     <article
-      className="flex flex-col items-center justify-center w-full h-full relative hover:bg-foreground/10 cursor-pointer"
+      className="flex flex-col items-center justify-center w-full h-full relative hover:bg-foreground/10 cursor-pointer overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => router.push(`/store/${item.id}`)}
     >
-      <section className="w-full h-full relative">
+      <motion.section
+        className="w-full h-full relative"
+        whileHover={{ scale: 1.1 }}
+      >
         <Image
           src={item.thumbnail}
           alt={item.name}
@@ -49,7 +52,7 @@ export const Item = ({ item }: { item: Item }) => {
           draggable={false}
           className="object-cover"
         />
-      </section>
+      </motion.section>
 
       <footer className="w-full h-6 flex items-center justify-between absolute bottom-2 px-2">
         <AnimatePresence>
