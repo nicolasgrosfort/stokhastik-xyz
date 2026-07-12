@@ -33,13 +33,13 @@ export default async function ItemPage({
           </p>
           <div className="flex gap-4 w-full items-center">
             <button className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline">
-              J&apos;achète
+              I&apos;ll buy it!
             </button>
             <Link
               href="/store"
               className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
             >
-              Retour
+              Back
             </Link>
           </div>
         </div>

@@ -10,8 +10,7 @@ export const items: Item[] = [
     position: 1.5,
     rotation: -Math.PI * 0.25,
     status: "available",
-    description:
-      "A rock is a naturally occurring solid aggregate of minerals or mineraloid matter.",
+    description: "Chocolate or banana?",
   },
   {
     id: "2",
@@ -22,8 +21,7 @@ export const items: Item[] = [
     position: 1,
     rotation: -Math.PI * 0.25,
     status: "available",
-    description:
-      "A rock is a naturally occurring solid aggregate of minerals or mineraloid matter.",
+    description: "Portable dripped coffee.",
   },
   {
     id: "3",
@@ -31,10 +29,20 @@ export const items: Item[] = [
     model: "/models/candy.glb",
     thumbnail: "/thumbnails/candy.png",
     price: 20,
-    position: 1.4,
+    position: 1.6,
     rotation: -Math.PI * 0.25,
     status: "available",
-    description:
-      "A rock is a naturally occurring solid aggregate of minerals or mineraloid matter.",
+    description: "A pack of super kawaii candy.",
+  },
+  {
+    id: "4",
+    name: "NES",
+    model: "/models/nes.glb",
+    thumbnail: "/thumbnails/nes.png",
+    price: 30,
+    position: 0.8,
+    rotation: -Math.PI * 0.25,
+    status: "available",
+    description: "A fragment of a NES controller.",
   },
 ];

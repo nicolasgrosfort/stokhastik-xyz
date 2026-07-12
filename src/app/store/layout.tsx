@@ -21,7 +21,6 @@ export default function StoreLayout({
             <span className="text-xs text-orange-400">STORE</span>
           </Link>
         </H2>
-
         <Link
           href="/store/about"
           className="bg-background text-foreground hover:underline hover:bg-foreground hover:text-background p-1 w-full text-xs h-full flex items-center justify-center"

@@ -11,8 +11,8 @@ export default function StorePage() {
           </article>
         ))}
       </div>
-      <div className="flex-1 bg-background border-t border-px border-foreground p-2">
-        Stats
+      <div className="flex-1 bg-background border-t border-px border-foreground p-4">
+        <p className="font-mono text-xs text-center">{items.length} items</p>
       </div>
     </>
   );
