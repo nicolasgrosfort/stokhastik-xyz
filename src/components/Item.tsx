@@ -79,7 +79,7 @@ export const Item = ({ item }: { item: Item }) => {
               background: isHovered ? "rgba(0, 0, 0, 0.1)" : "transparent",
             }}
           >
-            <Environment preset="city" />
+            <Environment environmentIntensity={0.4} preset="studio" />
             {item.model ? (
               <Suspense
                 fallback={
