@@ -45,4 +45,15 @@ export const items: Item[] = [
     status: "available",
     description: "A fragment of a NES controller.",
   },
+  {
+    id: "5",
+    name: "Coffee Beat",
+    model: "/models/coffee-beat.glb",
+    thumbnail: "/thumbnails/coffee-beat.png",
+    price: 30,
+    position: 0.4,
+    rotation: -Math.PI * 0.25,
+    status: "available",
+    description: "Coffee bean chocolate. Amazing !",
+  },
 ];
