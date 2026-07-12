@@ -1,4 +1,4 @@
-import { H2 } from "@/components/H2";
+import { H3 } from "@/components/H3";
 import { Model } from "@/components/model";
 import { items } from "@/data/items";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default async function ItemPage({
           <Model item={item} />
         </div>
         <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1">
-          <H2 className="uppercase">{item.name}</H2>
+          <H3 className="uppercase">{item.name}</H3>
           <p className="font-mono text-sm">{item.description}</p>
           <p className="font-mono text-xs uppercase">
             {item.price.toLocaleString("fr-CH", {
