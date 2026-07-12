@@ -1,29 +1,9 @@
+"use client";
+
+import { defaultBillingData } from "@/data/billing";
 import { useEffect, useRef } from "react";
 import { SwissQRCode } from "swissqrbill/svg";
-import type { Data } from "swissqrbill/types";
-
-const defaultData: Data = {
-  amount: 1994.75,
-  creditor: {
-    account: "CH44 3199 9123 0008 8901 2",
-    address: "Musterstrasse",
-    buildingNumber: 7,
-    city: "Musterstadt",
-    country: "CH",
-    name: "SwissQRBill",
-    zip: 1234,
-  },
-  currency: "CHF",
-  debtor: {
-    address: "Musterstrasse",
-    buildingNumber: 1,
-    city: "Musterstadt",
-    country: "CH",
-    name: "Peter Muster",
-    zip: 1234,
-  },
-  reference: "21 00000 00003 13947 14300 09017",
-};
+import { Data } from "swissqrbill/types";
 
 function makeSvgResponsive(svgEl: SVGElement, size: number) {
   svgEl.setAttribute("viewBox", `0 0 ${size} ${size}`);
@@ -47,7 +27,7 @@ interface QRCodeProps {
   size?: number;
 }
 
-function QRCode({ data = defaultData, size = 46 }: QRCodeProps) {
+function QRCode({ data = defaultBillingData, size = 46 }: QRCodeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -1,17 +1,16 @@
 "use client";
 
-import QRCode from "@/components/QRCode";
-import { Environment, Html, OrbitControls } from "@react-three/drei";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { AnimatePresence, motion } from "motion/react";
-import { Suspense, useRef, useState } from "react";
-import type { Group } from "three";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export type Item = {
-  id?: string;
+  id: string;
   name: string;
   model: string;
+  thumbnail: string;
   position: number;
   rotation: number;
   price: number;
@@ -20,8 +19,10 @@ export type Item = {
 };
 
 export const BLANK_ITEM: Item = {
+  id: "",
   name: "",
   model: "",
+  thumbnail: "",
   price: 0,
   position: 0,
   rotation: 0,
@@ -29,90 +30,47 @@ export const BLANK_ITEM: Item = {
   status: "coming-soon",
 };
 
-const Model = ({
-  item,
-  stopRotation,
-}: {
-  item: Item;
-  stopRotation?: boolean;
-}) => {
-  const result = useLoader(GLTFLoader, item.model);
-  const ref = useRef<Group>(null);
-
-  useFrame((_, delta) => {
-    if (ref.current && !stopRotation) {
-      ref.current.rotation.y += delta * 0.5;
-    }
-  });
-
-  return (
-    <primitive
-      ref={ref}
-      object={result.scene}
-      rotation={[0, item.rotation, 0]}
-    />
-  );
-};
-
 export const Item = ({ item }: { item: Item }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isWanted, setIsWanted] = useState(false);
-
-  const handleClickToggleWanted = () => {
-    setIsWanted((prev) => !prev);
-  };
+  const router = useRouter();
 
   return (
-    <div
-      className="flex flex-col items-center justify-center w-full h-full relative "
+    <article
+      className="flex flex-col items-center justify-center w-full h-full relative hover:bg-foreground/10 cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => router.push(`/store/${item.id}`)}
     >
-      {isWanted ? (
-        <QRCode />
-      ) : (
-        <>
-          <Canvas
-            className="w-full h-full cursor-move"
-            camera={{ position: [0, 0, item.position], fov: 50 }}
-            style={{
-              background: isHovered ? "rgba(0, 0, 0, 0.1)" : "transparent",
-            }}
-          >
-            <Environment environmentIntensity={0.4} preset="studio" />
-            {item.model ? (
-              <Suspense
-                fallback={
-                  <Html center>
-                    <p className="font-mono text-xs uppercase">Loading...</p>
-                  </Html>
-                }
-              >
-                <Model item={item} stopRotation={isHovered} />
-              </Suspense>
-            ) : null}
-            <OrbitControls />
-          </Canvas>
-        </>
-      )}
-      <div className="w-full h-6 flex items-center justify-between absolute bottom-2 px-2">
-        {isWanted && (
-          <>
-            <BuyButton />
-            <StatusButton />
-          </>
-        )}
+      <section className="w-full h-full relative">
+        <Image
+          src={item.thumbnail}
+          alt={item.name}
+          fill
+          draggable={false}
+          className="object-cover"
+        />
+      </section>
+
+      <footer className="w-full h-6 flex items-center justify-between absolute bottom-2 px-2">
         <AnimatePresence>
           {isHovered ? (
-            <motion.button
+            <motion.div
               key="toggle-wanted"
-              className="bg-black text-white font-mono text-xs uppercase p-1 block w-full cursor-pointer"
-              onClick={handleClickToggleWanted}
+              className="w-full"
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
             >
-              {isWanted ? "Actually, no..." : "I want it!"}
-            </motion.button>
+              <Link
+                href={`/store/${item.id}`}
+                className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:bg-foreground hover:text-background"
+              >
+                {item.status === "available"
+                  ? "I want it!"
+                  : item.status === "booked"
+                    ? "Booked"
+                    : "Sold"}
+              </Link>
+            </motion.div>
           ) : (
             <>
               <p className="font-mono text-xs uppercase">{item.name}</p>
@@ -124,8 +82,8 @@ export const Item = ({ item }: { item: Item }) => {
             </>
           )}
         </AnimatePresence>
-      </div>
-    </div>
+      </footer>
+    </article>
   );
 };
 

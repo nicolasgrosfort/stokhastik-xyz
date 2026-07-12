@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   trailingSlash: true,
   reactStrictMode: false,
+  images: { unoptimized: true },
 
   async rewrites() {
     return [
