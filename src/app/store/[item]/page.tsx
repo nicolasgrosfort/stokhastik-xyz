@@ -2,6 +2,7 @@ import { Details } from "@/components/details";
 import { Model } from "@/components/model";
 import { items } from "@/data/items";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function ItemPage({
   params,
@@ -22,7 +23,9 @@ export default async function ItemPage({
           <Model item={item} />
         </div>
         <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1">
-          <Details item={item} />
+          <Suspense fallback={null}>
+            <Details item={item} />
+          </Suspense>
         </div>
       </div>
     </div>
