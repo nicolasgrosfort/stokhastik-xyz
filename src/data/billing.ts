@@ -1,24 +1,15 @@
 import type { Data } from "swissqrbill/types";
 
-export const defaultBillingData: Data = {
-  amount: 1994.75,
+export const billing: Data = {
   creditor: {
-    account: "CH44 3199 9123 0008 8901 2",
-    address: "Musterstrasse",
-    buildingNumber: 7,
-    city: "Musterstadt",
+    account: "CH74 0027 9279 HU21 5036 0",
+    address: "Passage de l'Intendant",
+    buildingNumber: 4,
+    city: "Carouge",
     country: "CH",
-    name: "SwissQRBill",
-    zip: 1234,
+    name: "Nicolas GROSFORT",
+    zip: 1227,
   },
+  message: "Stokhastik Store",
   currency: "CHF",
-  debtor: {
-    address: "Musterstrasse",
-    buildingNumber: 1,
-    city: "Musterstadt",
-    country: "CH",
-    name: "Peter Muster",
-    zip: 1234,
-  },
-  reference: "21 00000 00003 13947 14300 09017",
 };

@@ -1,9 +1,6 @@
-import { Badge } from "@/components/badge";
-import { H3 } from "@/components/H3";
+import { Details } from "@/components/details";
 import { Model } from "@/components/model";
-import { Price } from "@/components/price";
 import { items } from "@/data/items";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function ItemPage({
@@ -25,24 +22,7 @@ export default async function ItemPage({
           <Model item={item} />
         </div>
         <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1">
-          <H3 className="uppercase">{item.name}</H3>
-          <p className="font-mono text-sm">{item.description}</p>
-          <Price price={item.price} />
-          <div className="flex gap-4 w-full items-center">
-            {item.status === "available" ? (
-              <button className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline">
-                I want it
-              </button>
-            ) : (
-              <Badge status={item.status} className="sm:w-50 w-full" />
-            )}
-            <Link
-              href="/store"
-              className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
-            >
-              Back
-            </Link>
-          </div>
+          <Details item={item} />
         </div>
       </div>
     </div>

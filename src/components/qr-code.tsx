@@ -1,6 +1,6 @@
 "use client";
 
-import { defaultBillingData } from "@/data/billing";
+import { billing } from "@/data/billing";
 import { useEffect, useRef } from "react";
 import { SwissQRCode } from "swissqrbill/svg";
 import { Data } from "swissqrbill/types";
@@ -25,24 +25,26 @@ function makeSvgResponsive(svgEl: SVGElement, size: number) {
 interface QRCodeProps {
   data?: Data;
   size?: number;
+  price: number;
+  message?: string;
 }
 
-function QRCode({ data = defaultBillingData, size = 46 }: QRCodeProps) {
+function QRCode({ data = billing, size = 46, price, message }: QRCodeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const qrCode = new SwissQRCode(data, size);
+    const qrCode = new SwissQRCode({ ...data, amount: price, message }, size);
     const svgEl = qrCode.element;
 
     makeSvgResponsive(svgEl, size);
 
     containerRef.current.innerHTML = "";
     containerRef.current.appendChild(svgEl);
-  }, [data, size]);
+  }, [data, size, price, message]);
 
-  return <div ref={containerRef} className="w-full h-full p-2" />;
+  return <div ref={containerRef} className="w-full h-full" />;
 }
 
 export default QRCode;
