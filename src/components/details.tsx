@@ -26,34 +26,44 @@ export const Details = ({ item }: { item: Item }) => {
 
       {showQR ? (
         <>
-          <div className="flex gap-4 w-full items-center">
+          <div className="flex gap-4 w-full items-start">
             <div className="w-50">
               <QRCode price={item.price} message={message} />
             </div>
             <div className="flex flex-col gap-2">
               <div>
                 <H4>Account</H4>
-                <p className="font-mono text-sm">{billing.creditor.account}</p>
-                <p className="font-mono text-sm">{billing.creditor.name}</p>
-                <p className="font-mono text-sm">{billing.creditor.address}</p>
-                <p className="font-mono text-sm">
+                <p className="font-mono text-xs sm:text-sm">
+                  {billing.creditor.account}
+                </p>
+                <p className="font-mono text-xs sm:text-sm">
+                  {billing.creditor.name}
+                </p>
+                <p className="font-mono text-xs sm:text-sm">
+                  {billing.creditor.address}
+                </p>
+                <p className="font-mono text-xs sm:text-sm">
                   {billing.creditor.city}, {billing.creditor.zip}
                 </p>
               </div>
 
               <div>
                 <H4>Additional information</H4>
-                <p className="font-mono text-sm">{message}</p>
+                <p className="font-mono text-xs sm:text-sm">{message}</p>
               </div>
 
               <div className="flex gap-2">
                 <div>
                   <H4>Currency</H4>
-                  <p className="font-mono text-sm">{billing.currency}</p>
+                  <p className="font-mono text-xs sm:text-sm">
+                    {billing.currency}
+                  </p>
                 </div>
                 <div>
                   <H4>Amount</H4>
-                  <p className="font-mono text-sm">{item.price?.toFixed(2)}</p>
+                  <p className="font-mono text-xs sm:text-sm">
+                    {item.price?.toFixed(2)}
+                  </p>
                 </div>
               </div>
             </div>
