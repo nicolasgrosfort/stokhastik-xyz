@@ -1,4 +1,4 @@
-import { Item } from "@/components/Item";
+import { Item } from "@/components/item";
 import { items } from "@/data/items";
 
 export default function StorePage() {

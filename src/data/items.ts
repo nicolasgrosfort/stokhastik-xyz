@@ -1,4 +1,4 @@
-import { Item } from "@/components/Item";
+import { type Item } from "@/components/item";
 
 export const items: Item[] = [
   {
@@ -9,7 +9,7 @@ export const items: Item[] = [
     price: 10,
     position: 1.5,
     rotation: -Math.PI * 0.25,
-    status: "available",
+    status: "booked",
     description: "Chocolate or banana?",
   },
   {
@@ -42,7 +42,7 @@ export const items: Item[] = [
     price: 30,
     position: 0.8,
     rotation: -Math.PI * 0.25,
-    status: "available",
+    status: "sold",
     description: "A fragment of a NES controller.",
   },
   {

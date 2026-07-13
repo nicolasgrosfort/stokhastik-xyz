@@ -1,6 +1,6 @@
 "use client";
 
-import { Item } from "@/components/Item";
+import { Item } from "@/components/item";
 import { Environment, Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";

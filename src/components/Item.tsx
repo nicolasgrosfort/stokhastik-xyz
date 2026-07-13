@@ -1,10 +1,14 @@
 "use client";
 
+import { Badge } from "@/components/badge";
+import { Price } from "@/components/price";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+export type Status = "available" | "booked" | "sold" | "soon";
 
 export type Item = {
   id: string;
@@ -15,7 +19,7 @@ export type Item = {
   rotation: number;
   price: number;
   description?: string;
-  status: "available" | "booked" | "sold" | "coming-soon";
+  status: Status;
 };
 
 export const BLANK_ITEM: Item = {
@@ -27,7 +31,7 @@ export const BLANK_ITEM: Item = {
   position: 0,
   rotation: 0,
   description: "",
-  status: "coming-soon",
+  status: "soon",
 };
 
 export const Item = ({ item }: { item: Item }) => {
@@ -67,20 +71,16 @@ export const Item = ({ item }: { item: Item }) => {
                 href={`/store/${item.id}`}
                 className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:bg-foreground hover:text-background"
               >
-                {item.status === "available"
-                  ? "I want it!"
-                  : item.status === "booked"
-                    ? "Booked"
-                    : "Sold"}
+                Let me see
               </Link>
             </motion.div>
           ) : (
             <>
               <p className="font-mono text-xs uppercase">{item.name}</p>
-              {item.price > 0 && (
-                <p className="font-mono text-xs uppercase">
-                  CHF {item.price.toFixed(2)}
-                </p>
+              {item.status === "available" ? (
+                <Price price={item.price} />
+              ) : (
+                <Badge status={item.status} />
               )}
             </>
           )}

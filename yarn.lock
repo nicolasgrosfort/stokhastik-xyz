@@ -625,6 +625,11 @@
   resolved "https://registry.yarnpkg.com/@rtsao/scc/-/scc-1.1.0.tgz#927dd2fae9bc3361403ac2c7a00c32ddce9ad7e8"
   integrity sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==
 
+"@standard-schema/spec@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.0.0.tgz#f193b73dc316c4170f2e82a881da0f550d551b9c"
+  integrity sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==
+
 "@swc/helpers@0.5.15":
   version "0.5.15"
   resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.5.15.tgz#79efab344c5819ecf83a43f3f9f811fc84b516d7"
@@ -2793,6 +2798,13 @@ node-releases@^2.0.50:
   version "2.0.51"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.51.tgz#cdc08433577f5b32ad01694481726e22eeb54aef"
   integrity sha512-wRNIrw4DmVLKQlbgOMdkMx27Wrpzes2hh5Jtbi2bjPd+4wJstWIqP5A+lscnqbm0xxmT5Bpg8Lec5ItEBwx6BQ==
+
+nuqs@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/nuqs/-/nuqs-2.9.0.tgz#398efd8c07a46ef1e819c1bf93df176510fd7b5b"
+  integrity sha512-1ckQBhVHaQYjLZ3kWhhH40A32lPJ7TNTQMa2T+SUvl5azyVt7swCQfUXt9xOXJV3YidWq8VHIHcMzVAJ0knRsw==
+  dependencies:
+    "@standard-schema/spec" "1.0.0"
 
 object-assign@^4.1.1:
   version "4.1.1"
