@@ -1,4 +1,4 @@
-import { H2 } from "@/components/H2";
+import { H2 } from "@/components/h2";
 import Link from "next/link";
 
 export default function StoreLayout({

@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/badge";
-import { H3 } from "@/components/H3";
+import { H3 } from "@/components/h3";
 import { H4 } from "@/components/h4";
 import { Item } from "@/components/item";
 import { Price } from "@/components/price";

@@ -1,4 +1,4 @@
-import { H1 } from "@/components/H1";
+import { H1 } from "@/components/h1";
 import Link from "next/link";
 
 export default function Home() {
