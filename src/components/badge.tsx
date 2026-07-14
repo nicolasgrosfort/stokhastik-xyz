@@ -2,8 +2,6 @@ import { Status } from "@/components/item";
 
 const STATUS_MAP: Record<Status, string | null> = {
   available: null,
-  booked: "Booked",
-  soon: "Coming Soon",
   sold: "Sold out",
 };
 

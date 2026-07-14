@@ -54,7 +54,7 @@ touch($file);
 
 $statusFile = __DIR__ . '/data/status.json';
 
-if (!updateStatus($statusFile, $id, 'booked')) {
+if (!updateStatus($statusFile, $id, 'sold')) {
     http_response_code(409);
     echo json_encode(["success" => false, "error" => "ID unavailable"]);
     exit;

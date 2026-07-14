@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export type Status = "available" | "booked" | "sold" | "soon";
+export type Status = "available" | "sold";
 
 export type Item = {
   id: string;
@@ -31,7 +31,7 @@ export const BLANK_ITEM: Item = {
   position: 0,
   rotation: 0,
   description: "",
-  status: "soon",
+  status: "available",
 };
 
 export const Item = ({ item }: { item: Item }) => {
