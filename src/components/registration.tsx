@@ -65,7 +65,7 @@ export const Registration = ({ id }: { id: Item["id"] }) => {
         )}
       </form.Field>
 
-      <section className="flex gap-4 items-center w-104">
+      <section className="flex gap-4 items-center sm:max-w-104 w-full">
         <form.Field name="firstname">
           {(field) => (
             <TextField
@@ -93,7 +93,7 @@ export const Registration = ({ id }: { id: Item["id"] }) => {
         </form.Field>
       </section>
 
-      <section className="flex flex-col w-104">
+      <section className="flex flex-col sm:max-w-104 w-full">
         <form.Field name="email">
           {(field) => (
             <TextField

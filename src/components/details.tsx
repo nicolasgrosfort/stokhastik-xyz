@@ -24,7 +24,7 @@ export const Details = ({ item }: { item: Item }) => {
       <H3 className="uppercase">{item.name}</H3>
       <p className="font-mono text-sm">{item.description}</p>
       <Price price={item.price} />
-      <hr className="border-0 border-t w-104 my-2" />
+      <hr className="border-0 border-t sm:max-w-104 w-full my-2" />
 
       {step === "registration" ? (
         <Registration id={item.id} />
