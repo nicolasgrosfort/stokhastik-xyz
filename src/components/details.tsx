@@ -6,15 +6,16 @@ import { H4 } from "@/components/h4";
 import { Item } from "@/components/item";
 import { Price } from "@/components/price";
 import QRCode from "@/components/qr-code";
+import { Registration } from "@/components/registration";
 import { billing } from "@/data/billing";
 import Link from "next/link";
-import { parseAsBoolean, useQueryState } from "nuqs";
+import { inferParserType, parseAsStringLiteral, useQueryState } from "nuqs";
+
+export const stepParser = parseAsStringLiteral(["registration", "qr-code"]);
+export type Step = inferParserType<typeof stepParser>;
 
 export const Details = ({ item }: { item: Item }) => {
-  const [showQR, setShowQR] = useQueryState(
-    "showQR",
-    parseAsBoolean.withDefault(false),
-  );
+  const [step, setStep] = useQueryState("process", stepParser);
 
   const message = `${billing.message}: ${item.name}`;
 
@@ -23,8 +24,11 @@ export const Details = ({ item }: { item: Item }) => {
       <H3 className="uppercase">{item.name}</H3>
       <p className="font-mono text-sm">{item.description}</p>
       <Price price={item.price} />
+      <hr className="border-0 border-t w-104 my-2" />
 
-      {showQR ? (
+      {step === "registration" ? (
+        <Registration id={item.id} />
+      ) : step === "qr-code" ? (
         <>
           <div className="flex gap-4 w-full items-start">
             <div className="w-50">
@@ -69,19 +73,19 @@ export const Details = ({ item }: { item: Item }) => {
             </div>
           </div>
 
-          <Link
-            href="/store"
-            className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+          <button
+            onClick={() => setStep(null)}
+            className=" border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
           >
             Back
-          </Link>
+          </button>
         </>
       ) : (
         <>
           <div className="flex gap-4 w-full items-center">
             {item.status === "available" ? (
               <button
-                onClick={() => setShowQR(true)}
+                onClick={() => setStep("registration")}
                 className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
               >
                 I want it

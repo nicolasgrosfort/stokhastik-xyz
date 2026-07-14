@@ -10,7 +10,7 @@ header("Content-Type: application/json");
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     http_response_code(405);
-    echo json_encode(["success" => false]);
+    echo json_encode(["success" => false, "error" => "Method not allowed"]);
     exit;
 }
 
@@ -24,7 +24,6 @@ if (!is_array($data)) {
     echo json_encode(["success" => false, "error" => "Invalid JSON"]);
     exit;
 }
-
 
 $sanitize = static fn($value) => htmlspecialchars(trim((string)$value), ENT_QUOTES, 'UTF-8');
 

@@ -10,8 +10,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@base-ui/react": "^1.6.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
+    "@tanstack/react-form": "^1.33.2",
     "@types/three": "^0.185.1",
     "add": "^2.0.6",
     "motion": "^12.42.2",
