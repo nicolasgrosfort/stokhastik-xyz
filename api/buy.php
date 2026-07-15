@@ -81,20 +81,23 @@ try {
     $mail->addBCC($email);
     $mail->addReplyTo($email, "$firstname $lastname");
 
-    $mail->Subject = "Thank you $firstname for your support : \"$item[name]\"";
+    $mail->Subject = "Thank you $firstname for your support: Your item \"$item[name]\" is reserved!";
     $mail->Body = implode("\n", [
         "Hey $firstname,",
         "",
-        "I just put \"$item[name]\" in my bag. I'll bring it to you as soon as I get back.",
-        "If you missed the payment information, you can find it here : https://stokhastik.xyz/store/$item[id]/?process=qr-code",
+        "I've set \"$item[name]\" aside for you, and I'll bring it back with me when I return.",
         "",
-        "If you've changed your mind, you can ignore this message.",
-        "If payment is not received within 5 days, \"$item[name]\" will automatically be made available to everyone.",
+        "You can find the payment information here:",
+        "https://stokhastik.xyz/store/$item[id]/?process=qr-code",
         "",
-        "Finally, this email address is the only place where the data you entered in the form is stored. ",
-        "I receive a copy of this message, which allows me to know who is supporting me.",
+        "Your item will be reserved for 5 days. If payment is not received within that time, it will automatically become available again.",
+        "",
+        "If you've changed your mind, you can simply ignore this email.",
+        "",
+        "The email address used for this message is the only place where the information you entered in the form is stored. I also receive a copy of this email so I know who is supporting me.",
         "",
         "Here is the information you provided:",
+        "",
         "Firstname: $firstname",
         "Lastname: $lastname",
         "Email: $email",
