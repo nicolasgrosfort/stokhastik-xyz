@@ -40,7 +40,10 @@ export const Model = ({ item }: { item: Item }) => {
         style={{ position: "absolute", inset: 0 }}
         camera={{ position: [0, 0, item.position], fov: 50 }}
       >
-        <Environment environmentIntensity={0.4} preset="studio" />
+        <Environment
+          environmentIntensity={0.4}
+          files="/hdris/monochrome-studio.hdr"
+        />
         {item.model ? (
           <Suspense
             fallback={
