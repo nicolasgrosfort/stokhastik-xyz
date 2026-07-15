@@ -17,12 +17,15 @@ const defaultValues = {
   honeypot: "",
 };
 
-export const Registration = ({ id }: { id: Item["id"] }) => {
+export const Registration = ({ item }: { item: Item }) => {
   const [error, setError] = useState<string | null>(null);
   const [, setStep] = useQueryState("process", stepParser);
 
   const form = useForm({
-    defaultValues: { ...defaultValues, id },
+    defaultValues: {
+      ...defaultValues,
+      item: { id: item.id, name: item.name },
+    },
     onSubmit: async ({ value }) => {
       try {
         const contactApi =
@@ -54,17 +57,6 @@ export const Registration = ({ id }: { id: Item["id"] }) => {
         form.handleSubmit();
       }}
     >
-      <form.Field name="id">
-        {(field) => (
-          <input
-            type="hidden"
-            name={field.name}
-            value={field.state.value}
-            readOnly
-          />
-        )}
-      </form.Field>
-
       <section className="flex gap-4 items-center sm:max-w-104 w-full">
         <form.Field name="firstname">
           {(field) => (

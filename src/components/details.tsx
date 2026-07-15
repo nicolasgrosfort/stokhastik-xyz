@@ -27,7 +27,7 @@ export const Details = ({ item }: { item: Item }) => {
       <hr className="border-0 border-t sm:max-w-104 w-full my-2" />
 
       {step === "registration" ? (
-        <Registration id={item.id} />
+        <Registration item={item} />
       ) : step === "qr-code" ? (
         <>
           <div className="flex gap-4 w-full items-start">

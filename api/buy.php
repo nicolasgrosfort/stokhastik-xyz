@@ -27,12 +27,16 @@ if (!is_array($data)) {
 
 $sanitize = static fn($value) => htmlspecialchars(trim((string)$value), ENT_QUOTES, 'UTF-8');
 
-$id = $sanitize($data['id'] ?? '');
 $firstname = $sanitize($data["firstname"] ?? "");
 $lastname = $sanitize($data["lastname"] ?? "");
 $email = filter_var($data["email"] ?? "", FILTER_VALIDATE_EMAIL);
 $message = $sanitize($data["message"] ?? "");
 $honeypot = $sanitize($data["honeypot"] ?? "");
+
+$item = [
+    "id" => $sanitize($data['item']['id'] ?? ''),
+    "name" => $sanitize($data['item']['name'] ?? '')
+];
 
 if (!$email || !empty($honeypot)) {
     http_response_code(400);
@@ -53,7 +57,7 @@ touch($file);
 
 $statusFile = __DIR__ . '/data/status.json';
 
-if (!updateStatus($statusFile, $id, 'sold')) {
+if (!updateStatus($statusFile, $item['id'] ?? '', 'sold')) {
     http_response_code(409);
     echo json_encode(["success" => false, "error" => "ID unavailable"]);
     exit;
@@ -72,19 +76,33 @@ try {
     $mail->Port = 587;
     $mail->CharSet = 'UTF-8';
 
-    $mail->setFrom($_ENV['EMAIL'], 'Parcours PAN');
+    $mail->setFrom($_ENV['EMAIL'], 'Nicolas Grosfort');
     $mail->addAddress($_ENV['EMAIL']);
     $mail->addBCC($email);
     $mail->addReplyTo($email, "$firstname $lastname");
 
-    $mail->Subject = "Message de $firstname $lastname";
+    $mail->Subject = "Thank you $firstname for your support : \"$item[name]\"";
     $mail->Body = implode("\n", [
-        "Prénom: $firstname",
-        "Nom: $lastname",
-        "Email: $email",
+        "Hey $firstname,",
         "",
-        "Message:",
-        $message,
+        "I just put \"$item[name]\" in my bag. I'll bring it to you as soon as I get back.",
+        "If you missed the payment information, you can find it here : https://stokhastik.xyz/store/$item[id]/?process=qr-code",
+        "",
+        "If you've changed your mind, you can ignore this message.",
+        "If payment is not received within 5 days, \"$item[name]\" will automatically be made available to everyone.",
+        "",
+        "Finally, this email address is the only place where the data you entered in the form is stored. ",
+        "I receive a copy of this message, which allows me to know who is supporting me.",
+        "",
+        "Here is the information you provided:",
+        "Firstname: $firstname",
+        "Lastname: $lastname",
+        "Email: $email",
+        "Message: $message",
+        "",
+        "If you have any questions, feel free to reply to this email.",
+        "Thanks again for your support!",
+        "Nicolas. "
     ]);
 
     $mail->send();
