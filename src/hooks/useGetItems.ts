@@ -1,4 +1,4 @@
-import { Item, Status } from "@/components/item";
+import { Item, ItemWithStatus, Status } from "@/components/item";
 import { items } from "@/data/items";
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,7 +18,7 @@ async function fetchStatus(): Promise<StatusResponse> {
   return response.json();
 }
 
-export function useGetItems() {
+export function useGetItems(id: Item["id"] | null = null) {
   const { data, error, isPending, isFetching } = useQuery({
     queryKey: ["status"],
     queryFn: fetchStatus,
@@ -27,10 +27,15 @@ export function useGetItems() {
     refetchIntervalInBackground: true,
   });
 
-  const mergedItems = items.map((item) => ({
+  const mergedItems: ItemWithStatus[] = items.map((item) => ({
     ...item,
-    status: data?.[Number(item.id)] ?? item.status,
+    status: data?.[Number(item.id)] ?? "available",
   }));
 
-  return { data: mergedItems, error, isPending, isFetching };
+  if (id) {
+    const item = mergedItems.find((item) => item.id === id);
+    return { items: mergedItems, item, error, isPending, isFetching };
+  }
+
+  return { items: mergedItems, error, isPending, isFetching };
 }

@@ -19,6 +19,9 @@ export type Item = {
   rotation: number;
   price: number;
   description?: string;
+};
+
+export type ItemWithStatus = Item & {
   status: Status;
 };
 
@@ -31,10 +34,9 @@ export const BLANK_ITEM: Item = {
   position: 0,
   rotation: 0,
   description: "",
-  status: "available",
 };
 
-export const Item = ({ item }: { item: Item }) => {
+export const Item = ({ item }: { item: ItemWithStatus }) => {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
 

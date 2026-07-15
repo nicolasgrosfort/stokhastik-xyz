@@ -9,7 +9,6 @@ export const items: Item[] = [
     price: 10,
     position: 1.5,
     rotation: -Math.PI * 0.25,
-    status: "available",
     description: "Chocolate or banana?",
   },
   {
@@ -20,7 +19,6 @@ export const items: Item[] = [
     price: 10,
     position: 1,
     rotation: -Math.PI * 0.25,
-    status: "available",
     description: "Portable dripped coffee.",
   },
   {
@@ -31,7 +29,6 @@ export const items: Item[] = [
     price: 20,
     position: 1.6,
     rotation: -Math.PI * 0.25,
-    status: "available",
     description: "A pack of super kawaii candy.",
   },
   {
@@ -42,7 +39,6 @@ export const items: Item[] = [
     price: 30,
     position: 0.8,
     rotation: -Math.PI * 0.25,
-    status: "available",
     description: "A fragment of a NES controller.",
   },
   {
@@ -53,7 +49,6 @@ export const items: Item[] = [
     price: 22,
     position: 0.3,
     rotation: -Math.PI * 0.25,
-    status: "available",
     description: "Coffee bean chocolate. Amazing !",
   },
   {
@@ -64,7 +59,6 @@ export const items: Item[] = [
     price: 25,
     position: 0.3,
     rotation: -Math.PI * 0.25,
-    status: "available",
     description: "A collection of sweets from Takayama Retro Museum.",
   },
   {
@@ -75,7 +69,6 @@ export const items: Item[] = [
     price: 40,
     position: 2,
     rotation: -Math.PI * 0.25,
-    status: "available",
     description: "Lawson Socks.",
   },
   {
@@ -86,7 +79,6 @@ export const items: Item[] = [
     price: 100,
     position: 2,
     rotation: -Math.PI * 0.25,
-    status: "available",
     description: "Iconic Casio F-91",
   },
 ];

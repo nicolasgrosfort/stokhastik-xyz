@@ -6,14 +6,28 @@ import { Item } from "@/components/item";
 import { Payment } from "@/components/payement";
 import { Price } from "@/components/price";
 import { Registration } from "@/components/registration";
+import { useGetItems } from "@/hooks/useGetItems";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { inferParserType, parseAsStringLiteral, useQueryState } from "nuqs";
+import { useEffect } from "react";
 
 export const stepParser = parseAsStringLiteral(["registration", "qr-code"]);
 export type Step = inferParserType<typeof stepParser>;
 
-export const Details = ({ item }: { item: Item }) => {
+export const Details = ({ id }: { id: Item["id"] }) => {
   const [step, setStep] = useQueryState("process", stepParser);
+  const { item } = useGetItems(id);
+
+  if (!item) {
+    redirect("/store");
+  }
+
+  useEffect(() => {
+    if (step === "registration" && item?.status !== "available") {
+      setStep(null);
+    }
+  }, [item?.status, step, setStep]);
 
   return (
     <>

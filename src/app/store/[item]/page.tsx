@@ -24,7 +24,7 @@ export default async function ItemPage({
         </div>
         <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1">
           <Suspense fallback={null}>
-            <Details item={item} />
+            <Details id={itemId} />
           </Suspense>
         </div>
       </div>
