@@ -2,12 +2,10 @@
 
 import { Badge } from "@/components/badge";
 import { H3 } from "@/components/h3";
-import { H4 } from "@/components/h4";
 import { Item } from "@/components/item";
+import { Payment } from "@/components/payement";
 import { Price } from "@/components/price";
-import QRCode from "@/components/qr-code";
 import { Registration } from "@/components/registration";
-import { billing } from "@/data/billing";
 import Link from "next/link";
 import { inferParserType, parseAsStringLiteral, useQueryState } from "nuqs";
 
@@ -17,68 +15,34 @@ export type Step = inferParserType<typeof stepParser>;
 export const Details = ({ item }: { item: Item }) => {
   const [step, setStep] = useQueryState("process", stepParser);
 
-  const message = `${billing.message}: ${item.name}`;
-
   return (
     <>
       <H3 className="uppercase">{item.name}</H3>
-      <p className="font-mono text-sm">{item.description}</p>
-      <Price price={item.price} />
+      <div>
+        <p className="font-mono text-sm">{item.description}</p>
+        <Price price={item.price} />
+      </div>
+
       <hr className="border-0 border-t sm:max-w-104 w-full my-2" />
 
       {step === "registration" ? (
-        <Registration item={item} />
+        <>
+          <p className="font-mono text-xs block w-full sm:max-w-104 mb-2">
+            After submitting this form, you’ll receive an invoice. The item will
+            be reserved for 5 days pending payment. After that, it will be made
+            available again.
+          </p>
+          <Registration item={item} />
+        </>
       ) : step === "qr-code" ? (
         <>
-          <div className="flex gap-4 w-full items-start">
-            <div className="w-50">
-              <QRCode price={item.price} message={message} />
-            </div>
-            <div className="flex flex-col gap-2">
-              <div>
-                <H4>Account</H4>
-                <p className="font-mono text-xs sm:text-sm">
-                  {billing.creditor.account}
-                </p>
-                <p className="font-mono text-xs sm:text-sm">
-                  {billing.creditor.name}
-                </p>
-                <p className="font-mono text-xs sm:text-sm">
-                  {billing.creditor.address}
-                </p>
-                <p className="font-mono text-xs sm:text-sm">
-                  {billing.creditor.city}, {billing.creditor.zip}
-                </p>
-              </div>
-
-              <div>
-                <H4>Additional information</H4>
-                <p className="font-mono text-xs sm:text-sm">{message}</p>
-              </div>
-
-              <div className="flex gap-2">
-                <div>
-                  <H4>Currency</H4>
-                  <p className="font-mono text-xs sm:text-sm">
-                    {billing.currency}
-                  </p>
-                </div>
-                <div>
-                  <H4>Amount</H4>
-                  <p className="font-mono text-xs sm:text-sm">
-                    {item.price?.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setStep(null)}
-            className=" border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
-          >
-            Back
-          </button>
+          <p className="font-mono text-xs block w-full sm:max-w-104 mb-2">
+            <strong>Thank you for your support!</strong> <br />
+            Please use the Swiss QR Bill below to complete your payment. A
+            confirmation email with your invoice and payment details has been
+            sent to your email address.
+          </p>
+          <Payment item={item} />
         </>
       ) : (
         <>
