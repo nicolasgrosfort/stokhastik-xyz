@@ -44,7 +44,12 @@ function QRCode({ data = billing, size = 46, price, message }: QRCodeProps) {
     containerRef.current.appendChild(svgEl);
   }, [data, size, price, message]);
 
-  return <div ref={containerRef} className="w-full h-full" />;
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-full bg-white border border-white"
+    />
+  );
 }
 
 export default QRCode;

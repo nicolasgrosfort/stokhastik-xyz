@@ -81,7 +81,7 @@ try {
     $mail->addBCC($email);
     $mail->addReplyTo($email, "$firstname $lastname");
 
-    $mail->Subject = "Thank you $firstname for your support: Your item \"$item[name]\" is reserved!";
+    $mail->Subject = "Thank you $firstname for your support; your item \"$item[name]\" is reserved!";
     $mail->Body = implode("\n", [
         "Hey $firstname,",
         "",
