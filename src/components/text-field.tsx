@@ -48,7 +48,7 @@ export const TextField = ({
         minLength={minLength}
         pattern={pattern}
         autoFocus={autofocus}
-        className="border border-dark-green w-full p-1 text-sm font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground [&::-webkit-inner-spin-button]:appearance-none"
+        className="border border-dark-green w-full p-1 text-base font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground [&::-webkit-inner-spin-button]:appearance-none"
       />
       <Field.Description>{description}</Field.Description>
       <Field.Error className="text-sm text-red-800" match="valueMissing">
