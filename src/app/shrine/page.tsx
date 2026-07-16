@@ -124,6 +124,7 @@ export default function Shrine() {
   const [isAudioReady, setIsAudioReady] = useState(false);
   const [showWireframe, setShowWireframe] = useState(true);
   const [showOutline, setShowOutline] = useState(true);
+  const [isLocked, setIsLocked] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4">
@@ -148,7 +149,11 @@ export default function Shrine() {
           fov: 60,
         }}
       >
-        <PointerLockControls />
+        <PointerLockControls
+          selector="canvas"
+          onLock={() => setIsLocked(true)}
+          onUnlock={() => setIsLocked(false)}
+        />
         <FPSMovement speed={4} />
 
         <Environment
@@ -190,7 +195,9 @@ export default function Shrine() {
         </Link>
       </H2>
       <p className="relative z-10 font-mono text-xs uppercase text-center">
-        Click to look around · WASD to move · R/F up/down
+        {isLocked
+          ? "Esc to use the menu"
+          : "Click to look around · WASD to move · R/F up/down"}
       </p>
       {!isAudioReady && (
         <button
