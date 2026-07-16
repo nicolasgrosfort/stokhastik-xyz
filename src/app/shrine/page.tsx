@@ -3,9 +3,9 @@
 import { H2 } from "@/components/h2";
 import {
   Environment,
-  FirstPersonControls,
   Html,
   Outlines,
+  PointerLockControls,
   PositionalAudio,
   Wireframe,
 } from "@react-three/drei";
@@ -21,6 +21,42 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Vector3 } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
+
+const FPSMovement = ({ speed = 2 }: { speed?: number }) => {
+  const keys = useRef<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const down = (event: KeyboardEvent) => (keys.current[event.code] = true);
+    const up = (event: KeyboardEvent) => (keys.current[event.code] = false);
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+    return () => {
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+    };
+  }, []);
+
+  useFrame(({ camera }, delta) => {
+    const forward = new THREE.Vector3();
+    camera.getWorldDirection(forward);
+    forward.y = 0;
+    forward.normalize();
+    const right = new THREE.Vector3().crossVectors(forward, camera.up);
+
+    if (keys.current["KeyW"])
+      camera.position.addScaledVector(forward, speed * delta);
+    if (keys.current["KeyS"])
+      camera.position.addScaledVector(forward, -speed * delta);
+    if (keys.current["KeyA"])
+      camera.position.addScaledVector(right, -speed * delta);
+    if (keys.current["KeyD"])
+      camera.position.addScaledVector(right, speed * delta);
+    if (keys.current["KeyR"]) camera.position.y += speed * delta;
+    if (keys.current["KeyF"]) camera.position.y -= speed * delta;
+  });
+
+  return null;
+};
 
 const SceneObject = ({
   stopRotation,
@@ -112,11 +148,8 @@ export default function Shrine() {
           fov: 60,
         }}
       >
-        <FirstPersonControls
-          movementSpeed={2} // Vitesse de déplacement du joueur
-          lookSpeed={0.1} // Vitesse de rotation de la caméra
-          lookVertical={false} // Permet ou non de regarder en haut/bas
-        />
+        <PointerLockControls />
+        <FPSMovement speed={4} />
 
         <Environment
           environmentIntensity={0.4}
@@ -156,6 +189,9 @@ export default function Shrine() {
           <span className="text-xs text-blue-400">SHRINE</span>
         </Link>
       </H2>
+      <p className="relative z-10 font-mono text-xs uppercase text-center">
+        Click to look around · WASD to move · R/F up/down
+      </p>
       {!isAudioReady && (
         <button
           className="cursor-pointer z-10"
