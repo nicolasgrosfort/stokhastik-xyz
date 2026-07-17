@@ -123,6 +123,14 @@ const SceneObject = ({
 };
 
 export default function Shrine() {
+  return (
+    <Suspense fallback={null}>
+      <ShrineScene />
+    </Suspense>
+  );
+}
+
+function ShrineScene() {
   const [isAudioReady, setIsAudioReady] = useState(false);
   const [showWireframe, setShowWireframe] = useState(true);
   const [showOutline, setShowOutline] = useState(true);
