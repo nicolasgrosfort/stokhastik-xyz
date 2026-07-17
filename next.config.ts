@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
         source: "/api/status",
         destination: "http://localhost:8080/status.php",
       },
+      {
+        source: "/api/embedding",
+        destination: "http://localhost:8080/embedding.php",
+      },
     ];
   },
 };
