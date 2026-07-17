@@ -1,8 +1,11 @@
 "use client";
 
 import { CameraFocus } from "@/components/camera-focus";
+import { Form } from "@/components/form";
 import { H2 } from "@/components/h2";
+import { TextField } from "@/components/text-field";
 import { useCameraTarget } from "@/hooks/useCameraTarget";
+import { useGetEmbedding } from "@/hooks/useGetEmbedding";
 import {
   Environment,
   Html,
@@ -24,8 +27,8 @@ import * as THREE from "three";
 import { Vector3 } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
-const TREE_TRUNK_POSITION = new Vector3(-5, -1, -10);
-const CAILLOU_POSITION = new Vector3(5, 1, -2);
+const TREE_TRUNK_POSITION = new Vector3(-10, -1, -10);
+const CAILLOU_POSITION = new Vector3(10, 1, -20);
 const VIEW_OFFSET = new Vector3(0, 2, 4);
 
 const FPSMovement = ({ speed = 2 }: { speed?: number }) => {
@@ -65,7 +68,6 @@ const FPSMovement = ({ speed = 2 }: { speed?: number }) => {
 };
 
 const SceneObject = ({
-  stopRotation,
   showWireframe,
   showOutline,
   model,
@@ -91,12 +93,6 @@ const SceneObject = ({
       audioRef.current?.play();
     }
   }, [isAudioReady]);
-
-  // useFrame((_, delta) => {
-  //   if (ref.current && !stopRotation) {
-  //     ref.current.rotation.y += delta * 0.5;
-  //   }
-  // });
 
   return (
     <group
@@ -131,35 +127,77 @@ export default function Shrine() {
   const [showWireframe, setShowWireframe] = useState(true);
   const [showOutline, setShowOutline] = useState(true);
   const [isLocked, setIsLocked] = useState(false);
+  const [question, setQuestion] = useState("");
   const { setTarget } = useCameraTarget();
+  const { getEmbedding, closest, error, isPending } = useGetEmbedding();
+
+  useEffect(() => {
+    if (closest) setTarget(closest.embedding.position);
+  }, [closest, setTarget]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4">
-      <div className="absolute top-2 left-2 z-10 flex gap-2">
+      <div className="absolute top-2 left-2 z-10 flex flex-wrap items-center gap-2">
+        <button
+          className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
+          onClick={() => setIsAudioReady((v) => !v)}
+        >
+          Audio {isAudioReady ? "on" : "off"}
+        </button>
         <button
           onClick={() => setShowWireframe((v) => !v)}
-          className="font-mono text-xs uppercase px-2 py-1 border bg-background/80"
+          className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
         >
           Wireframe {showWireframe ? "on" : "off"}
         </button>
         <button
           onClick={() => setShowOutline((v) => !v)}
-          className="font-mono text-xs uppercase px-2 py-1 border bg-background/80"
+          className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
         >
           Outline {showOutline ? "on" : "off"}
         </button>
         <button
           onClick={() => setTarget(TREE_TRUNK_POSITION)}
-          className="font-mono text-xs uppercase px-2 py-1 border bg-background/80"
+          className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
         >
           Go to tree
         </button>
         <button
           onClick={() => setTarget(CAILLOU_POSITION)}
-          className="font-mono text-xs uppercase px-2 py-1 border bg-background/80"
+          className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
         >
           Go to rock
         </button>
+        <button
+          onClick={() => setTarget(VIEW_OFFSET)}
+          className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
+        >
+          Back view
+        </button>
+        <Form onSubmit={() => question && getEmbedding(question)}>
+          <div className="flex items-center gap-2 bg-background/80 ">
+            <TextField
+              name="question"
+              value={question}
+              onChange={setQuestion}
+              placeholder="Ask me anything..."
+              className="w-48"
+              stopPropagation
+            />
+            <button
+              type="submit"
+              disabled={isPending}
+              className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
+            >
+              {isPending ? "…" : "Go"}
+            </button>
+          </div>
+        </Form>
+        {error && (
+          <p className="font-mono text-xs text-red-500 bg-background/80 px-2 py-1">
+            {error.message}
+          </p>
+        )}
       </div>
       <Canvas
         style={{ position: "absolute", inset: 0 }}
@@ -190,7 +228,7 @@ export default function Shrine() {
         >
           <SceneObject
             model="/models/tree-trunk.glb"
-            audio="/audio/tree-trunk.mp3"
+            audio="/audio/dub-techno.mp3"
             position={TREE_TRUNK_POSITION}
             isAudioReady={isAudioReady}
             showOutline={showOutline}
@@ -199,7 +237,7 @@ export default function Shrine() {
 
           <SceneObject
             model="/models/caillou.glb"
-            audio="/audio/tree-trunk.mp3"
+            audio="/audio/kankyo-ongaku.mp3"
             position={CAILLOU_POSITION}
             isAudioReady={isAudioReady}
             showOutline={showOutline}
@@ -219,14 +257,6 @@ export default function Shrine() {
           ? "Esc to use the menu"
           : "Click to look around · WASD to move · R/F up/down"}
       </p>
-      {!isAudioReady && (
-        <button
-          className="cursor-pointer z-10"
-          onClick={() => setIsAudioReady(true)}
-        >
-          Enable Audio
-        </button>
-      )}
     </div>
   );
 }

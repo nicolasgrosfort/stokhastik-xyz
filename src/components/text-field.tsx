@@ -1,7 +1,7 @@
 import { Field } from "@base-ui/react";
 type TextFieldProps = {
   name: string;
-  label: string;
+  label?: string;
   placeholder?: string;
   required?: boolean;
   minLength?: number;
@@ -10,6 +10,7 @@ type TextFieldProps = {
   error?: string;
   autofocus?: boolean;
   value?: string;
+  stopPropagation?: boolean;
   onChange?: (value: string) => void;
   type?: "textarea" | "text" | "email" | "tel" | "number";
   className?: string;
@@ -27,6 +28,7 @@ export const TextField = ({
   autofocus,
   value,
   onChange,
+  stopPropagation,
   type = "text",
   className = "",
 }: TextFieldProps) => {
@@ -35,9 +37,11 @@ export const TextField = ({
       name={name}
       className={`flex w-full flex-col items-start gap-1 ${className}`}
     >
-      <Field.Label className="text-xs uppercase font-bold font-mono">
-        {label}
-      </Field.Label>
+      {label && (
+        <Field.Label className="text-xs uppercase font-bold font-mono">
+          {label}
+        </Field.Label>
+      )}
       <Field.Control
         render={type === "textarea" ? <textarea /> : undefined}
         type={type === "textarea" ? undefined : type}
@@ -48,12 +52,19 @@ export const TextField = ({
         minLength={minLength}
         pattern={pattern}
         autoFocus={autofocus}
+        onKeyDown={(e) => {
+          if (stopPropagation) {
+            e.stopPropagation();
+          }
+        }}
         className="border border-dark-green w-full p-1 text-base font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground [&::-webkit-inner-spin-button]:appearance-none"
       />
-      <Field.Description>{description}</Field.Description>
-      <Field.Error className="text-sm text-red-800" match="valueMissing">
-        {error}
-      </Field.Error>
+      {description && <Field.Description>{description}</Field.Description>}
+      {error && (
+        <Field.Error className="text-sm text-red-800" match="valueMissing">
+          {error}
+        </Field.Error>
+      )}
     </Field.Root>
   );
 };

@@ -12,7 +12,7 @@ export const embeddings: Embedding[] = [
   {
     id: "1",
     name: "Swimming in the Arve",
-    position: new Vector3(-5, -1, -10),
+    position: new Vector3(-10, -1, -10),
     originalText:
       "Every day, I go swimming in the Arve. I take a book, sit down on a rock, and spend about an hour there.",
     embedding: [
@@ -1386,7 +1386,7 @@ export const embeddings: Embedding[] = [
   {
     id: "2",
     name: "Trip to Japan",
-    position: new Vector3(5, -1, -10),
+    position: new Vector3(10, 1, -20),
     originalText:
       "I don't feel ready for my trip to Japan. It's like I haven't done enough... never enough. I haven't worked enough on my thesis, the context, and what I'm going to observe there.",
     embedding: [
