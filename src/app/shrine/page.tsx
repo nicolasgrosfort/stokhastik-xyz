@@ -1,6 +1,8 @@
 "use client";
 
+import { CameraFocus } from "@/components/camera-focus";
 import { H2 } from "@/components/h2";
+import { useCameraTarget } from "@/hooks/useCameraTarget";
 import {
   Environment,
   Html,
@@ -21,6 +23,10 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Vector3 } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
+
+const TREE_TRUNK_POSITION = new Vector3(-5, -1, -10);
+const CAILLOU_POSITION = new Vector3(5, 1, -2);
+const VIEW_OFFSET = new Vector3(0, 2, 4);
 
 const FPSMovement = ({ speed = 2 }: { speed?: number }) => {
   const keys = useRef<Record<string, boolean>>({});
@@ -86,11 +92,11 @@ const SceneObject = ({
     }
   }, [isAudioReady]);
 
-  useFrame((_, delta) => {
-    if (ref.current && !stopRotation) {
-      ref.current.rotation.y += delta * 0.5;
-    }
-  });
+  // useFrame((_, delta) => {
+  //   if (ref.current && !stopRotation) {
+  //     ref.current.rotation.y += delta * 0.5;
+  //   }
+  // });
 
   return (
     <group
@@ -125,6 +131,7 @@ export default function Shrine() {
   const [showWireframe, setShowWireframe] = useState(true);
   const [showOutline, setShowOutline] = useState(true);
   const [isLocked, setIsLocked] = useState(false);
+  const { setTarget } = useCameraTarget();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4">
@@ -141,6 +148,18 @@ export default function Shrine() {
         >
           Outline {showOutline ? "on" : "off"}
         </button>
+        <button
+          onClick={() => setTarget(TREE_TRUNK_POSITION)}
+          className="font-mono text-xs uppercase px-2 py-1 border bg-background/80"
+        >
+          Go to tree
+        </button>
+        <button
+          onClick={() => setTarget(CAILLOU_POSITION)}
+          className="font-mono text-xs uppercase px-2 py-1 border bg-background/80"
+        >
+          Go to rock
+        </button>
       </div>
       <Canvas
         style={{ position: "absolute", inset: 0 }}
@@ -155,6 +174,7 @@ export default function Shrine() {
           onUnlock={() => setIsLocked(false)}
         />
         <FPSMovement speed={4} />
+        <CameraFocus offset={VIEW_OFFSET} />
 
         <Environment
           environmentIntensity={0.4}
@@ -171,7 +191,7 @@ export default function Shrine() {
           <SceneObject
             model="/models/tree-trunk.glb"
             audio="/audio/tree-trunk.mp3"
-            position={new Vector3(-5, -1, -10)}
+            position={TREE_TRUNK_POSITION}
             isAudioReady={isAudioReady}
             showOutline={showOutline}
             showWireframe={showWireframe}
@@ -180,7 +200,7 @@ export default function Shrine() {
           <SceneObject
             model="/models/caillou.glb"
             audio="/audio/tree-trunk.mp3"
-            position={new Vector3(5, 1, -2)}
+            position={CAILLOU_POSITION}
             isAudioReady={isAudioReady}
             showOutline={showOutline}
             showWireframe={showWireframe}
