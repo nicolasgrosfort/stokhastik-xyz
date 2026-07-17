@@ -1,4 +1,7 @@
+import { embeddings } from "@/data/embeddings";
+import { findClosestEmbedding } from "@/libs/similarity";
 import { useMutation } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 type EmbeddingResponse = {
   data: { embedding: number[] }[];
@@ -32,10 +35,18 @@ export function useGetEmbedding() {
     mutationFn: fetchEmbedding,
   });
 
+  const embedding = data?.data[0]?.embedding ?? null;
+
+  const closest = useMemo(
+    () => (embedding ? findClosestEmbedding(embedding, embeddings) : null),
+    [embedding],
+  );
+
   return {
     getEmbedding: mutate,
     getEmbeddingAsync: mutateAsync,
-    embedding: data?.data[0]?.embedding ?? null,
+    embedding,
+    closest,
     error,
     isPending,
   };

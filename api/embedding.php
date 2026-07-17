@@ -36,7 +36,7 @@ if ($input === "" || mb_strlen($input) > 2000) {
 $ip = $_SERVER['REMOTE_ADDR'];
 $file = sys_get_temp_dir() . "/embedding_" . md5($ip);
 
-if (file_exists($file) && time() - filemtime($file) < 10) {
+if (file_exists($file) && time() - filemtime($file) < 2) {
     http_response_code(429);
     echo json_encode(["success" => false, "error" => "Too many requests"]);
     exit;
@@ -52,7 +52,7 @@ $headers = [
 
 $body = json_encode([
     "input" => $input,
-    "model" => "mini_lm_l12_v2"
+    "model" => "Qwen/Qwen3-Embedding-8B"
 ]);
 
 $request = new Request('POST', 'https://api.infomaniak.com/2/ai/' . $_ENV['INFOMANIAK_PRODUCT_ID'] . '/openai/v1/embeddings', $headers, $body);

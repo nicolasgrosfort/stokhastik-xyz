@@ -9,7 +9,8 @@ import { useState } from "react";
 
 export default function Garden() {
   const [input, setInput] = useState("");
-  const { getEmbedding, embedding, error, isPending } = useGetEmbedding();
+  const { getEmbedding, embedding, closest, error, isPending } =
+    useGetEmbedding();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4">
@@ -44,6 +45,15 @@ export default function Garden() {
         <p className="text-red-500 text-xs">
           An unknown error occurred: {error.message}
         </p>
+      )}
+
+      {closest && (
+        <div className="text-xs font-mono border border-foreground p-2 w-full sm:max-w-104">
+          <p className="font-bold uppercase">
+            {(closest.similarity * 100).toFixed(1)}% match
+          </p>
+          <p>{closest.embedding.originalText}</p>
+        </div>
       )}
 
       {embedding && (
