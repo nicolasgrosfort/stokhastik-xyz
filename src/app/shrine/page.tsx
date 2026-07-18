@@ -4,6 +4,7 @@ import { CameraFocus } from "@/components/camera-focus";
 import { Form } from "@/components/form";
 import { H2 } from "@/components/h2";
 import { TextField } from "@/components/text-field";
+import { embeddings } from "@/data/embeddings";
 import { useCameraTarget } from "@/hooks/useCameraTarget";
 import { useGetEmbedding } from "@/hooks/useGetEmbedding";
 import {
@@ -27,8 +28,6 @@ import * as THREE from "three";
 import { Vector3 } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
-const TREE_TRUNK_POSITION = new Vector3(-10, -1, -10);
-const CAILLOU_POSITION = new Vector3(10, 1, -20);
 const VIEW_OFFSET = new Vector3(0, 2, 4);
 
 const FPSMovement = ({ speed = 2 }: { speed?: number }) => {
@@ -164,18 +163,15 @@ function ShrineScene() {
         >
           Outline {showOutline ? "on" : "off"}
         </button>
-        <button
-          onClick={() => setTarget(TREE_TRUNK_POSITION)}
-          className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
-        >
-          Go to tree
-        </button>
-        <button
-          onClick={() => setTarget(CAILLOU_POSITION)}
-          className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
-        >
-          Go to rock
-        </button>
+        {embeddings.map((embedding) => (
+          <button
+            key={embedding.id}
+            onClick={() => setTarget(embedding.position)}
+            className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
+          >
+            Go to {embedding.name}
+          </button>
+        ))}
         <button
           onClick={() => setTarget(VIEW_OFFSET)}
           className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
@@ -234,23 +230,17 @@ function ShrineScene() {
             </Html>
           }
         >
-          <SceneObject
-            model="/models/tree-trunk.glb"
-            audio="/audio/dub-techno.mp3"
-            position={TREE_TRUNK_POSITION}
-            isAudioReady={isAudioReady}
-            showOutline={showOutline}
-            showWireframe={showWireframe}
-          />
-
-          <SceneObject
-            model="/models/caillou.glb"
-            audio="/audio/kankyo-ongaku.mp3"
-            position={CAILLOU_POSITION}
-            isAudioReady={isAudioReady}
-            showOutline={showOutline}
-            showWireframe={showWireframe}
-          />
+          {embeddings.map((embedding) => (
+            <SceneObject
+              key={embedding.id}
+              model={embedding.model}
+              audio={embedding.audio}
+              position={embedding.position}
+              isAudioReady={isAudioReady}
+              showOutline={showOutline}
+              showWireframe={showWireframe}
+            />
+          ))}
         </Suspense>
       </Canvas>
 
