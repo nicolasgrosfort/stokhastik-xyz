@@ -77,8 +77,8 @@ try {
     $mail->CharSet = 'UTF-8';
 
     $mail->setFrom($_ENV['EMAIL'], 'Nicolas Grosfort');
-    $mail->addAddress($_ENV['EMAIL']);
-    $mail->addBCC($email);
+    $mail->addAddress($email, "$firstname $lastname");
+    $mail->addBCC($_ENV['EMAIL']);
     $mail->addReplyTo($email, "$firstname $lastname");
 
     $mail->Subject = "Thank you $firstname for your support; your item \"$item[name]\" is reserved!";
