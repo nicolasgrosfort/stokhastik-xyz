@@ -32,7 +32,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
   return (
     <>
       <H3 className="uppercase">{item.name}</H3>
-      <div>
+      <div className="flex flex-col gap-1">
         <p className="font-mono text-sm">{item.description}</p>
         <Price price={item.price} />
       </div>
