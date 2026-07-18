@@ -107,7 +107,6 @@ export const Registration = ({ item }: { item: Item }) => {
               type="textarea"
               value={field.state.value}
               onChange={field.handleChange}
-              required
             />
           )}
         </form.Field>
