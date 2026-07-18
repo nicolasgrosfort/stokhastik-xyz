@@ -33,7 +33,7 @@ export default function StoreLayout({
 
       <footer className="sticky bottom-0 z-10 bg-background border-t border-px border-foreground p-2">
         <p className="font-mono text-xs text-center">
-          Fait avec ❤️ par{" "}
+          Made with ❤️ by{" "}
           <a
             href="https://www.tekh.studio"
             target="_blank"
