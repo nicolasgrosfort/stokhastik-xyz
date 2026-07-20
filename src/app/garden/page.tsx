@@ -82,8 +82,10 @@ export default function Garden() {
               {closest.fragment.data.analyse}
             </p>
             <hr className="my-2 border-foreground" />
-            <p className="text-xs uppercase">
-              {(closest.similarity * 100).toFixed(1)}% match
+            <p className="text-xs uppercase flex gap-2">
+              <span>{(closest.similarity * 100).toFixed(1)}% match</span>
+              <span> | </span>
+              <span>{closest.fragment.data.type?.join(", ")}</span>
             </p>
           </div>
         )}

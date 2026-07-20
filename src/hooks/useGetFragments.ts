@@ -18,6 +18,7 @@ type FragmentFrontMatter = {
   embedding?: number[] | null;
   titre?: string | null;
   analyse?: string | null;
+  type?: string[] | null;
 };
 
 export type Fragment = {
