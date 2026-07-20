@@ -18,74 +18,76 @@ export default function Garden() {
   console.log("Closest:", closest);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4">
-      <H2 className="bg-background col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
-        <Link href="/">STOKHASTIK</Link>{" "}
-        <Link href="/garden">
-          <span className="text-xs text-green-400">GARDEN</span>
-        </Link>
-      </H2>
-
-      <Form onSubmit={() => getEmbedding(input)}>
-        <TextField
-          name="input"
-          placeholder="What are you looking for?"
-          value={input}
-          onChange={setInput}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              getEmbedding(input);
-            }
-          }}
-          required
-          className="sm:max-w-104"
-        />
-        <div className="flex gap-2">
-          {" "}
-          <button
-            type="submit"
-            disabled={isPending}
-            className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-51 w-full cursor-pointer text-center hover:underline"
-          >
-            {isPending ? "Searching..." : "Search"}
-          </button>
-          <Link
-            href="/"
-            className="text-xs uppercase block sm:w-51 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
-          >
-            Back
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full sm:max-w-126 flex flex-col items-center justify-center gap-2 ">
+        <H2 className="bg-background col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
+          <Link href="/">STOKHASTIK</Link>{" "}
+          <Link href="/garden">
+            <span className="text-xs text-green-400">GARDEN</span>
           </Link>
-        </div>
-      </Form>
+        </H2>
 
-      {error && (
-        <p className="text-red-500 text-xs">
-          An unknown error occurred: {error.message}
-        </p>
-      )}
+        <Form onSubmit={() => getEmbedding(input)}>
+          <TextField
+            name="input"
+            placeholder="What are you looking for?"
+            value={input}
+            onChange={setInput}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                getEmbedding(input);
+              }
+            }}
+            required
+            className=""
+          />
+          <div className="flex gap-2 w-full">
+            {" "}
+            <button
+              type="submit"
+              disabled={isPending}
+              className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+            >
+              {isPending ? "Searching..." : "Search"}
+            </button>
+            <Link
+              href="/"
+              className="text-xs uppercase block  w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+            >
+              Back
+            </Link>
+          </div>
+        </Form>
 
-      {embedding && (
-        <pre className="text-xs font-mono border border-foreground p-2 w-full sm:max-w-104 max-h-64 overflow-auto">
-          {JSON.stringify(embedding)}
-        </pre>
-      )}
+        {error && (
+          <p className="text-red-500 text-xs">
+            An unknown error occurred: {error.message}
+          </p>
+        )}
 
-      {closest && (
-        <div className="flex flex-col gap-1 font-mono border border-foreground p-2 w-full sm:max-w-104">
-          <p className="font-bold text-sm">{closest.fragment.data.titre}</p>
-          <p className="text-foreground text-xs">
-            {closest.fragment.data.citation}
-          </p>
-          <p className="text-foreground text-xs">
-            {closest.fragment.data.analyse}
-          </p>
-          <hr className="my-2 border-foreground" />
-          <p className="text-xs uppercase">
-            {(closest.similarity * 100).toFixed(1)}% match
-          </p>
-        </div>
-      )}
+        {embedding && (
+          <pre className="text-xs font-mono border border-foreground p-2 w-full max-h-64 overflow-auto">
+            {JSON.stringify(embedding)}
+          </pre>
+        )}
+
+        {closest && (
+          <div className="flex flex-col gap-1 font-mono border border-foreground p-2 w-full ">
+            <p className="font-bold text-sm">{closest.fragment.data.titre}</p>
+            <p className="text-foreground text-xs">
+              {closest.fragment.data.citation}
+            </p>
+            <p className="text-foreground text-xs">
+              {closest.fragment.data.analyse}
+            </p>
+            <hr className="my-2 border-foreground" />
+            <p className="text-xs uppercase">
+              {(closest.similarity * 100).toFixed(1)}% match
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
