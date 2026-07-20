@@ -16,6 +16,8 @@ type FragmentFrontMatter = {
   références?: string[] | null;
   citation?: string;
   embedding?: number[] | null;
+  titre?: string | null;
+  analyse?: string | null;
 };
 
 export type Fragment = {

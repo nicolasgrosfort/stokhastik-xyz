@@ -15,6 +15,8 @@ export default function Garden() {
   const { results } = useSearchFragments(embedding);
   const closest = results?.[0] ?? null;
 
+  console.log("Closest:", closest);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4">
       <H2 className="bg-background col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
@@ -44,13 +46,13 @@ export default function Garden() {
           <button
             type="submit"
             disabled={isPending}
-            className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
+            className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-51 w-full cursor-pointer text-center hover:underline"
           >
             {isPending ? "Searching..." : "Search"}
           </button>
           <Link
             href="/"
-            className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+            className="text-xs uppercase block sm:w-51 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
           >
             Back
           </Link>
@@ -70,12 +72,18 @@ export default function Garden() {
       )}
 
       {closest && (
-        <div className="text-xs font-mono border border-foreground p-2 w-full sm:max-w-104">
-          <p className="font-bold uppercase">
+        <div className="flex flex-col gap-1 font-mono border border-foreground p-2 w-full sm:max-w-104">
+          <p className="font-bold text-sm">{closest.fragment.data.titre}</p>
+          <p className="text-foreground text-xs">
+            {closest.fragment.data.citation}
+          </p>
+          <p className="text-foreground text-xs">
+            {closest.fragment.data.analyse}
+          </p>
+          <hr className="my-2 border-foreground" />
+          <p className="text-xs uppercase">
             {(closest.similarity * 100).toFixed(1)}% match
           </p>
-          <p className="font-bold">{closest.fragment.name}</p>
-          <p>{closest.fragment.data.citation}</p>
         </div>
       )}
     </div>

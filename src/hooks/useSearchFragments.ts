@@ -22,7 +22,5 @@ export function useSearchFragments(embedding: number[] | null) {
       .sort((a, b) => b.similarity - a.similarity);
   }, [embedding, fragments]);
 
-  console.log("useSearchFragments results:", results);
-
   return { fragments, results, error, isPending, isFetching };
 }
