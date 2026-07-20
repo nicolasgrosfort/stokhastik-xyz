@@ -27,10 +27,15 @@ export default function Garden() {
       <Form onSubmit={() => getEmbedding(input)}>
         <TextField
           name="input"
-          label="Text"
-          type="textarea"
+          placeholder="What are you looking for?"
           value={input}
           onChange={setInput}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              getEmbedding(input);
+            }
+          }}
           required
           className="sm:max-w-104"
         />
@@ -41,7 +46,7 @@ export default function Garden() {
             disabled={isPending}
             className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
           >
-            {isPending ? "Embedding…" : "Embed"}
+            {isPending ? "Searching..." : "Search"}
           </button>
           <Link
             href="/"

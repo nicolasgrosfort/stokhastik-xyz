@@ -12,6 +12,9 @@ type TextFieldProps = {
   value?: string;
   stopPropagation?: boolean;
   onChange?: (value: string) => void;
+  onKeyDown?: (
+    event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ) => void;
   type?: "textarea" | "text" | "email" | "tel" | "number";
   className?: string;
 };
@@ -29,6 +32,7 @@ export const TextField = ({
   value,
   onChange,
   stopPropagation,
+  onKeyDown,
   type = "text",
   className = "",
 }: TextFieldProps) => {
@@ -56,6 +60,8 @@ export const TextField = ({
           if (stopPropagation) {
             e.stopPropagation();
           }
+
+          onKeyDown?.(e);
         }}
         className="border border-dark-green w-full p-1 text-base font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground [&::-webkit-inner-spin-button]:appearance-none"
       />
