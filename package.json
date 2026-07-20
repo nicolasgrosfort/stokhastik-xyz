@@ -10,6 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@11ty/gray-matter": "^2.1.0",
     "@base-ui/react": "^1.6.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
@@ -17,8 +18,10 @@
     "@tanstack/react-query": "^5.101.2",
     "@types/three": "^0.185.1",
     "add": "^2.0.6",
+    "i": "^0.3.7",
     "motion": "^12.42.2",
     "next": "16.2.10",
+    "npm": "^12.0.1",
     "nuqs": "^2.9.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
