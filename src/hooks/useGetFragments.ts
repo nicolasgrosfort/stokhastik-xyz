@@ -12,13 +12,14 @@ type GithubContentItem = {
 type FragmentFrontMatter = {
   création: string;
   révision?: string | null;
-  relations?: string | null;
+  relations?: string[] | null;
   références?: string[] | null;
   citation?: string;
   embedding?: number[] | null;
   titre?: string | null;
   analyse?: string | null;
   type?: string[] | null;
+  thématique?: string[] | null;
 };
 
 export type Fragment = {

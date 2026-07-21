@@ -86,6 +86,8 @@ export default function Garden() {
               <span>{(closest.similarity * 100).toFixed(1)}% match</span>
               <span> | </span>
               <span>{closest.fragment.data.type?.join(", ")}</span>
+              <span> | </span>
+              <span>{closest.fragment.data.thématique?.join(", ") || "-"}</span>
             </p>
           </div>
         )}
