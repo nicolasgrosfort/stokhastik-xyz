@@ -1,7 +1,7 @@
 "use client";
 
 import { Item } from "@/components/item";
-import { Environment, Html, OrbitControls } from "@react-three/drei";
+import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
 import { Group } from "three";
@@ -40,10 +40,7 @@ export const Model = ({ item }: { item: Item }) => {
         style={{ position: "absolute", inset: 0 }}
         camera={{ position: [0, 0, item.position], fov: 50 }}
       >
-        <Environment
-          environmentIntensity={0.4}
-          files="/hdris/monochrome-studio.hdr"
-        />
+        <ambientLight intensity={2} />
         {item.model ? (
           <Suspense
             fallback={
