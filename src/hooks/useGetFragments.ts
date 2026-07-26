@@ -30,6 +30,7 @@ export type Fragment = {
   htmlUrl: string;
   data: FragmentFrontMatter;
   content: string;
+  similarity: number;
 };
 
 type ErrorResponse = {
@@ -59,6 +60,7 @@ async function fetchFragmentContent(
     htmlUrl: item.html_url,
     data: { ...data, embedding } as FragmentFrontMatter,
     content: content.trim(),
+    similarity: 0,
   };
 }
 
