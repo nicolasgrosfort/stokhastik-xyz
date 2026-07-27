@@ -35,3 +35,43 @@ export default async function ItemPage({
 export async function generateStaticParams() {
   return items.map((item) => ({ item: item.id.toString() }));
 }
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ item: string }>;
+}) {
+  const itemId = (await params).item;
+  const item = items.find((i) => i.id === itemId);
+
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? "https://stokhastik.xyz"
+      : "http://localhost:3000";
+
+  if (!item) {
+    return {
+      title: "Item not found",
+      description: "The item you are looking for does not exist.",
+    };
+  }
+
+  return {
+    title: `Stokhastik - Store - ${item.name}`,
+    description: item.description,
+    openGraph: {
+      title: item.name,
+
+      description: item.description,
+
+      images: [
+        {
+          url: baseUrl + item.thumbnail,
+          alt: item.name,
+          width: 1920,
+          height: 1920,
+        },
+      ],
+    },
+  };
+}

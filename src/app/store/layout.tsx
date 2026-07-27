@@ -1,5 +1,11 @@
 import { H2 } from "@/components/h2";
+import { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Stokhastik - Store",
+  description: "Fragments of a trip to Japan for sale.",
+};
 
 export default function StoreLayout({
   children,
