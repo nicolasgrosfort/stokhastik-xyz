@@ -10,6 +10,11 @@ jobs:
       - name: Get latest code
         uses: actions/checkout@v6
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+
       - name: Install API dependencies
         run: |
           cd api
