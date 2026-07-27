@@ -10,16 +10,18 @@ export const items: Item[] = [
     position: 1.5,
     rotation: -Math.PI * 0.25,
     description: "Chocolate or banana?",
+    date: "2023-06-01",
   },
   {
     id: "2",
     name: "Coffee",
     model: "/models/coffee.glb",
     thumbnail: "/thumbnails/coffee.png",
-    price: 10,
+    price: 200,
     position: 1,
     rotation: -Math.PI * 0.25,
     description: "Portable dripped coffee.",
+    date: "2023-06-01",
   },
   {
     id: "3",
@@ -30,6 +32,7 @@ export const items: Item[] = [
     position: 1.6,
     rotation: -Math.PI * 0.25,
     description: "A pack of super kawaii candy.",
+    date: "2023-06-01",
   },
   {
     id: "4",
@@ -40,6 +43,7 @@ export const items: Item[] = [
     position: 0.8,
     rotation: -Math.PI * 0.25,
     description: "A fragment of a NES controller.",
+    date: "2023-06-01",
   },
   {
     id: "5",
@@ -50,6 +54,7 @@ export const items: Item[] = [
     position: 0.3,
     rotation: -Math.PI * 0.25,
     description: "Coffee bean chocolate. Amazing !",
+    date: "2023-06-01",
   },
   {
     id: "6",
@@ -60,6 +65,7 @@ export const items: Item[] = [
     position: 0.3,
     rotation: -Math.PI * 0.25,
     description: "A collection of sweets from Takayama Retro Museum.",
+    date: "2023-06-01",
   },
   {
     id: "7",
@@ -70,6 +76,7 @@ export const items: Item[] = [
     position: 2,
     rotation: -Math.PI * 0.25,
     description: "Lawson Socks.",
+    date: "2023-06-01",
   },
   {
     id: "8",
@@ -80,5 +87,6 @@ export const items: Item[] = [
     position: 2,
     rotation: -Math.PI * 0.25,
     description: "Iconic Casio F-91",
+    date: "2023-06-01",
   },
 ];

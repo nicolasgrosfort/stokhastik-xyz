@@ -19,6 +19,7 @@ export type Item = {
   rotation: number;
   price: number;
   description?: string;
+  date?: string;
 };
 
 export type ItemWithStatus = Item & {

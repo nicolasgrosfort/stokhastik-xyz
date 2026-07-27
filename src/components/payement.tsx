@@ -11,7 +11,9 @@ export const Payment = ({ item }: { item: Item }) => {
 
   const message = `${billing.message}: ${item.name}`;
 
-  const qrBillHref = `/api/qr-bill?${new URLSearchParams({
+  const qrBillApi =
+    process.env.NODE_ENV === "production" ? "/api/qr-bill.php" : "/api/qr-bill";
+  const qrBillHref = `${qrBillApi}?${new URLSearchParams({
     name: item.name,
     price: String(item.price ?? 0),
     message,
