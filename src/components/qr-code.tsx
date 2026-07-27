@@ -1,33 +1,17 @@
 "use client";
 
 import { billing } from "@/data/billing";
+import { makeSvgResponsive } from "@/libs/utils";
 import { useEffect, useRef } from "react";
 import { SwissQRCode } from "swissqrbill/svg";
 import { Data } from "swissqrbill/types";
 
-function makeSvgResponsive(svgEl: SVGElement, size: number) {
-  svgEl.setAttribute("viewBox", `0 0 ${size} ${size}`);
-  svgEl.style.width = "100%";
-  svgEl.style.height = "auto";
-  svgEl.style.display = "block";
-
-  const attrs = ["x", "y", "width", "height"];
-  svgEl.querySelectorAll("*").forEach((el) => {
-    for (const attr of attrs) {
-      const value = el.getAttribute(attr);
-      if (value?.endsWith("mm")) {
-        el.setAttribute(attr, value.replace("mm", ""));
-      }
-    }
-  });
-}
-
-interface QRCodeProps {
+type QRCodeProps = {
   data?: Data;
   size?: number;
   price: number;
   message?: string;
-}
+};
 
 function QRCode({ data = billing, size = 46, price, message }: QRCodeProps) {
   const containerRef = useRef<HTMLDivElement>(null);

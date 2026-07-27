@@ -62,7 +62,7 @@ export const Registration = ({ item }: { item: Item }) => {
           {(field) => (
             <TextField
               name={field.name}
-              label="Firstname"
+              label="Firstname*"
               type="text"
               value={field.state.value}
               onChange={field.handleChange}
@@ -75,7 +75,7 @@ export const Registration = ({ item }: { item: Item }) => {
           {(field) => (
             <TextField
               name={field.name}
-              label="Lastname"
+              label="Lastname*"
               type="text"
               value={field.state.value}
               onChange={field.handleChange}
@@ -90,7 +90,7 @@ export const Registration = ({ item }: { item: Item }) => {
           {(field) => (
             <TextField
               name={field.name}
-              label="Email"
+              label="Email*"
               type="email"
               value={field.state.value}
               onChange={field.handleChange}
