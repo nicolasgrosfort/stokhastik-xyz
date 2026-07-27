@@ -25,6 +25,10 @@ const nextConfig: NextConfig = {
         source: "/api/fragments",
         destination: "http://localhost:8080/fragments.php",
       },
+      {
+        source: "/api/qr-bill",
+        destination: "http://localhost:8080/qr-bill.php",
+      },
     ];
   },
 };

@@ -2,6 +2,8 @@
     "require": {
         "phpmailer/phpmailer": "^7.0",
         "vlucas/phpdotenv": "^5.6",
-        "guzzlehttp/guzzle": "^7.14"
+        "guzzlehttp/guzzle": "^7.15.1",
+        "sprain/swiss-qr-bill": "^5.3",
+        "fpdf/fpdf": "^1.90"
     }
 }
