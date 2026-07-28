@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/badge";
 import { Price } from "@/components/price";
+import { format } from "date-fns";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,22 +20,11 @@ export type Item = {
   rotation: number;
   price: number;
   description?: string;
-  date?: string;
+  date: string;
 };
 
 export type ItemWithStatus = Item & {
   status: Status;
-};
-
-export const BLANK_ITEM: Item = {
-  id: "",
-  name: "",
-  model: "",
-  thumbnail: "",
-  price: 0,
-  position: 0,
-  rotation: 0,
-  description: "",
 };
 
 export const Item = ({ item }: { item: ItemWithStatus }) => {
@@ -48,6 +38,9 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => router.push(`/store/${item.id}`)}
     >
+      <header className="w-full h-6 flex items-center justify-between absolute top-2 px-2">
+        <p className="font-mono text-sm uppercase">{item.name}</p>
+      </header>
       <motion.section
         className="w-full h-full relative"
         whileHover={{ scale: 1.1 }}
@@ -79,7 +72,9 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
             </motion.div>
           ) : (
             <>
-              <p className="font-mono text-xs uppercase">{item.name}</p>
+              <p className="font-mono text-xs uppercase">
+                {format(item.date, "dd.MM.yyyy")}
+              </p>
               {item.status === "available" ? (
                 <Price price={item.price} />
               ) : (
