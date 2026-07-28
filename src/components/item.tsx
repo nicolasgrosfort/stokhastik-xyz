@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/badge";
+import { FormatedDate } from "@/components/formated-date";
 import { Price } from "@/components/price";
-import { format } from "date-fns";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -72,9 +72,7 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
             </motion.div>
           ) : (
             <>
-              <p className="font-mono text-xs uppercase">
-                {format(item.date, "dd.MM.yyyy")}
-              </p>
+              <FormatedDate date={new Date(item.date)} />
               {item.status === "available" ? (
                 <Price price={item.price} />
               ) : (

@@ -1,13 +1,13 @@
 "use client";
 
 import { Badge } from "@/components/badge";
+import { FormatedDate } from "@/components/formated-date";
 import { H3 } from "@/components/h3";
 import { Item } from "@/components/item";
 import { Payment } from "@/components/payement";
 import { Price } from "@/components/price";
 import { Registration } from "@/components/registration";
 import { useGetItems } from "@/hooks/useGetItems";
-import { format } from "date-fns";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { inferParserType, parseAsStringLiteral, useQueryState } from "nuqs";
@@ -36,9 +36,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
       <div className="flex flex-col gap-1 w-full sm:max-w-104">
         <p className="font-mono text-sm">{item.description}</p>
         <div className="flex gap-4 w-full items-center justify-between">
-          <p className="font-mono text-xs uppercase">
-            {format(item.date, "dd.MM.yyyy")}
-          </p>
+          <FormatedDate date={new Date(item.date)} />
           <Price price={item.price} />
         </div>
       </div>

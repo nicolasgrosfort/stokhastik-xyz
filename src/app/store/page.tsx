@@ -49,7 +49,7 @@ export default function StorePage() {
           return a.name.localeCompare(b.name);
         case "date":
         default:
-          return (a.date ?? "").localeCompare(b.date ?? "");
+          return (b.date ?? "").localeCompare(a.date ?? "");
       }
     });
   }, [items, availableItems, soldItems, statusFilter, sortKey]);
