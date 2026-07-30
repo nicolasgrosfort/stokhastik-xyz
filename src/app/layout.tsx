@@ -1,18 +1,21 @@
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-
 import { QueryProvider } from "@/components/query-provider";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const mapleMono = localFont({
+  src: [
+    {
+      path: "../fonts/maple-mono.ttf",
+      style: "normal",
+    },
+    {
+      path: "../fonts/maple-mono-italic.ttf",
+      style: "italic",
+    },
+  ],
+  variable: "--font-maple-mono",
 });
 
 export const metadata: Metadata = {
@@ -26,10 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${mapleMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <NuqsAdapter>
           <QueryProvider>{children}</QueryProvider>
