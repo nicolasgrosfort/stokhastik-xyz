@@ -98,7 +98,9 @@ export const Registration = ({ item }: { item: Item }) => {
             />
           )}
         </form.Field>
+      </section>
 
+      <section className="flex flex-col sm:max-w-104 w-full">
         <form.Field name="message">
           {(field) => (
             <TextField
@@ -133,7 +135,7 @@ export const Registration = ({ item }: { item: Item }) => {
               disabled={isSubmitting}
               className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
             >
-              {isSubmitting ? "Acheter…" : "Acheter"}
+              {isSubmitting ? "Achat..." : "Acheter"}
             </button>
           )}
         </form.Subscribe>

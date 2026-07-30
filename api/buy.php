@@ -89,8 +89,29 @@ try {
     $mail->addBCC($_ENV['EMAIL']);
     $mail->addReplyTo($email, "$firstname $lastname");
 
+    $paymentLink = "https://stokhastik.xyz/store/$item[id]/?process=qr-code";
+
     $mail->Subject = "Merci $firstname pour ton soutien ❤️ Ton article \"$item[name]\" est réservé !";
+    $mail->isHTML(true);
     $mail->Body = implode("\n", [
+        "<p>Salut $firstname,</p>",
+        "<p>Merci beaucoup pour ton soutien ❤️</p>",
+        "<p>J'ai mis \"$item[name]\" de côté pour toi. Je te l'apporterai dès mon retour, à partir du 1er octobre 2026.</p>",
+        "<p>Tu trouveras ici <a href=\"$paymentLink\">les informations nécessaires pour effectuer le paiement</a></p>",
+        "<p>Tu peux aussi <a href=\"$invoiceLink\">télécharger directement ta facture QR ici</a></p>",
+        "<p>\"$item[name]\" te sera réservé pendant 5 jours. Si le paiement n'est pas reçu dans ce délai, il deviendra automatiquement à nouveau disponible.</p>",
+        "<p>Si tu as changé d'avis, tu peux simplement ignorer cet email.<br>",
+        "Voici les informations que tu as transmises :</p>",
+        "<p>Prénom : $firstname<br>",
+        "Nom : $lastname<br>",
+        "Email : $email<br>",
+        "Message : $message</p>",
+        "<p>Ces informations me sont uniquement envoyées par email afin de traiter ta réservation.</p>",
+        "<p>Si tu as des questions, n'hésite pas à répondre à cet email.<br>",
+        "Merci encore pour ton soutien !<br>",
+        "Nicolas.</p>"
+    ]);
+    $mail->AltBody = implode("\n", [
         "Salut $firstname,",
         "",
         'Merci beaucoup pour ton soutien ❤️',
@@ -98,7 +119,7 @@ try {
         "J'ai mis \"$item[name]\" de côté pour toi. Je te l'apporterai dès mon retour, à partir du 1er octobre 2026.",
         "",
         "Tu trouveras ici les informations nécessaires pour effectuer le paiement :",
-        "https://stokhastik.xyz/store/$item[id]/?process=qr-code",
+        $paymentLink,
         "",
         "Tu peux aussi télécharger directement ta facture QR ici :",
         $invoiceLink,
