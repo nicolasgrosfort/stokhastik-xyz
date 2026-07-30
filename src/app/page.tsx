@@ -6,26 +6,28 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4">
       <H1 className="uppercase">Stokhastik</H1>
       <p className="text-center font-mono max-w-sm">
-        Stokhastik is a space to host prototypes and research progress.
+        Stokhastik est un espace à multiple fonction. Il est à la fois un outil
+        de recherche et un outil de retranscription de cette dernière. Un espace
+        pour penser et pour communiquer. Un espace vivant.
       </p>
       <div className="flex gap-4">
         <Link
           href="/shrine"
           className="text-blue-400 hover:underline font-mono font-bold uppercase"
         >
-          Shrine
+          Sanctuaire
         </Link>
         <Link
           href="/garden"
           className="text-green-400 hover:underline font-mono font-bold uppercase"
         >
-          Garden
+          Jardin
         </Link>
         <Link
           href="/store"
           className="text-orange-400 hover:underline font-mono font-bold uppercase"
         >
-          Store
+          Boutique
         </Link>
       </div>
     </div>

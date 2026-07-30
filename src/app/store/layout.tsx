@@ -19,19 +19,19 @@ export default function StoreLayout({
           href="/store"
           className="bg-background text-foreground hover:underline hover:bg-foreground hover:text-background p-1 w-full text-xs h-full flex items-center justify-center"
         >
-          STORE
+          BOUTIQUE
         </Link>
         <H2 className="bg-background col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
           <Link href="/">STOKHASTIK</Link>{" "}
           <Link href="/store">
-            <span className="text-xs text-orange-400">STORE</span>
+            <span className="text-xs text-orange-400">BOUTIQUE</span>
           </Link>
         </H2>
         <Link
           href="/store/about"
           className="bg-background text-foreground hover:underline hover:bg-foreground hover:text-background p-1 w-full text-xs h-full flex items-center justify-center"
         >
-          ABOUT
+          À PROPOS
         </Link>
       </header>
 
@@ -39,7 +39,7 @@ export default function StoreLayout({
 
       <footer className="sticky bottom-0 z-10 bg-background border-t border-px border-foreground p-2">
         <p className="font-mono text-xs text-center">
-          Made with ❤️ by{" "}
+          Fait avec ❤️ par{" "}
           <a
             href="https://www.tekh.studio"
             target="_blank"

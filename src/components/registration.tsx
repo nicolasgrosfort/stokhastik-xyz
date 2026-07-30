@@ -62,7 +62,7 @@ export const Registration = ({ item }: { item: Item }) => {
           {(field) => (
             <TextField
               name={field.name}
-              label="Firstname*"
+              label="Prénom*"
               type="text"
               value={field.state.value}
               onChange={field.handleChange}
@@ -75,7 +75,7 @@ export const Registration = ({ item }: { item: Item }) => {
           {(field) => (
             <TextField
               name={field.name}
-              label="Lastname*"
+              label="Nom*"
               type="text"
               value={field.state.value}
               onChange={field.handleChange}
@@ -133,7 +133,7 @@ export const Registration = ({ item }: { item: Item }) => {
               disabled={isSubmitting}
               className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
             >
-              {isSubmitting ? "Buying…" : "Buy"}
+              {isSubmitting ? "Acheter…" : "Acheter"}
             </button>
           )}
         </form.Subscribe>
@@ -142,7 +142,7 @@ export const Registration = ({ item }: { item: Item }) => {
           onClick={() => setStep(null)}
           className=" border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
         >
-          Cancel
+          Annuler
         </button>
       </section>
     </Form>

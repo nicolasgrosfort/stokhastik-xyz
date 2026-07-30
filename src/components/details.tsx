@@ -46,19 +46,19 @@ export const Details = ({ id }: { id: Item["id"] }) => {
       {step === "registration" ? (
         <>
           <p className="font-mono text-xs block w-full sm:max-w-104 mb-2">
-            After submitting this form, you’ll receive an invoice. The item will
-            be reserved for 5 days pending payment. After that, it will be made
-            available again.
+            Après l'envoi de ce formulaire, vous recevrez une facture. L'article
+            sera réservé pendant 5 jours en attendant le paiement. Passé ce
+            délai, il sera de nouveau disponible.
           </p>
           <Registration item={item} />
         </>
       ) : step === "qr-code" ? (
         <>
           <p className="font-mono text-xs block w-full sm:max-w-104 mb-2">
-            <strong>Thank you for your support!</strong> <br />
-            Please use the Swiss QR Bill below to complete your payment. A
-            confirmation email with your invoice and payment details has been
-            sent to your email address.
+            <strong>Merci pour votre soutien!</strong> <br />
+            Veuillez utiliser le QR Bill suisse ci-dessous pour compléter votre
+            paiement. Un email de confirmation avec votre facture et les détails
+            du paiement a été envoyé à votre adresse email.
           </p>
           <Payment item={item} />
         </>
@@ -70,7 +70,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
                 onClick={() => setStep("registration")}
                 className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
               >
-                I want it
+                Je le veux !
               </button>
             ) : (
               <Badge status={item.status} className="sm:w-50 w-full" />
@@ -79,7 +79,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
               href="/store"
               className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
             >
-              Back
+              Retour
             </Link>
           </div>
         </>

@@ -56,23 +56,23 @@ export default function Garden() {
     return typeMatch && thematiqueMatch;
   });
 
-  console.log("filteredResults", filteredResults);
-
   return (
     <motion.div className="min-h-screen  h-[200vh] relative">
       <div className="w-screen h-screen flex flex-col items-center justify-center sticky top-0">
         <div className="w-full sm:max-w-126 flex flex-col items-center justify-center gap-2 p-4">
           <H2 className="bg-background col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
-            <Link href="/">STOKHASTIK</Link>{" "}
+            <Link className="uppercase" href="/">
+              Stokhastik
+            </Link>{" "}
             <Link href="/garden">
-              <span className="text-xs text-green-400">GARDEN</span>
+              <span className="text-xs text-green-400">Jardin</span>
             </Link>
           </H2>
 
           <Form onSubmit={() => getEmbedding(input)}>
             <TextField
               name="input"
-              placeholder="What are you looking for?"
+              placeholder="Que recherchez-vous ?"
               value={input}
               onChange={setInput}
               onKeyDown={(e) => {
@@ -91,18 +91,18 @@ export default function Garden() {
                 disabled={isPending}
                 className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
               >
-                {isPending ? "Searching..." : "Search"}
+                {isPending ? "Recherche en cours..." : "Rechercher"}
               </button>
               <Link
                 href="/"
                 className="text-xs uppercase block  w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
               >
-                Back
+                Retour
               </Link>
             </div>
           </Form>
 
-          <H3 className="text-xs uppercase">Filters</H3>
+          <H3 className="text-xs uppercase">Filtres</H3>
           <div className="grid grid-cols-3 gap-2 w-full">
             <button
               className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"

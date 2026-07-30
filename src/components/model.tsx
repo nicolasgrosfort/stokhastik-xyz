@@ -45,7 +45,7 @@ export const Model = ({ item }: { item: Item }) => {
           <Suspense
             fallback={
               <Html center>
-                <p className="font-mono text-xs uppercase">Loading...</p>
+                <p className="font-mono text-xs uppercase">Chargement...</p>
               </Html>
             }
           >

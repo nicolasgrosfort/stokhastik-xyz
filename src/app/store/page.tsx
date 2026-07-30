@@ -63,8 +63,8 @@ export default function StorePage() {
             onChange={setSortKey}
             options={[
               { value: "date", label: "date" },
-              { value: "price", label: "price" },
-              { value: "name", label: "name" },
+              { value: "price", label: "prix" },
+              { value: "name", label: "nom" },
             ]}
           />
         </div>
@@ -73,9 +73,9 @@ export default function StorePage() {
             value={statusFilter}
             onChange={setStatusFilter}
             options={[
-              { value: "all", label: "all" },
-              { value: "available", label: "available" },
-              { value: "sold", label: "sold" },
+              { value: "all", label: "tous" },
+              { value: "available", label: "disponibles" },
+              { value: "sold", label: "vendus" },
             ]}
           />
         </div>
@@ -100,18 +100,18 @@ export default function StorePage() {
           </>
         ) : (
           <p className="col-span-full text-center bg-background font-mono text-xs uppercase p-4">
-            No items found.
+            Aucun article ne correspond aux filtres sélectionnés.
           </p>
         )}
       </div>
       <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-4 gap-1 sticky bottom-8">
         <p className="font-mono text-xs text-center">
-          {availableItems.length} available | {soldItems.length} sold |{" "}
+          {availableItems.length} disponibles | {soldItems.length} vendus |{" "}
           {items.length} total
         </p>
         <p className="font-mono text-xs text-center">
-          {percentageSupport.toFixed(2)}% | <Price price={totalSupport} />{" "}
-          supported
+          soutien {percentageSupport.toFixed(2)}% |{" "}
+          <Price price={totalSupport} />{" "}
         </p>
       </div>
     </div>

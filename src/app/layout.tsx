@@ -20,7 +20,7 @@ const mapleMono = localFont({
 
 export const metadata: Metadata = {
   title: "Stokhastik",
-  description: "A space made for prototyping and research",
+  description: "Espace de prorotypage, d'expérimentation et de partage.",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${mapleMono.variable} h-full antialiased`}>
+    <html lang="fr" className={`${mapleMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <NuqsAdapter>
           <QueryProvider>{children}</QueryProvider>
