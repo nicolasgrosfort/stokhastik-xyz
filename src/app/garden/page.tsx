@@ -65,7 +65,7 @@ export default function Garden() {
               Stokhastik
             </Link>{" "}
             <Link href="/garden">
-              <span className="text-xs text-green-400">Jardin</span>
+              <span className="text-xs text-green-400">GARDEN</span>
             </Link>
           </H2>
 
@@ -171,7 +171,7 @@ export default function Garden() {
 
           {error && (
             <p className="text-red-500 text-xs">
-              An unknown error occurred: {error.message}
+              Un erreur s'est produite: {error.message}
             </p>
           )}
 

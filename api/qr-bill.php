@@ -71,12 +71,12 @@ $pdf->Cell(0, 10, 'Stokhastik Store', 0, 1);
 
 $pdf->SetFont('Courier', '', 12);
 $pdf->Cell(0, 8, $itemName, 0, 1);
-$pdf->Cell(0, 8, sprintf('Amount : CHF %.2f', $amount), 0, 1);
+$pdf->Cell(0, 8, sprintf('Montant : CHF %.2f', $amount), 0, 1);
 
 // 3. Ajout de la section QR suisse
 $output = new FpdfOutput(
     $qrBill,
-    'en',
+    'fr',
     $pdf
 );
 

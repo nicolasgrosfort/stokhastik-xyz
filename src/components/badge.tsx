@@ -2,7 +2,7 @@ import { Status } from "@/components/item";
 
 const STATUS_MAP: Record<Status, string | null> = {
   available: null,
-  sold: "Sold out",
+  sold: "Vendu",
 };
 
 export const Badge = ({

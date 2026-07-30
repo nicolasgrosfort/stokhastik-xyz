@@ -51,8 +51,8 @@ export async function generateMetadata({
 
   if (!item) {
     return {
-      title: "Item not found",
-      description: "The item you are looking for does not exist.",
+      title: "Article non trouvé",
+      description: "L'article que vous recherchez n'existe pas.",
     };
   }
 

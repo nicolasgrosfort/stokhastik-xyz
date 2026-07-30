@@ -35,7 +35,8 @@ $honeypot = $sanitize($data["honeypot"] ?? "");
 
 $item = [
     "id" => $sanitize($data['item']['id'] ?? ''),
-    "name" => $sanitize($data['item']['name'] ?? '')
+    "name" => $sanitize($data['item']['name'] ?? ''),
+    "price" => (float)($data['item']['price'] ?? 0)
 ];
 
 if (!$email || !empty($honeypot)) {
@@ -64,6 +65,13 @@ if (!updateStatus($statusFile, $item['id'] ?? '', 'sold')) {
 }
 
 
+$invoiceMessage = "Stokhastik Store: {$item['name']}";
+$invoiceLink = "https://stokhastik.xyz/api/qr-bill.php?" . http_build_query([
+    'name' => $item['name'],
+    'price' => $item['price'],
+    'message' => $invoiceMessage,
+]);
+
 $mail = new PHPMailer(true);
 
 try {
@@ -81,30 +89,35 @@ try {
     $mail->addBCC($_ENV['EMAIL']);
     $mail->addReplyTo($email, "$firstname $lastname");
 
-    $mail->Subject = "Thank you $firstname for your support ❤️ Your item \"$item[name]\" is reserved!";
+    $mail->Subject = "Merci $firstname pour ton soutien ❤️ Ton article \"$item[name]\" est réservé !";
     $mail->Body = implode("\n", [
-        "Hey $firstname,",
+        "Salut $firstname,",
         "",
-        "I've set \"$item[name]\" aside for you, and I'll bring it back with me when I return.",
+        'Merci beaucoup pour ton soutien ❤️',
         "",
-        "You can find the payment information here:",
+        "J'ai mis \"$item[name]\" de côté pour toi. Je te l'apporterai dès mon retour, à partir du 1er octobre 2026.",
+        "",
+        "Tu trouveras ici les informations nécessaires pour effectuer le paiement :",
         "https://stokhastik.xyz/store/$item[id]/?process=qr-code",
         "",
-        "Your item will be reserved for 5 days. If payment is not received within that time, it will automatically become available again.",
+        "Tu peux aussi télécharger directement ta facture QR ici :",
+        $invoiceLink,
         "",
-        "If you've changed your mind, you can simply ignore this email.",
+        "\"$item[name]\" te sera réservé pendant 5 jours. Si le paiement n'est pas reçu dans ce délai, il deviendra automatiquement à nouveau disponible.",
         "",
-        "The email address used for this message is the only place where the information you entered in the form is stored. I also receive a copy of this email so I know who is supporting me.",
+        "Si tu as changé d'avis, tu peux simplement ignorer cet email.",
         "",
-        "Here is the information you provided:",
+        "Voici les informations que tu as transmises :",
         "",
-        "Firstname: $firstname",
-        "Lastname: $lastname",
-        "Email: $email",
-        "Message: $message",
+        "Prénom : $firstname",
+        "Nom : $lastname",
+        "Email : $email",
+        "Message : $message",
         "",
-        "If you have any questions, feel free to reply to this email.",
-        "Thanks again for your support!",
+        "Ces informations me sont uniquement envoyées par email afin de traiter ta réservation.",
+        "",
+        "Si tu as des questions, n'hésite pas à répondre à cet email.",
+        "Merci encore pour ton soutien !",
         "Nicolas. "
     ]);
 

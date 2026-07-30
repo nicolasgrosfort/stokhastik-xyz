@@ -15,19 +15,19 @@ export default function Home() {
           href="/shrine"
           className="text-blue-400 hover:underline font-mono font-bold uppercase"
         >
-          Sanctuaire
+          SHRINE
         </Link>
         <Link
           href="/garden"
           className="text-green-400 hover:underline font-mono font-bold uppercase"
         >
-          Jardin
+          GARDEN
         </Link>
         <Link
           href="/store"
           className="text-orange-400 hover:underline font-mono font-bold uppercase"
         >
-          Boutique
+          STORE
         </Link>
       </div>
     </div>

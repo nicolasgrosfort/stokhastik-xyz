@@ -27,7 +27,7 @@ export const Payment = ({ item }: { item: Item }) => {
         </div>
         <div className="flex flex-col gap-2">
           <div>
-            <H4>Account</H4>
+            <H4>Compte</H4>
             <p className="font-mono text-xs sm:text-sm">
               {billing.creditor.account}
             </p>
@@ -43,17 +43,17 @@ export const Payment = ({ item }: { item: Item }) => {
           </div>
 
           <div>
-            <H4>Additional information</H4>
+            <H4>Informations supplémentaires</H4>
             <p className="font-mono text-xs sm:text-sm">{message}</p>
           </div>
 
           <div className="flex gap-2">
             <div>
-              <H4>Currency</H4>
+              <H4>Monnaie</H4>
               <p className="font-mono text-xs sm:text-sm">{billing.currency}</p>
             </div>
             <div>
-              <H4>Amount</H4>
+              <H4>Montant</H4>
               <p className="font-mono text-xs sm:text-sm">
                 {item.price?.toFixed(2)}
               </p>
@@ -67,13 +67,13 @@ export const Payment = ({ item }: { item: Item }) => {
           href={qrBillHref}
           className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
         >
-          Download
+          Facture
         </Link>
         <button
           onClick={() => setStep(null)}
           className=" border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
         >
-          Back
+          Retour
         </button>
       </div>
     </>

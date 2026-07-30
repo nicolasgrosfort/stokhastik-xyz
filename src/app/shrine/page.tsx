@@ -247,7 +247,7 @@ function ShrineScene() {
       <H2 className="relative z-10 p-2">
         <Link href="/">STOKHASTIK</Link>{" "}
         <Link href="/shrine">
-          <span className="text-xs uppercase text-blue-400">Sanctuaire</span>
+          <span className="text-xs uppercase text-blue-400">SHRINE</span>
         </Link>
       </H2>
       <p className="relative z-10 font-mono text-xs uppercase text-center">

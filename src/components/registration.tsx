@@ -24,7 +24,7 @@ export const Registration = ({ item }: { item: Item }) => {
   const form = useForm({
     defaultValues: {
       ...defaultValues,
-      item: { id: item.id, name: item.name },
+      item: { id: item.id, name: item.name, price: item.price },
     },
     onSubmit: async ({ value }) => {
       try {
@@ -43,9 +43,9 @@ export const Registration = ({ item }: { item: Item }) => {
         setStep("qr-code");
       } catch (error) {
         if (error instanceof Error) {
-          setError("An unknown error occurred: " + error.message);
+          setError("Un erreur s'est produite: " + error.message);
         } else {
-          setError("An unknown error occurred.");
+          setError("Un erreur s'est produite.");
         }
       }
     },

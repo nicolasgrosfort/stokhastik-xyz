@@ -9,7 +9,7 @@ export const items: Item[] = [
     price: 10,
     position: 1.5,
     rotation: -Math.PI * 0.25,
-    description: "Chocolate or banana?",
+    description: "Chocolat ou banane ?",
     date: "2026-07-20",
   },
   {
@@ -20,7 +20,7 @@ export const items: Item[] = [
     price: 200,
     position: 1,
     rotation: -Math.PI * 0.25,
-    description: "Portable dripped coffee.",
+    description: "Café-filtre portatif.",
     date: "2026-06-01",
   },
   {
@@ -31,7 +31,7 @@ export const items: Item[] = [
     price: 20,
     position: 1.6,
     rotation: -Math.PI * 0.25,
-    description: "A pack of super kawaii candy.",
+    description: "Un pack de bonbons super kawaii.",
     date: "2026-07-04",
   },
   {
@@ -42,7 +42,7 @@ export const items: Item[] = [
     price: 30,
     position: 0.8,
     rotation: -Math.PI * 0.25,
-    description: "A fragment of a NES controller.",
+    description: "Un fragment d'un contrôleur NES.",
     date: "2026-07-08",
   },
   {
@@ -53,7 +53,7 @@ export const items: Item[] = [
     price: 22,
     position: 0.3,
     rotation: -Math.PI * 0.25,
-    description: "Coffee bean chocolate. Amazing !",
+    description: "Chocolat à base de fèves de café. Incroyable !",
     date: "2026-06-01",
   },
   {
@@ -64,7 +64,7 @@ export const items: Item[] = [
     price: 25,
     position: 0.3,
     rotation: -Math.PI * 0.25,
-    description: "A collection of sweets from Takayama Retro Museum.",
+    description: "Une collection de bonbons du musée Retro de Takayama.",
     date: "2026-05-01",
   },
   {
@@ -75,7 +75,7 @@ export const items: Item[] = [
     price: 40,
     position: 2,
     rotation: -Math.PI * 0.25,
-    description: "Lawson Socks.",
+    description: "Une paire de chaussettes Lawson. Tu connais ?",
     date: "2026-07-01",
   },
   {
@@ -86,7 +86,7 @@ export const items: Item[] = [
     price: 100,
     position: 2,
     rotation: -Math.PI * 0.25,
-    description: "Iconic Casio F-91",
+    description: "L'Iconic Casio F-91",
     date: "2026-07-03",
   },
 ];

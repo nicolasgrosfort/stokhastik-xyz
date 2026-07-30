@@ -19,12 +19,12 @@ export default function StoreLayout({
           href="/store"
           className="bg-background text-foreground hover:underline hover:bg-foreground hover:text-background p-1 w-full text-xs h-full flex items-center justify-center"
         >
-          BOUTIQUE
+          STORE
         </Link>
         <H2 className="bg-background col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
           <Link href="/">STOKHASTIK</Link>{" "}
           <Link href="/store">
-            <span className="text-xs text-orange-400">BOUTIQUE</span>
+            <span className="text-xs text-orange-400">STORE</span>
           </Link>
         </H2>
         <Link
