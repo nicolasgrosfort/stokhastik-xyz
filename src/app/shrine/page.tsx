@@ -143,8 +143,8 @@ function ShrineScene() {
   }, [closest, setTarget]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4">
-      <div className="absolute top-2 left-2 z-10 flex flex-wrap items-center gap-2">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-2 p-4 bg-background">
+      <div className="absolute top-2 left-2 z-5 flex flex-wrap items-center gap-2">
         <button
           className="font-mono text-base uppercase px-2 py-1 border bg-background/80 cursor-pointer"
           onClick={() => setIsAudioReady((v) => !v)}

@@ -57,137 +57,139 @@ export default function Garden() {
   });
 
   return (
-    <motion.div className="min-h-screen  h-[200vh] relative">
-      <div className="w-screen h-screen flex flex-col items-center justify-center sticky top-0">
-        <div className="w-full sm:max-w-126 flex flex-col items-center justify-center gap-2 p-4">
-          <H2 className="bg-background col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
-            <Link className="uppercase" href="/">
-              Stokhastik
-            </Link>{" "}
-            <Link href="/garden">
-              <span className="text-xs text-green-400">GARDEN</span>
-            </Link>
-          </H2>
-
-          <Form onSubmit={() => getEmbedding(input)}>
-            <TextField
-              name="input"
-              placeholder="Que recherchez-vous ?"
-              value={input}
-              onChange={setInput}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  getEmbedding(input);
-                }
-              }}
-              required
-              className=""
-            />
-            <div className="flex gap-2 w-full">
-              {" "}
-              <button
-                type="submit"
-                disabled={isPending}
-                className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
-              >
-                {isPending ? "Recherche en cours..." : "Rechercher"}
-              </button>
-              <Link
-                href="/"
-                className="text-xs uppercase block  w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
-              >
-                Retour
+    <div className="bg-background text-foreground p-2 h-full flex justify-center items-center">
+      <motion.div className="min-h-screen  h-[200vh] relative">
+        <div className="w-screen h-screen flex flex-col items-center justify-center sticky top-0">
+          <div className="w-full sm:max-w-126 flex flex-col items-center justify-center gap-2 p-4">
+            <H2 className="bg-background col-span-2 sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
+              <Link className="uppercase" href="/">
+                Stokhastik
+              </Link>{" "}
+              <Link href="/garden">
+                <span className="text-xs text-green-400">GARDEN</span>
               </Link>
+            </H2>
+
+            <Form onSubmit={() => getEmbedding(input)}>
+              <TextField
+                name="input"
+                placeholder="Que recherchez-vous ?"
+                value={input}
+                onChange={setInput}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    getEmbedding(input);
+                  }
+                }}
+                required
+                className=""
+              />
+              <div className="flex gap-2 w-full">
+                {" "}
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+                >
+                  {isPending ? "Recherche en cours..." : "Rechercher"}
+                </button>
+                <Link
+                  href="/"
+                  className="text-xs uppercase block  w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+                >
+                  Retour
+                </Link>
+              </div>
+            </Form>
+
+            <H3 className="text-xs uppercase">Filtres</H3>
+            <div className="grid grid-cols-3 gap-2 w-full">
+              <button
+                className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+                style={{
+                  backgroundColor: filters.type.includes("livre")
+                    ? "var(--foreground)"
+                    : "transparent",
+                  color: filters.type.includes("livre")
+                    ? "var(--background)"
+                    : "var(--foreground)",
+                }}
+                onClick={() => {
+                  setFilters((prev) => ({
+                    ...prev,
+                    type: prev.type.includes("livre")
+                      ? prev.type.filter((t) => t !== "livre")
+                      : [...prev.type, "livre"],
+                  }));
+                }}
+              >
+                Livre
+              </button>
+              <button
+                className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+                style={{
+                  backgroundColor: filters.type.includes("journal")
+                    ? "var(--foreground)"
+                    : "transparent",
+                  color: filters.type.includes("journal")
+                    ? "var(--background)"
+                    : "var(--foreground)",
+                }}
+                onClick={() => {
+                  setFilters((prev) => ({
+                    ...prev,
+                    type: prev.type.includes("journal")
+                      ? prev.type.filter((t) => t !== "journal")
+                      : [...prev.type, "journal"],
+                  }));
+                }}
+              >
+                Journal
+              </button>
+              <button
+                className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+                style={{
+                  backgroundColor: filters.type.includes("entretien")
+                    ? "var(--foreground)"
+                    : "transparent",
+                  color: filters.type.includes("entretien")
+                    ? "var(--background)"
+                    : "var(--foreground)",
+                }}
+                onClick={() => {
+                  setFilters((prev) => ({
+                    ...prev,
+                    type: prev.type.includes("entretien")
+                      ? prev.type.filter((t) => t !== "entretien")
+                      : [...prev.type, "entretien"],
+                  }));
+                }}
+              >
+                Entretien
+              </button>
             </div>
-          </Form>
 
-          <H3 className="text-xs uppercase">Filtres</H3>
-          <div className="grid grid-cols-3 gap-2 w-full">
-            <button
-              className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
-              style={{
-                backgroundColor: filters.type.includes("livre")
-                  ? "var(--foreground)"
-                  : "transparent",
-                color: filters.type.includes("livre")
-                  ? "var(--background)"
-                  : "var(--foreground)",
-              }}
-              onClick={() => {
-                setFilters((prev) => ({
-                  ...prev,
-                  type: prev.type.includes("livre")
-                    ? prev.type.filter((t) => t !== "livre")
-                    : [...prev.type, "livre"],
-                }));
-              }}
-            >
-              Livre
-            </button>
-            <button
-              className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
-              style={{
-                backgroundColor: filters.type.includes("journal")
-                  ? "var(--foreground)"
-                  : "transparent",
-                color: filters.type.includes("journal")
-                  ? "var(--background)"
-                  : "var(--foreground)",
-              }}
-              onClick={() => {
-                setFilters((prev) => ({
-                  ...prev,
-                  type: prev.type.includes("journal")
-                    ? prev.type.filter((t) => t !== "journal")
-                    : [...prev.type, "journal"],
-                }));
-              }}
-            >
-              Journal
-            </button>
-            <button
-              className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
-              style={{
-                backgroundColor: filters.type.includes("entretien")
-                  ? "var(--foreground)"
-                  : "transparent",
-                color: filters.type.includes("entretien")
-                  ? "var(--background)"
-                  : "var(--foreground)",
-              }}
-              onClick={() => {
-                setFilters((prev) => ({
-                  ...prev,
-                  type: prev.type.includes("entretien")
-                    ? prev.type.filter((t) => t !== "entretien")
-                    : [...prev.type, "entretien"],
-                }));
-              }}
-            >
-              Entretien
-            </button>
+            {error && (
+              <p className="text-red-500 text-xs">
+                Un erreur s'est produite: {error.message}
+              </p>
+            )}
+
+            {embedding && (
+              <pre className="text-xs font-mono border border-foreground p-2 w-full max-h-64 overflow-auto">
+                {JSON.stringify(embedding)}
+              </pre>
+            )}
+
+            <Fragments
+              fragments={filteredResults}
+              scrollProgress={scrollProgress}
+            />
           </div>
-
-          {error && (
-            <p className="text-red-500 text-xs">
-              Un erreur s'est produite: {error.message}
-            </p>
-          )}
-
-          {embedding && (
-            <pre className="text-xs font-mono border border-foreground p-2 w-full max-h-64 overflow-auto">
-              {JSON.stringify(embedding)}
-            </pre>
-          )}
-
-          <Fragments
-            fragments={filteredResults}
-            scrollProgress={scrollProgress}
-          />
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
 
