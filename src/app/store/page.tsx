@@ -74,7 +74,7 @@ export default function StorePage() {
             onChange={setStatusFilter}
             options={[
               { value: "all", label: "tous" },
-              { value: "available", label: "disponibles" },
+              { value: "available", label: "dispos" },
               { value: "sold", label: "vendus" },
             ]}
           />
