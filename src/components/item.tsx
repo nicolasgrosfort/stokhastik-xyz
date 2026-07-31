@@ -25,6 +25,8 @@ export type Item = {
 
 export type ItemWithStatus = Item & {
   status: Status;
+  buyBy: string;
+  buyAt: string;
 };
 
 export const Item = ({ item }: { item: ItemWithStatus }) => {

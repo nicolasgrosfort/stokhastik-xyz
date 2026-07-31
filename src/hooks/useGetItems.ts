@@ -2,7 +2,10 @@ import { Item, ItemWithStatus, Status } from "@/components/item";
 import { items } from "@/data/items";
 import { useQuery } from "@tanstack/react-query";
 
-type StatusMap = Record<Item["id"], Status>;
+type StatusMap = Record<
+  Item["id"],
+  { status: Status; buyBy: string; buyAt: string }
+>;
 
 type StatusResponse = {
   success: boolean;
@@ -29,7 +32,9 @@ export function useGetItems(id: Item["id"] | null = null) {
 
   const mergedItems: ItemWithStatus[] = items.map((item) => ({
     ...item,
-    status: data?.[Number(item.id)] ?? "available",
+    status: data?.[Number(item.id)]?.status ?? "available",
+    buyBy: data?.[Number(item.id)]?.buyBy ?? "",
+    buyAt: data?.[Number(item.id)]?.buyAt ?? "",
   }));
 
   if (id) {

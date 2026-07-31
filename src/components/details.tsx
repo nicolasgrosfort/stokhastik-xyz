@@ -35,8 +35,11 @@ export const Details = ({ id }: { id: Item["id"] }) => {
       <H3 className="uppercase">{item.name}</H3>
       <div className="flex flex-col gap-1 w-full sm:max-w-104">
         <p className="font-mono text-sm">{item.description}</p>
-        <div className="flex gap-4 w-full items-center justify-between">
-          <FormatedDate date={new Date(item.date)} />
+
+        <div className="flex gap-4 w-full items-center justify-between text-xs">
+          <span>
+            Mise en ligne le <FormatedDate date={new Date(item.date)} />
+          </span>
           <Price price={item.price} />
         </div>
       </div>
@@ -82,6 +85,13 @@ export const Details = ({ id }: { id: Item["id"] }) => {
               Retour
             </Link>
           </div>
+
+          {item.status === "sold" && (
+            <p className="text-xs mt-1">
+              Acheté par {item.buyBy} le{" "}
+              <FormatedDate date={new Date(item.buyAt)} />
+            </p>
+          )}
         </>
       )}
     </>

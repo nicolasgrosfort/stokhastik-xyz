@@ -58,7 +58,10 @@ touch($file);
 
 $statusFile = __DIR__ . '/data/status.json';
 
-if (!updateStatus($statusFile, $item['id'] ?? '', 'sold')) {
+if (!updateStatus($statusFile, $item['id'] ?? '', 'sold', [
+    'buyAt' => date('Y-m-d'),
+    'buyBy' => "$firstname",
+])) {
     http_response_code(409);
     echo json_encode(["success" => false, "error" => "ID unavailable"]);
     exit;
