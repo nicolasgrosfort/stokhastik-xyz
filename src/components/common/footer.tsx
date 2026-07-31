@@ -17,7 +17,7 @@ export const Footer = () => {
       >
         Garden
       </Link>
-      <p className="bg-background col-span-2 font-mono text-xs text-center gap-2 py-2 h-full flex items-center justify-center">
+      <p className="bg-background col-span-2 font-mono text-xs text-center gap-2 py-2 h-full flex items-center justify-center sm:col-span-2 xl:col-span-6 order-first sm:order-0 p-2">
         Fait avec ❤️ par{" "}
         <Link
           href="https://www.tekh.studio"
