@@ -9,7 +9,7 @@ import * as THREE from "three";
 
 export default function Map() {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full bg-background cursor-move">
       <Canvas>
         <Scene />
       </Canvas>
@@ -121,6 +121,7 @@ const Card = (props: {
             justifyContent: "center",
             cursor: "pointer",
             userSelect: "none",
+            border: "1px solid var(--color-foreground)",
           }}
         >
           <H1>{props.title}</H1>
