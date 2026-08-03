@@ -75,7 +75,8 @@ export const items: Item[] = [
     price: 20,
     position: 0.5,
     rotation: -Math.PI * 0.25,
-    description: "Une paire de chaussettes Pokemon.",
+    description:
+      "Une paire de chaussettes Pokemon: Métamorph.\n Taille: 26-29 [JP] / 41-45 [EU]",
     date: "2026-08-03",
   },
   {
