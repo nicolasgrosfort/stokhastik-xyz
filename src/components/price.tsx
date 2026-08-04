@@ -1,5 +1,5 @@
 export const Price = ({ price }: { price: number }) => {
   return (
-    <span className="font-mono text-xs uppercase">CHF {price.toFixed(2)}</span>
+    <span className="font-mono text-xs uppercase">STKH {price.toFixed(0)}</span>
   );
 };

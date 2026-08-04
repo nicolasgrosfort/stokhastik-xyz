@@ -5,7 +5,9 @@ import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
 import { Group } from "three";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
+import { DRACOLoader, GLTFLoader } from "three/examples/jsm/Addons.js";
+
+const dracoLoader = new DRACOLoader();
 
 const Object = ({
   item,
@@ -14,7 +16,9 @@ const Object = ({
   item: Item;
   stopRotation?: boolean;
 }) => {
-  const result = useLoader(GLTFLoader, item.model);
+  const result = useLoader(GLTFLoader, item.model, (loader) => {
+    loader.setDRACOLoader(dracoLoader);
+  });
   const ref = useRef<Group>(null);
 
   useFrame((_, delta) => {
