@@ -105,7 +105,7 @@ export const items: Item[] = [
     id: "10",
     name: "Calbee Jagariko Salad",
     model: "/models/calbee-jagariko-salad.glb",
-    thumbnail: "/thumbnails/calbee-jagariko-salad.png",
+    thumbnail: "/thumbnails/calbee-jagariko-salad.avif",
     price: 1000,
     position: 0.25,
     rotation: -Math.PI * 0.25,
