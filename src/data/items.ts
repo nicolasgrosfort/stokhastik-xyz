@@ -90,4 +90,15 @@ export const items: Item[] = [
     description: "L'iconique Casio F-91.",
     date: "2026-07-28",
   },
+  {
+    id: "9",
+    name: "Dangerous Jiisan",
+    model: "/models/dangerous-jiisan.glb",
+    thumbnail: "/thumbnails/dangerous-jiisan.png",
+    price: 10,
+    position: 1,
+    rotation: -Math.PI * 0.25,
+    description: "Une mini édition de Dangerous Jiisan.",
+    date: "2026-08-04",
+  },
 ];
