@@ -8,7 +8,7 @@ import {
   loadStripe,
   StripeElementsOptions,
 } from "@stripe/stripe-js";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -26,56 +26,58 @@ type PaymentIntentResponse = {
   error?: string;
 };
 
-const appearance: Appearance = {
-  theme: "night",
+function buildAppearance(): Appearance {
+  const styles = getComputedStyle(document.documentElement);
+  const foreground = styles.getPropertyValue("--color-foreground").trim();
+  const background = styles.getPropertyValue("--color-background").trim();
+  const danger = styles.getPropertyValue("--color-red-500").trim();
 
-  variables: {
-    colorPrimary: "var(--color-foreground)",
-    colorBackground: "var(--color-background)",
-    colorText: "var(--color-foreground)",
-    colorTextSecondary: "var(--color-foreground-muted)",
-    colorDanger: "var(--color-red-500)",
+  return {
+    variables: {
+      colorPrimary: foreground,
+      colorBackground: background,
+      colorText: foreground,
+      colorTextSecondary: foreground,
+      colorDanger: danger,
 
-    fontFamily:
-      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+      fontFamily:
+        "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
 
-    borderRadius: "0px",
-    spacingUnit: "4px",
-  },
-
-  rules: {
-    ".Input": {
-      border: "1px solid #404040",
-      boxShadow: "none",
-      padding: "14px",
+      borderRadius: "0px",
+      spacingUnit: "4px",
     },
 
-    ".Input:focus": {
-      border: "1px solid #ffffff",
-      boxShadow: "none",
-    },
+    rules: {
+      ".Input": {
+        border: `1px solid ${foreground}`,
+        boxShadow: "none",
+        backgroundColor: background,
+        padding: "8px",
+      },
 
-    ".Label": {
-      fontSize: "12px",
-      textTransform: "uppercase",
-      letterSpacing: "0.08em",
-    },
+      ".Input:focus": {
+        border: `1px solid ${foreground}`,
+        boxShadow: "none",
+      },
 
-    ".Tab": {
-      border: "1px solid #404040",
-      boxShadow: "none",
-    },
+      ".Label": {
+        fontSize: "12px",
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+      },
 
-    ".Tab:hover": {
-      border: "1px solid #737373",
-    },
+      ".Tab": {
+        border: `1px solid ${foreground}`,
+        boxShadow: "none",
+      },
 
-    ".Tab--selected": {
-      border: "1px solid #ffffff",
-      boxShadow: "none",
+      ".Tab--selected": {
+        border: `1px solid ${foreground}`,
+        boxShadow: "none",
+      },
     },
-  },
-};
+  };
+}
 
 export default function Payment() {
   const [selectedPack, setSelectedPack] = useState<PackId>("medium");
@@ -122,13 +124,17 @@ export default function Payment() {
     setError(null);
   }
 
-  const options: StripeElementsOptions | undefined = clientSecret
-    ? {
-        clientSecret,
-        appearance,
-        loader: "auto",
-      }
-    : undefined;
+  const options: StripeElementsOptions | undefined = useMemo(
+    () =>
+      clientSecret
+        ? {
+            clientSecret,
+            appearance: buildAppearance(),
+            loader: "auto",
+          }
+        : undefined,
+    [clientSecret],
+  );
 
   return (
     <section className="space-y-6">
@@ -145,8 +151,8 @@ export default function Payment() {
               className={[
                 "border p-4 text-left transition",
                 isSelected
-                  ? "border-white bg-white text-black"
-                  : "border-neutral-700 bg-neutral-900 hover:border-neutral-500",
+                  ? "bg-foreground text-background"
+                  : "border-foreground bg-background text-foreground",
               ].join(" ")}
             >
               <span className="block text-xl font-semibold">{pack.tokens}</span>

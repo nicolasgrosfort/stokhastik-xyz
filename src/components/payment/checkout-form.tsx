@@ -52,10 +52,7 @@ export default function CheckoutForm({ onCancel }: CheckoutFormProps) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border border-neutral-700 bg-neutral-900 p-5"
-    >
+    <form onSubmit={handleSubmit} className="">
       <PaymentElement
         options={{
           layout: "tabs",
