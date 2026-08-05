@@ -65,10 +65,13 @@ export async function POST(request: NextRequest) {
     await prisma.transaction.create({
       data: {
         userId: session.user.id,
+        type: "PURCHASE",
+        status: "PENDING",
         packId,
         tokens: pack.tokens,
         amount,
         stripePaymentIntentId: paymentIntent.id,
+        description: `Recharge — pack ${pack.id}`,
       },
     });
 

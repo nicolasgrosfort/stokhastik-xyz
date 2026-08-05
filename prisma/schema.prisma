@@ -40,6 +40,8 @@ model StoreItem {
   buyer       User?     @relation(fields: [buyerId], references: [id])
   purchasedAt DateTime?
 
+  transactions Transaction[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -52,19 +54,37 @@ enum TransactionStatus {
   FAILED
 }
 
+enum TransactionType {
+  PURCHASE
+  SPEND
+  REFUND
+  BONUS
+  ADJUSTMENT
+}
+
 model Transaction {
-  id                    String            @id @default(cuid())
-  userId                String
-  user                  User              @relation(fields: [userId], references: [id])
-  packId                String
-  tokens                Int
-  amount                Int // centimes CHF
-  currency              String            @default("chf")
-  status                TransactionStatus @default(PENDING)
-  stripePaymentIntentId String            @unique
+  id     String            @id @default(cuid())
+  userId String
+  user   User              @relation(fields: [userId], references: [id])
+  type   TransactionType
+  status TransactionStatus @default(SUCCEEDED)
+  tokens Int // delta signé : + crédit, - dépense
+
+  // Détail Stripe, uniquement pour type = PURCHASE
+  packId                String?
+  amount                Int? // centimes CHF
+  currency              String? @default("chf")
+  stripePaymentIntentId String? @unique
+
+  // Référence vers l'objet source d'une dépense (type = SPEND)
+  storeItemId String?
+  storeItem   StoreItem? @relation(fields: [storeItemId], references: [id], onDelete: SetNull)
+
+  description String? // libellé figé au moment de la transaction
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([storeItemId])
 }

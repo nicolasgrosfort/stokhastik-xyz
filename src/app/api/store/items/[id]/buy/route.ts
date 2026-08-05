@@ -49,6 +49,16 @@ export async function POST(
         throw new Error("INSUFFICIENT_TOKENS");
       }
 
+      await tx.transaction.create({
+        data: {
+          userId: session.user.id,
+          type: "SPEND",
+          tokens: -existing.price,
+          storeItemId: existing.id,
+          description: existing.name,
+        },
+      });
+
       return tx.storeItem.findUniqueOrThrow({ where: { id } });
     });
 

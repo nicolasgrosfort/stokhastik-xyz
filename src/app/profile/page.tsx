@@ -13,6 +13,14 @@ const statusLabels = {
   FAILED: "Échoué",
 };
 
+const typeLabels = {
+  PURCHASE: "Recharge",
+  SPEND: "Achat",
+  REFUND: "Remboursement",
+  BONUS: "Bonus",
+  ADJUSTMENT: "Ajustement",
+};
+
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
@@ -26,10 +34,6 @@ export default async function ProfilePage() {
       transactions: {
         orderBy: { createdAt: "desc" },
       },
-      storeItems: {
-        where: { purchasedAt: { not: null } },
-        orderBy: { purchasedAt: "desc" },
-      },
     },
   });
 
@@ -37,23 +41,7 @@ export default async function ProfilePage() {
     redirect("/auth/signin?callbackUrl=/profile");
   }
 
-  const history = [
-    ...user.transactions.map((transaction) => ({
-      type: "recharge" as const,
-      id: transaction.id,
-      date: transaction.createdAt,
-      tokens: transaction.tokens,
-      amount: transaction.amount,
-      status: transaction.status,
-    })),
-    ...user.storeItems.map((item) => ({
-      type: "purchase" as const,
-      id: item.id,
-      date: item.purchasedAt!,
-      tokens: item.price,
-      name: item.name,
-    })),
-  ].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const history = user.transactions;
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 h-full p-4 bg-background">
@@ -94,29 +82,29 @@ export default async function ProfilePage() {
             <p className="text-xs">Aucune transaction pour l&apos;instant.</p>
           ) : (
             <div className="flex flex-col gap-2">
-              {history.map((entry) =>
-                entry.type === "recharge" ? (
-                  <div
-                    key={`transaction-${entry.id}`}
-                    className="flex items-center justify-between gap-2 border border-dark-green p-2 text-xs"
-                  >
-                    <FormatedDate date={entry.date} />
-                    <span>+{entry.tokens} STKH</span>
-                    <span>{(entry.amount / 100).toFixed(2)} CHF</span>
-                    <span>{statusLabels[entry.status]}</span>
-                  </div>
-                ) : (
-                  <div
-                    key={`purchase-${entry.id}`}
-                    className="flex items-center justify-between gap-2 border border-dark-green p-2 text-xs"
-                  >
-                    <FormatedDate date={entry.date} />
-                    <span>-{entry.tokens} STKH</span>
-                    <span>{entry.name}</span>
-                    <span>Achat</span>
-                  </div>
-                ),
-              )}
+              {history.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between gap-2 border border-dark-green p-2 text-xs"
+                >
+                  <FormatedDate date={entry.createdAt} />
+                  <span>
+                    {entry.tokens >= 0 ? "+" : ""}
+                    {entry.tokens} STKH
+                  </span>
+                  <span>
+                    {entry.amount !== null
+                      ? `${(entry.amount / 100).toFixed(2)} CHF`
+                      : entry.description}
+                  </span>
+                  <span>
+                    {typeLabels[entry.type]}
+                    {entry.status !== "SUCCEEDED"
+                      ? ` — ${statusLabels[entry.status]}`
+                      : ""}
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </div>

@@ -4,7 +4,7 @@ A space made for prototyping and research.
 
 ## Docker
 
-To run the application with Docker, use the following commands:
+Run the application with Docker.
 
 ```bash
 docker-compose up -d
@@ -21,9 +21,9 @@ npx auth secret
 ## Prisma
 
 ```bash
-npx prisma migrate reset
 npx prisma migrate dev
 npx prisma generate
+npx prisma migrate reset
 ```
 
 ## Stripe
@@ -49,3 +49,8 @@ curl -X POST http://localhost:3000/api/stripe/create-payment-intent \
   -H "Content-Type: application/json" \
   -d '{"packId": "small"}'
 ```
+
+## Tools
+
+- [Convert PNG to AVIF](https://cloudconvert.com/png-to-avif)
+- [Optimise GLTF](https://optimizeglb.com/dashboard)
