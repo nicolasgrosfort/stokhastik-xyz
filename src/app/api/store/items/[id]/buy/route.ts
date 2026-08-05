@@ -1,7 +1,7 @@
-import { Prisma } from "@/generated/prisma/client";
 import { authOptions } from "@/libs/auth";
 import { sendPurchaseEmail } from "@/libs/mail";
 import { prisma } from "@/libs/prisma";
+import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 

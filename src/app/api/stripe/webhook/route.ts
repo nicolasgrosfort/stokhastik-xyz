@@ -1,8 +1,8 @@
-import { getPackById, isPackId } from "@/libs/pack";
-import { Prisma } from "@/generated/prisma/client";
 import { sendRechargeEmail } from "@/libs/mail";
+import { getPackById, isPackId } from "@/libs/pack";
 import { prisma } from "@/libs/prisma";
 import { stripe } from "@/libs/stripe";
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
