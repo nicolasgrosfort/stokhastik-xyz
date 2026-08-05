@@ -113,4 +113,16 @@ export const items: Item[] = [
       "Des bâtonnets croustillants à base de pomme de terre - saveur salade.",
     date: "2026-08-05",
   },
+  {
+    id: "11",
+    name: "Carte Pokemon Saquedeneu",
+    model: "/models/carte-pokemon-saquedeneu.glb",
+    thumbnail: "/thumbnails/carte-pokemon-saquedeneu.avif",
+    price: 800,
+    position: 0.25,
+    rotation: -Math.PI * 0.25,
+    description:
+      "Une carte Pokémon japonaise (Saquedeneu). Édition Pt1 de 2008.",
+    date: "2026-08-05",
+  },
 ];
