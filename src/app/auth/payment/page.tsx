@@ -1,3 +1,5 @@
+import { H3 } from "@/components/h3";
+import { Model } from "@/components/model";
 import Payment from "@/components/payment/payment";
 import { authOptions } from "@/libs/auth";
 import { getServerSession } from "next-auth/next";
@@ -11,24 +13,22 @@ export default async function PaymentPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-4 py-16 text-foreground">
-      <div className="mx-auto max-w-xl">
-        <header className="mb-10">
-          <p className="mb-2 font-mono text-xs uppercase tracking-[0.2em]">
-            Recharge
-          </p>
+    <section className="bg-background text-foreground p-2 h-full w-full min-h-0">
+      <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-2 grid-cols-1 h-full w-full min-h-0">
+        <div className="h-full w-full flex flex-col items-end justify-center p-2 gap-2 flex-1">
+          <Model
+            position={1}
+            rotation={Math.PI * -0.2}
+            model="/models/gamecube.glb"
+            stopRotation
+          />
+        </div>
 
-          <h1 className="text-4xl font-semibold tracking-tight">
-            Acheter des STKH
-          </h1>
-
-          <p className="mt-3">
-            Choisis un pack, puis règle directement depuis cette page.
-          </p>
-        </header>
-
-        <Payment />
+        <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1 ">
+          <H3 className="uppercase">Recharger mon compte</H3>
+          <Payment />
+        </div>
       </div>
-    </main>
+    </section>
   );
 }

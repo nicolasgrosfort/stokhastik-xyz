@@ -8,6 +8,7 @@ import {
   loadStripe,
   StripeElementsOptions,
 } from "@stripe/stripe-js";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -137,7 +138,7 @@ export default function Payment() {
   );
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-4">
       <div className="grid grid-cols-4 gap-2">
         {packs.map((pack) => {
           const isSelected = pack.id === selectedPack;
@@ -149,18 +150,16 @@ export default function Payment() {
               onClick={() => changePack(pack.id)}
               disabled={isLoading}
               className={[
-                "border p-4 text-left transition",
+                "border p-2 text-left transition cursor-pointer",
                 isSelected
                   ? "bg-foreground text-background"
                   : "border-foreground bg-background text-foreground",
               ].join(" ")}
             >
-              <span className="block text-xl font-semibold">{pack.tokens}</span>
-
-              <span className="mt-1 block font-mono text-xs uppercase opacity-70">
-                STKH
+              <span className="block font-semibold">
+                {pack.tokens.toLocaleString("fr-CH")}
               </span>
-
+              <span className="block font-mono text-xs uppercase">STKH</span>
               <span className="mt-4 block text-sm">
                 {tokensToCHF(pack.tokens)} CHF
               </span>
@@ -170,14 +169,22 @@ export default function Payment() {
       </div>
 
       {!clientSecret && (
-        <button
-          type="button"
-          onClick={preparePayment}
-          disabled={isLoading}
-          className="w-full bg-foreground px-5 py-4 font-mono text-sm font-bold uppercase text-background disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isLoading ? "Préparation…" : "Continuer vers le paiement"}
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={preparePayment}
+            disabled={isLoading}
+            className="w-full bg-foreground p-1 font-mono text-xs uppercase text-background disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+          >
+            {isLoading ? "Chargement..." : "Recharger"}
+          </button>
+          <Link
+            href="/auth/profile"
+            className="flex items-center justify-center text-xs uppercase sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+          >
+            Retour
+          </Link>
+        </div>
       )}
 
       {error && (

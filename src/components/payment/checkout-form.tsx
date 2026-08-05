@@ -68,22 +68,21 @@ export default function CheckoutForm({ onCancel }: CheckoutFormProps) {
         </p>
       )}
 
-      <div className="mt-6 flex gap-2">
+      <div className="mt-6 grid grid-cols-2 gap-2">
+        <button
+          type="submit"
+          disabled={!stripe || !elements || isPaying}
+          className="flex-1 bg-foreground p-1 font-mono text-xs  uppercase text-background disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+        >
+          {isPaying ? "Paiement…" : "Payer"}
+        </button>
         <button
           type="button"
           onClick={onCancel}
           disabled={isPaying}
-          className="border border-neutral-600 px-5 py-4 font-mono text-sm uppercase disabled:opacity-50"
+          className="border border-neutral-600 p-1 font-mono text-xs uppercase disabled:opacity-50 cursor-pointer"
         >
           Retour
-        </button>
-
-        <button
-          type="submit"
-          disabled={!stripe || !elements || isPaying}
-          className="flex-1 bg-foreground px-5 py-4 font-mono text-sm font-bold uppercase text-background disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isPaying ? "Paiement…" : "Payer"}
         </button>
       </div>
     </form>

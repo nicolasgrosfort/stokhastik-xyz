@@ -1,4 +1,4 @@
-import { H2 } from "@/components/h2";
+import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
 
 export default function AboutPage() {
@@ -14,7 +14,7 @@ export default function AboutPage() {
           />
         </div>
         <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1">
-          <H2 className="uppercase text-left">À PROPOS</H2>
+          <H3 className="uppercase text-left">À PROPOS</H3>
           <p className="font-mono text-sm text-left ">
             Stokhastik Store est une plateforme expérimentale qui documente mon
             séjour académique au Japon, dans le cadre de mon mémoire de Master

@@ -18,7 +18,7 @@ export const Footer = () => {
       {session ? (
         <Link
           href="/auth/profile"
-          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("auth/profile") ? activeClassName : inactiveClassName}`}
+          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/profile") ? activeClassName : inactiveClassName}`}
         >
           {session.user?.name || "Profil"}
         </Link>
@@ -45,7 +45,7 @@ export const Footer = () => {
       {session ? (
         <Link
           href="/auth/payment"
-          className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("auth/payment") ? activeClassName : inactiveClassName}`}
+          className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/payment") ? activeClassName : inactiveClassName}`}
         >
           {tokens !== undefined ? `${tokens} STKH` : "..."}
         </Link>
