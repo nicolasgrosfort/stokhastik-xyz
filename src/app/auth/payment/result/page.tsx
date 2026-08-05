@@ -2,7 +2,7 @@
 
 import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -19,7 +19,7 @@ type PaymentState =
   | "failed"
   | "unknown";
 
-export default function PaymentResultPage() {
+function PaymentResult() {
   const searchParams = useSearchParams();
   const [state, setState] = useState<PaymentState>("loading");
 
@@ -85,5 +85,13 @@ export default function PaymentResultPage() {
         </a>
       </div>
     </main>
+  );
+}
+
+export default function PaymentResultPage() {
+  return (
+    <Suspense fallback={null}>
+      <PaymentResult />
+    </Suspense>
   );
 }
