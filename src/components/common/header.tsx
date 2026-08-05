@@ -11,7 +11,7 @@ export const Header = () => {
   const inactiveClassName = "bg-background text-foreground";
 
   return (
-    <header className="sticky top-0 z-10 grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-9 gap-px bg-foreground border-b border-px border-foreground">
+    <header className="sticky top-0 z-10 grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-px bg-foreground border-b border-px border-foreground">
       <Link
         href="/store"
         className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/store") ? activeClassName : inactiveClassName}`}
