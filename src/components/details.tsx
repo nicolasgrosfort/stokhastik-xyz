@@ -18,6 +18,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
+  const [needsConfirm, setNeedsConfirm] = useState(false);
 
   const buyMutation = useMutation({
     mutationFn: async () => {
@@ -40,6 +41,16 @@ export const Details = ({ id }: { id: Item["id"] }) => {
     redirect("/store");
   }
 
+  const handleBuyClick = () => {
+    if (buyMutation.isPending) return;
+    if (needsConfirm) {
+      setNeedsConfirm(false);
+      buyMutation.mutate();
+      return;
+    }
+    setNeedsConfirm(true);
+  };
+
   return (
     <>
       <H3 className="uppercase">{item.name}</H3>
@@ -60,13 +71,15 @@ export const Details = ({ id }: { id: Item["id"] }) => {
         {item.status === "available" ? (
           sessionStatus === "authenticated" ? (
             <button
-              onClick={() => buyMutation.mutate()}
+              onClick={handleBuyClick}
               disabled={buyMutation.isPending}
               className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
             >
               {buyMutation.isPending
                 ? "Achat..."
-                : `Acheter · ${item.price} STKH`}
+                : needsConfirm
+                  ? "Confirmer ?"
+                  : `Acheter · ${item.price} STKH`}
             </button>
           ) : (
             <Link
@@ -79,19 +92,29 @@ export const Details = ({ id }: { id: Item["id"] }) => {
         ) : (
           <Badge status={item.status} className="sm:w-50 w-full" />
         )}
-        <Link
-          href="/store"
-          className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
-        >
-          Retour
-        </Link>
+        {needsConfirm ? (
+          <button
+            onClick={() => setNeedsConfirm(false)}
+            className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+          >
+            Annuler
+          </button>
+        ) : (
+          <Link
+            href="/store"
+            className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+          >
+            Retour
+          </Link>
+        )}
       </div>
 
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
 
       {item.status === "sold" && (
         <p className="text-xs mt-1">
-          Acheté par {item.buyBy} le <FormatedDate date={new Date(item.buyAt)} />
+          Acheté par {item.buyBy} le{" "}
+          <FormatedDate date={new Date(item.buyAt)} />
         </p>
       )}
     </>
