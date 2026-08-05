@@ -1,9 +1,24 @@
+import { authOptions } from "@/libs/auth";
 import { getPackById, isPackId, tokensToCHF } from "@/libs/pack";
 import { stripe } from "@/libs/stripe";
+import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+      return NextResponse.json(
+        {
+          error: "Tu dois être connecté pour recharger ton compte.",
+        },
+        {
+          status: 401,
+        },
+      );
+    }
+
     const body: unknown = await request.json();
 
     console.log("Body reçu :", body);
@@ -37,8 +52,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         packId,
         tokens: String(pack.tokens),
-        // Plus tard :
-        // userId: session.user.id,
+        userId: session.user.id,
       },
     });
 

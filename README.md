@@ -2,6 +2,31 @@
 
 A space made for prototyping and research.
 
+## Docker
+
+To run the application with Docker, use the following commands:
+
+```bash
+docker-compose up -d
+```
+
+## Auth
+
+Setup NEXT_AUTH_SECRET in .env file.
+
+```bash
+npx auth secret
+```
+
+## Prisma
+
+```bash
+npx prisma migrate reset
+npx prisma migrate dev
+npx prisma generate
+npx prisma studio
+```
+
 ## Stripe
 
 Stripe is used for payment processing. The following commands are useful for testing the Stripe integration in development.

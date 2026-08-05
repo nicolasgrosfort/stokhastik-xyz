@@ -174,7 +174,7 @@ export default function Payment() {
           type="button"
           onClick={preparePayment}
           disabled={isLoading}
-          className="w-full bg-white px-5 py-4 font-mono text-sm font-bold uppercase text-black disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full bg-foreground px-5 py-4 font-mono text-sm font-bold uppercase text-background disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? "Préparation…" : "Continuer vers le paiement"}
         </button>

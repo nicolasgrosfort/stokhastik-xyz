@@ -81,7 +81,7 @@ export default function CheckoutForm({ onCancel }: CheckoutFormProps) {
         <button
           type="submit"
           disabled={!stripe || !elements || isPaying}
-          className="flex-1 bg-white px-5 py-4 font-mono text-sm font-bold uppercase text-black disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 bg-foreground px-5 py-4 font-mono text-sm font-bold uppercase text-background disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isPaying ? "Paiement…" : "Payer"}
         </button>

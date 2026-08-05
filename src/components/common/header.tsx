@@ -1,17 +1,19 @@
 "use client";
 
 import { H2 } from "@/components/h2";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const Header = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const activeClassName = "bg-foreground text-background";
   const inactiveClassName = "bg-background text-foreground";
 
   return (
-    <header className="sticky top-0 z-10 grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-px bg-foreground border-b border-px border-foreground">
+    <header className="sticky top-0 z-10 grid grid-cols-2 sm:grid-cols-5 xl:grid-cols-9 gap-px bg-foreground border-b border-px border-foreground">
       <Link
         href="/store"
         className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/store") ? activeClassName : inactiveClassName}`}
@@ -27,6 +29,21 @@ export const Header = () => {
       >
         À PROPOS
       </Link>
+      {session ? (
+        <button
+          onClick={() => signOut()}
+          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center cursor-pointer ${inactiveClassName}`}
+        >
+          DÉCONNEXION
+        </button>
+      ) : (
+        <Link
+          href="/auth/signin"
+          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth") ? activeClassName : inactiveClassName}`}
+        >
+          CONNEXION
+        </Link>
+      )}
     </header>
   );
 };
