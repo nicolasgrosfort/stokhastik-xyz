@@ -76,7 +76,7 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
             <>
               <FormatedDate date={new Date(item.date)} />
               {item.status === "available" ? (
-                <Price price={item.price} />
+                <Price price={item.price} highlighted />
               ) : (
                 <Badge status={item.status} />
               )}

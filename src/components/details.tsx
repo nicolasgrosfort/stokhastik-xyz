@@ -6,6 +6,7 @@ import { H3 } from "@/components/h3";
 import { Item } from "@/components/item";
 import { Price } from "@/components/price";
 import { useGetItems } from "@/hooks/useGetItems";
+import { useGetTokens } from "@/hooks/useGetTokens";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -15,6 +16,7 @@ import { useState } from "react";
 export const Details = ({ id }: { id: Item["id"] }) => {
   const { item } = useGetItems(id);
   const { status: sessionStatus } = useSession();
+  const { tokens } = useGetTokens();
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +43,8 @@ export const Details = ({ id }: { id: Item["id"] }) => {
     redirect("/store");
   }
 
+  const insufficientTokens = tokens !== undefined && tokens < item.price;
+
   const handleBuyClick = () => {
     if (buyMutation.isPending) return;
     if (needsConfirm) {
@@ -54,14 +58,14 @@ export const Details = ({ id }: { id: Item["id"] }) => {
   return (
     <>
       <H3 className="uppercase">{item.name}</H3>
-      <div className="flex flex-col gap-1 w-full sm:max-w-104">
+      <div className="flex flex-col gap-2 w-full sm:max-w-104">
         <p className="font-mono text-sm">{item.description}</p>
 
         <div className="flex gap-4 w-full items-center justify-between text-xs">
           <span>
             Mise en ligne le <FormatedDate date={new Date(item.date)} />
           </span>
-          <Price price={item.price} />
+          <Price price={item.price} highlighted />
         </div>
       </div>
 
@@ -72,8 +76,8 @@ export const Details = ({ id }: { id: Item["id"] }) => {
           sessionStatus === "authenticated" ? (
             <button
               onClick={handleBuyClick}
-              disabled={buyMutation.isPending}
-              className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
+              disabled={buyMutation.isPending || insufficientTokens}
+              className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background disabled:hover:no-underline"
             >
               {buyMutation.isPending
                 ? "Achat..."
@@ -108,6 +112,15 @@ export const Details = ({ id }: { id: Item["id"] }) => {
           </Link>
         )}
       </div>
+
+      {insufficientTokens && (
+        <p className="text-xs mt-1">
+          Solde insuffisant pour cet achat.{" "}
+          <Link href="/auth/payment" className="underline">
+            Recharger mon compte
+          </Link>
+        </p>
+      )}
 
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
 

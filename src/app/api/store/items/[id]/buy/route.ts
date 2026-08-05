@@ -1,5 +1,5 @@
-import { authOptions } from "@/libs/auth";
 import { Prisma } from "@/generated/prisma/client";
+import { authOptions } from "@/libs/auth";
 import { prisma } from "@/libs/prisma";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,7 +12,10 @@ export async function POST(
 
   if (!session?.user) {
     return NextResponse.json(
-      { success: false, error: "Tu dois être connecté pour acheter un article." },
+      {
+        success: false,
+        error: "Tu dois être connecté pour acheter un article.",
+      },
       { status: 401 },
     );
   }
@@ -95,7 +98,7 @@ export async function POST(
 
     if (message === "INSUFFICIENT_TOKENS") {
       return NextResponse.json(
-        { success: false, error: "Solde de tokens insuffisant." },
+        { success: false, error: "Solde insuffisant." },
         { status: 400 },
       );
     }
