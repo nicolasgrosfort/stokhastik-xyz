@@ -15,7 +15,7 @@ type TextFieldProps = {
   onKeyDown?: (
     event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => void;
-  type?: "textarea" | "text" | "email" | "tel" | "number";
+  type?: "textarea" | "text" | "email" | "tel" | "number" | "password";
   className?: string;
 };
 

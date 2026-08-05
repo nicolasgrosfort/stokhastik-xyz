@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-export function SignInForm() {
+export function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
@@ -17,20 +17,33 @@ export function SignInForm() {
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm({
-    defaultValues: { email: "", password: "" },
+    defaultValues: { firstName: "", lastName: "", email: "", password: "" },
     onSubmit: async ({ value }) => {
       setError(null);
 
       try {
-        const res = await signIn("credentials", {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(value),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.error ?? "Un erreur s'est produite.");
+          return;
+        }
+
+        const signInRes = await signIn("credentials", {
           email: value.email,
           password: value.password,
           redirect: false,
           callbackUrl,
         });
 
-        if (res?.error) {
-          setError("Email ou mot de passe incorrect.");
+        if (signInRes?.error) {
+          setError("Compte créé, mais la connexion automatique a échoué.");
           return;
         }
 
@@ -43,7 +56,7 @@ export function SignInForm() {
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 h-full p-4 bg-background">
-      <H1>Connexion</H1>
+      <H1>Créer un compte</H1>
 
       <Form
         onSubmit={() => {
@@ -51,6 +64,35 @@ export function SignInForm() {
         }}
       >
         <div className="flex flex-col gap-4 sm:max-w-104 w-full">
+          <div className="flex gap-4">
+            <form.Field name="firstName">
+              {(field) => (
+                <TextField
+                  name={field.name}
+                  label="Prénom*"
+                  type="text"
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                  required
+                  autofocus
+                />
+              )}
+            </form.Field>
+
+            <form.Field name="lastName">
+              {(field) => (
+                <TextField
+                  name={field.name}
+                  label="Nom*"
+                  type="text"
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                  required
+                />
+              )}
+            </form.Field>
+          </div>
+
           <form.Field name="email">
             {(field) => (
               <TextField
@@ -60,7 +102,6 @@ export function SignInForm() {
                 value={field.state.value}
                 onChange={field.handleChange}
                 required
-                autofocus
               />
             )}
           </form.Field>
@@ -88,15 +129,15 @@ export function SignInForm() {
                 disabled={isSubmitting}
                 className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
               >
-                {isSubmitting ? "Connexion..." : "Se connecter"}
+                {isSubmitting ? "Création..." : "Créer mon compte"}
               </button>
             )}
           </form.Subscribe>
 
           <p className="text-xs font-mono text-center">
-            Pas encore de compte ?{" "}
-            <Link href="/auth/signup" className="underline">
-              Créer un compte
+            Déjà un compte ?{" "}
+            <Link href="/auth/signin" className="underline">
+              Se connecter
             </Link>
           </p>
         </div>
