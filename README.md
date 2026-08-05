@@ -24,7 +24,6 @@ npx auth secret
 npx prisma migrate reset
 npx prisma migrate dev
 npx prisma generate
-npx prisma studio
 ```
 
 ## Stripe
