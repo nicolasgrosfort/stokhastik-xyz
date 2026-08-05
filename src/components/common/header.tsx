@@ -1,7 +1,7 @@
 "use client";
 
 import { H2 } from "@/components/h2";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -30,12 +30,12 @@ export const Header = () => {
         À PROPOS
       </Link>
       {session ? (
-        <button
-          onClick={() => signOut()}
-          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center cursor-pointer ${inactiveClassName}`}
+        <Link
+          href="/profile"
+          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/profile") ? activeClassName : inactiveClassName}`}
         >
-          DÉCONNEXION
-        </button>
+          MON COMPTE
+        </Link>
       ) : (
         <Link
           href="/auth/signin"
