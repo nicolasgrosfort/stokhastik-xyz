@@ -1,3 +1,4 @@
+import { prisma } from "@/libs/prisma";
 import { stripe } from "@/libs/stripe";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -51,30 +52,38 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  console.log("Hello world");
   console.log("Événement Stripe reçu :", event.type);
 
   switch (event.type) {
     case "payment_intent.succeeded": {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-      console.log("Hello world — paiement réussi", {
-        paymentIntentId: paymentIntent.id,
-        amount: paymentIntent.amount,
-        currency: paymentIntent.currency,
-        metadata: paymentIntent.metadata,
+      const transaction = await prisma.transaction.findUnique({
+        where: { stripePaymentIntentId: paymentIntent.id },
       });
 
-      // Plus tard :
-      //
-      // const userId = paymentIntent.metadata.userId;
-      // const tokens = Number(paymentIntent.metadata.tokens);
-      //
-      // await creditTokens({
-      //   userId,
-      //   tokens,
-      //   paymentIntentId: paymentIntent.id,
-      // });
+      if (!transaction) {
+        console.error(
+          "Aucune transaction trouvée pour le paiement Stripe :",
+          paymentIntent.id,
+        );
+        break;
+      }
+
+      if (transaction.status === "SUCCEEDED") {
+        break;
+      }
+
+      await prisma.$transaction([
+        prisma.transaction.update({
+          where: { id: transaction.id },
+          data: { status: "SUCCEEDED" },
+        }),
+        prisma.user.update({
+          where: { id: transaction.userId },
+          data: { tokens: { increment: transaction.tokens } },
+        }),
+      ]);
 
       break;
     }
@@ -82,7 +91,19 @@ export async function POST(request: NextRequest) {
     case "payment_intent.payment_failed": {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-      console.log("Paiement échoué :", paymentIntent.id);
+      const transaction = await prisma.transaction.findUnique({
+        where: { stripePaymentIntentId: paymentIntent.id },
+      });
+
+      if (!transaction || transaction.status !== "PENDING") {
+        break;
+      }
+
+      await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: { status: "FAILED" },
+      });
+
       break;
     }
 

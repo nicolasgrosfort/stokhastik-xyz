@@ -73,13 +73,13 @@ export default function PaymentResultPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-neutral-950 p-6 text-white">
-      <div className="w-full max-w-md border border-neutral-700 bg-neutral-900 p-8">
+    <main className="flex min-h-screen items-center justify-center bg-background p-6 text-foreground">
+      <div className="w-full max-w-md bg-background p-8">
         <h1 className="text-2xl font-semibold">{messages[state]}</h1>
 
         <a
           href="/payment"
-          className="mt-8 inline-block border border-white px-5 py-3 font-mono text-sm uppercase"
+          className="mt-8 inline-block border border-foreground px-5 py-3 font-mono text-sm uppercase"
         >
           Retour
         </a>

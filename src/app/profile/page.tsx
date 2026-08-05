@@ -1,9 +1,17 @@
 import { SignOutButton } from "@/components/auth/signout-button";
+import { FormatedDate } from "@/components/formated-date";
 import { H1 } from "@/components/h1";
 import { authOptions } from "@/libs/auth";
 import { prisma } from "@/libs/prisma";
 import { getServerSession } from "next-auth/next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+
+const statusLabels = {
+  PENDING: "En attente",
+  SUCCEEDED: "Réussi",
+  FAILED: "Échoué",
+};
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -14,6 +22,11 @@ export default async function ProfilePage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
+    include: {
+      transactions: {
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
 
   if (!user) {
@@ -38,6 +51,40 @@ export default async function ProfilePage() {
         <div>
           <p className="text-xs uppercase font-bold">Email</p>
           <p>{user.email}</p>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase font-bold">Solde</p>
+          <p>{user.tokens} STKH</p>
+        </div>
+
+        <Link
+          href="/payment"
+          className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+        >
+          Recharger mon compte
+        </Link>
+
+        <div>
+          <p className="text-xs uppercase font-bold mb-2">Transactions</p>
+
+          {user.transactions.length === 0 ? (
+            <p className="text-xs">Aucune transaction pour l&apos;instant.</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {user.transactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className="flex items-center justify-between gap-2 border border-dark-green p-2 text-xs"
+                >
+                  <FormatedDate date={transaction.createdAt} />
+                  <span>+{transaction.tokens} STKH</span>
+                  <span>{(transaction.amount / 100).toFixed(2)} CHF</span>
+                  <span>{statusLabels[transaction.status]}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <SignOutButton />

@@ -1,5 +1,6 @@
 import { authOptions } from "@/libs/auth";
 import { getPackById, isPackId, tokensToCHF } from "@/libs/pack";
+import { prisma } from "@/libs/prisma";
 import { stripe } from "@/libs/stripe";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
@@ -41,9 +42,10 @@ export async function POST(request: NextRequest) {
 
     const packId = body.packId;
     const pack = getPackById(packId);
+    const amount = tokensToCHF(pack.tokens) * 100; // Convertir en centimes
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: tokensToCHF(pack.tokens) * 100, // Convertir en centimes
+      amount,
       currency: "chf",
       automatic_payment_methods: {
         enabled: true,
@@ -59,6 +61,16 @@ export async function POST(request: NextRequest) {
     if (!paymentIntent.client_secret) {
       throw new Error("Stripe n'a pas retourné de client secret.");
     }
+
+    await prisma.transaction.create({
+      data: {
+        userId: session.user.id,
+        packId,
+        tokens: pack.tokens,
+        amount,
+        stripePaymentIntentId: paymentIntent.id,
+      },
+    });
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,

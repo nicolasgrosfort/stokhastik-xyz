@@ -17,11 +17,36 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  tokens        Int       @default(0)
   accounts      Account[]
   sessions      Session[]
+  transactions  Transaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+model Transaction {
+  id                    String            @id @default(cuid())
+  userId                String
+  user                  User              @relation(fields: [userId], references: [id])
+  packId                String
+  tokens                Int
+  amount                Int // centimes CHF
+  currency              String            @default("chf")
+  status                TransactionStatus @default(PENDING)
+  stripePaymentIntentId String            @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Account {
