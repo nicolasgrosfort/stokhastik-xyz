@@ -8,18 +8,16 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
   firstName     String?
   lastName      String?
-  username      String?   @unique
-  email         String?   @unique
+  username      String?       @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  tokens        Int       @default(0)
-  accounts      Account[]
-  sessions      Session[]
+  tokens        Int           @default(0)
   transactions  Transaction[]
   storeItems    StoreItem[]
 
@@ -28,9 +26,9 @@ model User {
 }
 
 model StoreItem {
-  id          String    @id
+  id          String   @id
   name        String
-  description String?   @db.Text
+  description String?  @db.Text
   model       String
   thumbnail   String
   price       Int
@@ -69,48 +67,4 @@ model Transaction {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
-}
-
-model Account {
-  id                       String  @id @default(cuid())
-  userId                   String  @unique
-  type                     String
-  provider                 String
-  providerAccountId        String
-  refresh_token            String? @db.Text
-  access_token             String? @db.Text
-  expires_at               Int?
-  token_type               String?
-  scope                    String?
-  id_token                 String? @db.Text
-  session_state            String?
-  refresh_token_expires_in Int?
-  user                     User?   @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([provider, providerAccountId])
-  @@index([userId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
 }
