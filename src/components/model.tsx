@@ -10,13 +10,15 @@ import { DRACOLoader, GLTFLoader } from "three/examples/jsm/Addons.js";
 const dracoLoader = new DRACOLoader();
 
 const Object = ({
-  item,
   stopRotation,
+  model,
+  rotation,
 }: {
-  item: Item;
+  model: Item["model"];
+  rotation: Item["rotation"];
   stopRotation?: boolean;
 }) => {
-  const result = useLoader(GLTFLoader, item.model, (loader) => {
+  const result = useLoader(GLTFLoader, model, (loader) => {
     loader.setDRACOLoader(dracoLoader);
   });
   const ref = useRef<Group>(null);
@@ -28,13 +30,23 @@ const Object = ({
   });
 
   return (
-    <group ref={ref} rotation={[0, item.rotation, 0]}>
+    <group ref={ref} rotation={[0, rotation, 0]}>
       <primitive object={result.scene} />
     </group>
   );
 };
 
-export const Model = ({ item }: { item: Item }) => {
+export const Model = ({
+  position,
+  rotation,
+  model,
+  stopRotation,
+}: {
+  position: Item["position"];
+  rotation: Item["rotation"];
+  model: Item["model"];
+  stopRotation?: boolean;
+}) => {
   const [isControlling, setIsControlling] = useState(false);
 
   return (
@@ -42,10 +54,10 @@ export const Model = ({ item }: { item: Item }) => {
       <Canvas
         className="cursor-move"
         style={{ position: "absolute", inset: 0 }}
-        camera={{ position: [0, 0, item.position], fov: 50 }}
+        camera={{ position: [0, 0, position], fov: 50 }}
       >
         <ambientLight intensity={2} />
-        {item.model ? (
+        {model ? (
           <Suspense
             fallback={
               <Html center>
@@ -53,7 +65,11 @@ export const Model = ({ item }: { item: Item }) => {
               </Html>
             }
           >
-            <Object item={item} stopRotation={isControlling} />
+            <Object
+              model={model}
+              rotation={rotation}
+              stopRotation={stopRotation || isControlling}
+            />
           </Suspense>
         ) : null}
         <OrbitControls

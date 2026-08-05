@@ -21,17 +21,9 @@ export default async function ItemPage({
       <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-[minmax(0,1fr)_auto] grid-cols-1 h-full w-full min-h-0">
         <div className="w-full h-full min-h-0">
           <Model
-            item={{
-              id: item.id,
-              name: item.name,
-              model: item.model,
-              thumbnail: item.thumbnail,
-              position: item.position,
-              rotation: item.rotation,
-              price: item.price,
-              description: item.description ?? undefined,
-              date: item.releaseDate.toISOString().slice(0, 10),
-            }}
+            position={item.position}
+            rotation={item.rotation}
+            model={item.model}
           />
         </div>
         <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1">
