@@ -1,6 +1,5 @@
 import { authOptions } from "@/libs/auth";
 import { getPackById, isPackId, tokensToCHF } from "@/libs/pack";
-import { prisma } from "@/libs/prisma";
 import { stripe } from "@/libs/stripe";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
@@ -61,19 +60,6 @@ export async function POST(request: NextRequest) {
     if (!paymentIntent.client_secret) {
       throw new Error("Stripe n'a pas retourné de client secret.");
     }
-
-    await prisma.transaction.create({
-      data: {
-        userId: session.user.id,
-        type: "PURCHASE",
-        status: "PENDING",
-        packId,
-        tokens: pack.tokens,
-        amount,
-        stripePaymentIntentId: paymentIntent.id,
-        description: `Recharge — pack ${pack.id}`,
-      },
-    });
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,

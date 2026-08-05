@@ -1,3 +1,5 @@
+import { getPackById, isPackId } from "@/libs/pack";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/libs/prisma";
 import { stripe } from "@/libs/stripe";
 import { NextRequest, NextResponse } from "next/server";
@@ -57,33 +59,48 @@ export async function POST(request: NextRequest) {
   switch (event.type) {
     case "payment_intent.succeeded": {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      const { packId, tokens, userId } = paymentIntent.metadata;
 
-      const transaction = await prisma.transaction.findUnique({
-        where: { stripePaymentIntentId: paymentIntent.id },
-      });
-
-      if (!transaction) {
+      if (!isPackId(packId) || !tokens || !userId) {
         console.error(
-          "Aucune transaction trouvée pour le paiement Stripe :",
+          "Métadonnées invalides ou manquantes sur le paiement Stripe :",
           paymentIntent.id,
         );
         break;
       }
 
-      if (transaction.status === "SUCCEEDED") {
-        break;
-      }
+      const pack = getPackById(packId);
 
-      await prisma.$transaction([
-        prisma.transaction.update({
-          where: { id: transaction.id },
-          data: { status: "SUCCEEDED" },
-        }),
-        prisma.user.update({
-          where: { id: transaction.userId },
-          data: { tokens: { increment: transaction.tokens } },
-        }),
-      ]);
+      try {
+        await prisma.$transaction([
+          prisma.transaction.create({
+            data: {
+              userId,
+              type: "PURCHASE",
+              status: "SUCCEEDED",
+              packId,
+              tokens: Number(tokens),
+              amount: paymentIntent.amount,
+              stripePaymentIntentId: paymentIntent.id,
+              description: `Recharge — pack ${pack.id}`,
+            },
+          }),
+          prisma.user.update({
+            where: { id: userId },
+            data: { tokens: { increment: Number(tokens) } },
+          }),
+        ]);
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2002"
+        ) {
+          // Événement déjà traité (livraison dupliquée du webhook).
+          break;
+        }
+
+        throw error;
+      }
 
       break;
     }
@@ -91,18 +108,7 @@ export async function POST(request: NextRequest) {
     case "payment_intent.payment_failed": {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-      const transaction = await prisma.transaction.findUnique({
-        where: { stripePaymentIntentId: paymentIntent.id },
-      });
-
-      if (!transaction || transaction.status !== "PENDING") {
-        break;
-      }
-
-      await prisma.transaction.update({
-        where: { id: transaction.id },
-        data: { status: "FAILED" },
-      });
+      console.log("Paiement échoué :", paymentIntent.id);
 
       break;
     }
