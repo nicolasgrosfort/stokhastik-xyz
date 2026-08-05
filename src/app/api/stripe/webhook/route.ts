@@ -1,5 +1,6 @@
 import { getPackById, isPackId } from "@/libs/pack";
 import { Prisma } from "@/generated/prisma/client";
+import { sendRechargeEmail } from "@/libs/mail";
 import { prisma } from "@/libs/prisma";
 import { stripe } from "@/libs/stripe";
 import { NextRequest, NextResponse } from "next/server";
@@ -100,6 +101,21 @@ export async function POST(request: NextRequest) {
         }
 
         throw error;
+      }
+
+      try {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+
+        if (user?.email) {
+          await sendRechargeEmail({
+            to: user.email,
+            firstName: user.firstName ?? "",
+            tokens: Number(tokens),
+            amount: paymentIntent.amount,
+          });
+        }
+      } catch (error) {
+        console.error("Erreur envoi email de recharge :", error);
       }
 
       break;

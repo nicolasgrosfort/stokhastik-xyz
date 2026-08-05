@@ -1,5 +1,6 @@
 import { Prisma } from "@/generated/prisma/client";
 import { authOptions } from "@/libs/auth";
+import { sendPurchaseEmail } from "@/libs/mail";
 import { prisma } from "@/libs/prisma";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
@@ -64,6 +65,23 @@ export async function POST(
 
       return tx.storeItem.findUniqueOrThrow({ where: { id } });
     });
+
+    try {
+      const buyer = await prisma.user.findUnique({
+        where: { id: session.user.id },
+      });
+
+      if (buyer?.email) {
+        await sendPurchaseEmail({
+          to: buyer.email,
+          firstName: buyer.firstName ?? "",
+          itemName: item.name,
+          price: item.price,
+        });
+      }
+    } catch (error) {
+      console.error("Erreur envoi email d'achat :", error);
+    }
 
     return NextResponse.json({ success: true, item });
   } catch (error) {
