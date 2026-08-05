@@ -29,7 +29,10 @@ export const Details = ({ id }: { id: Item["id"] }) => {
       return data;
     },
     onMutate: () => setError(null),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["store-items"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["store-items"] });
+      queryClient.invalidateQueries({ queryKey: ["user-tokens"] });
+    },
     onError: (err: Error) => setError(err.message),
   });
 
