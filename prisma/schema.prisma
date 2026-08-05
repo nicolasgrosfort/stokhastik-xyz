@@ -21,9 +21,31 @@ model User {
   accounts      Account[]
   sessions      Session[]
   transactions  Transaction[]
+  storeItems    StoreItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model StoreItem {
+  id          String    @id
+  name        String
+  description String?   @db.Text
+  model       String
+  thumbnail   String
+  price       Int
+  position    Float
+  rotation    Float
+  releaseDate DateTime
+
+  buyerId     String?
+  buyer       User?     @relation(fields: [buyerId], references: [id])
+  purchasedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([buyerId])
 }
 
 enum TransactionStatus {

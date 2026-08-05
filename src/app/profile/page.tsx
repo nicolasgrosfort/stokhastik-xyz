@@ -26,12 +26,34 @@ export default async function ProfilePage() {
       transactions: {
         orderBy: { createdAt: "desc" },
       },
+      storeItems: {
+        where: { purchasedAt: { not: null } },
+        orderBy: { purchasedAt: "desc" },
+      },
     },
   });
 
   if (!user) {
     redirect("/auth/signin?callbackUrl=/profile");
   }
+
+  const history = [
+    ...user.transactions.map((transaction) => ({
+      type: "recharge" as const,
+      id: transaction.id,
+      date: transaction.createdAt,
+      tokens: transaction.tokens,
+      amount: transaction.amount,
+      status: transaction.status,
+    })),
+    ...user.storeItems.map((item) => ({
+      type: "purchase" as const,
+      id: item.id,
+      date: item.purchasedAt!,
+      tokens: item.price,
+      name: item.name,
+    })),
+  ].sort((a, b) => b.date.getTime() - a.date.getTime());
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 h-full p-4 bg-background">
@@ -68,21 +90,33 @@ export default async function ProfilePage() {
         <div>
           <p className="text-xs uppercase font-bold mb-2">Transactions</p>
 
-          {user.transactions.length === 0 ? (
+          {history.length === 0 ? (
             <p className="text-xs">Aucune transaction pour l&apos;instant.</p>
           ) : (
             <div className="flex flex-col gap-2">
-              {user.transactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center justify-between gap-2 border border-dark-green p-2 text-xs"
-                >
-                  <FormatedDate date={transaction.createdAt} />
-                  <span>+{transaction.tokens} STKH</span>
-                  <span>{(transaction.amount / 100).toFixed(2)} CHF</span>
-                  <span>{statusLabels[transaction.status]}</span>
-                </div>
-              ))}
+              {history.map((entry) =>
+                entry.type === "recharge" ? (
+                  <div
+                    key={`transaction-${entry.id}`}
+                    className="flex items-center justify-between gap-2 border border-dark-green p-2 text-xs"
+                  >
+                    <FormatedDate date={entry.date} />
+                    <span>+{entry.tokens} STKH</span>
+                    <span>{(entry.amount / 100).toFixed(2)} CHF</span>
+                    <span>{statusLabels[entry.status]}</span>
+                  </div>
+                ) : (
+                  <div
+                    key={`purchase-${entry.id}`}
+                    className="flex items-center justify-between gap-2 border border-dark-green p-2 text-xs"
+                  >
+                    <FormatedDate date={entry.date} />
+                    <span>-{entry.tokens} STKH</span>
+                    <span>{entry.name}</span>
+                    <span>Achat</span>
+                  </div>
+                ),
+              )}
             </div>
           )}
         </div>

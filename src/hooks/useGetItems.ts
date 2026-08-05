@@ -1,46 +1,33 @@
-import { Item, ItemWithStatus, Status } from "@/components/item";
-import { items } from "@/data/items";
+import { Item, ItemWithStatus } from "@/components/item";
 import { useQuery } from "@tanstack/react-query";
 
-type StatusMap = Record<
-  Item["id"],
-  { status: Status; buyBy: string; buyAt: string }
->;
-
-type StatusResponse = {
+type ItemsResponse = {
   success: boolean;
-  data: StatusMap;
+  data: ItemWithStatus[];
 };
 
-async function fetchStatus(): Promise<StatusResponse> {
-  const statusApi =
-    process.env.NODE_ENV === "production" ? "/api/status.php" : "/api/status";
-  const response = await fetch(statusApi);
-  if (!response.ok) throw new Error("Failed to fetch status");
+async function fetchItems(): Promise<ItemsResponse> {
+  const response = await fetch("/api/store/items");
+  if (!response.ok) throw new Error("Failed to fetch items");
 
   return response.json();
 }
 
 export function useGetItems(id: Item["id"] | null = null) {
   const { data, error, isPending, isFetching } = useQuery({
-    queryKey: ["status"],
-    queryFn: fetchStatus,
+    queryKey: ["store-items"],
+    queryFn: fetchItems,
     refetchInterval: 1_000,
     select: (response) => response.data,
     refetchIntervalInBackground: true,
   });
 
-  const mergedItems: ItemWithStatus[] = items.map((item) => ({
-    ...item,
-    status: data?.[Number(item.id)]?.status ?? "available",
-    buyBy: data?.[Number(item.id)]?.buyBy ?? "",
-    buyAt: data?.[Number(item.id)]?.buyAt ?? "",
-  }));
+  const items = data ?? [];
 
   if (id) {
-    const item = mergedItems.find((item) => item.id === id);
-    return { items: mergedItems, item, error, isPending, isFetching };
+    const item = items.find((item) => item.id === id);
+    return { items, item, error, isPending, isFetching };
   }
 
-  return { items: mergedItems, error, isPending, isFetching };
+  return { items, error, isPending, isFetching };
 }
