@@ -14,7 +14,7 @@ import { redirect, usePathname } from "next/navigation";
 import { useState } from "react";
 
 export const Details = ({ id }: { id: Item["id"] }) => {
-  const { item } = useGetItems(id);
+  const { item, isPending } = useGetItems(id);
   const { status: sessionStatus } = useSession();
   const { tokens } = useGetTokens();
   const pathname = usePathname();
@@ -40,6 +40,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
   });
 
   if (!item) {
+    if (isPending) return null;
     redirect("/store");
   }
 

@@ -104,7 +104,7 @@ export default function StorePage() {
           </p>
         )}
       </div>
-      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-4 gap-1 sticky bottom-8">
+      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-4 gap-1 sticky bottom-14 sm:bottom-8">
         <p className="font-mono text-xs text-center">
           {availableItems.length} disponibles | {soldItems.length} vendus |{" "}
           {items.length} total

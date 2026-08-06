@@ -54,7 +54,7 @@ export const Model = ({
       <Canvas
         className="cursor-move"
         style={{ position: "absolute", inset: 0 }}
-        camera={{ position: [0, 0, position], fov: 50 }}
+        camera={{ position: [position, position, position], fov: 50 }}
       >
         <ambientLight intensity={2} />
         {model ? (
