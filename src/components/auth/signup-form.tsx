@@ -158,7 +158,7 @@ export function SignUpForm() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+                      className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full enabled:cursor-pointer text-center enabled:hover:underline"
                     >
                       {isSubmitting ? "Création..." : "Créer mon compte"}
                     </button>
