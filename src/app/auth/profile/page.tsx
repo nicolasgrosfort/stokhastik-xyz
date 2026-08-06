@@ -1,3 +1,4 @@
+import { ProfileBalance } from "@/components/auth/profile-balance";
 import { SignOutButton } from "@/components/auth/signout-button";
 import { FormatedDate } from "@/components/formated-date";
 import { H3 } from "@/components/h3";
@@ -77,7 +78,7 @@ export default async function ProfilePage() {
 
             <div>
               <p className="text-xs uppercase font-bold">Solde</p>
-              <p>{user.tokens} STKH</p>
+              <ProfileBalance initialTokens={user.tokens} />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
