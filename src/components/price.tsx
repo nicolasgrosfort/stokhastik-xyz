@@ -11,7 +11,7 @@ export const Price = ({
         highlighted ? "bg-yellow-300 border border-yellow-300 text-black" : ""
       } px-1 py-0.5 font-medium`}
     >
-      STKH {price.toLocaleString("fr-CH")}
+      {price.toLocaleString("fr-CH")} STKH
     </span>
   );
 };
