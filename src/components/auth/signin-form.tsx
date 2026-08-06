@@ -1,7 +1,8 @@
 "use client";
 
 import { Form } from "@/components/form";
-import { H1 } from "@/components/h1";
+import { H3 } from "@/components/h3";
+import { Model } from "@/components/model";
 import { TextField } from "@/components/text-field";
 import { useForm } from "@tanstack/react-form";
 import { signIn } from "next-auth/react";
@@ -42,65 +43,80 @@ export function SignInForm() {
   });
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 h-full p-4 bg-background">
-      <H1>Connexion</H1>
-
-      <Form
-        onSubmit={() => {
-          form.handleSubmit();
-        }}
-      >
-        <div className="flex flex-col gap-4 sm:max-w-104 w-full">
-          <form.Field name="email">
-            {(field) => (
-              <TextField
-                name={field.name}
-                label="Email*"
-                type="email"
-                value={field.state.value}
-                onChange={field.handleChange}
-                required
-                autofocus
-              />
-            )}
-          </form.Field>
-
-          <form.Field name="password">
-            {(field) => (
-              <TextField
-                name={field.name}
-                label="Mot de passe*"
-                type="password"
-                value={field.state.value}
-                onChange={field.handleChange}
-                required
-                minLength={8}
-              />
-            )}
-          </form.Field>
-
-          {error && <p className="text-red-500 text-xs">{error}</p>}
-
-          <form.Subscribe selector={(state) => state.isSubmitting}>
-            {(isSubmitting) => (
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
-              >
-                {isSubmitting ? "Connexion..." : "Se connecter"}
-              </button>
-            )}
-          </form.Subscribe>
-
-          <p className="text-xs font-mono text-center">
-            Pas encore de compte ?{" "}
-            <Link href="/auth/signup" className="underline">
-              Créer un compte
-            </Link>
-          </p>
+    <section className="text-foreground h-full w-full min-h-0">
+      <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+        <div className="bg-background w-full h-full min-h-0">
+          <Model
+            position={3}
+            rotation={Math.PI * 0.5}
+            stopRotation={true}
+            model="/models/cabine-telephonique-osaka.glb"
+          />
         </div>
-      </Form>
+
+        <div className="bg-background w-full flex items-center justify-center">
+          <div className="h-full sm:max-w-120 flex flex-col items-start justify-center p-4 gap-2 flex-1">
+            <H3>Connexion</H3>
+
+            <Form
+              onSubmit={() => {
+                form.handleSubmit();
+              }}
+            >
+              <div className="flex flex-col gap-4 sm:max-w-104 w-full">
+                <form.Field name="email">
+                  {(field) => (
+                    <TextField
+                      name={field.name}
+                      label="Email*"
+                      type="email"
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      required
+                      autofocus
+                    />
+                  )}
+                </form.Field>
+
+                <form.Field name="password">
+                  {(field) => (
+                    <TextField
+                      name={field.name}
+                      label="Mot de passe*"
+                      type="password"
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      required
+                      minLength={8}
+                    />
+                  )}
+                </form.Field>
+
+                {error && <p className="text-red-500 text-xs">{error}</p>}
+
+                <form.Subscribe selector={(state) => state.isSubmitting}>
+                  {(isSubmitting) => (
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full enabled:cursor-pointer text-center enabled:hover:underline"
+                    >
+                      {isSubmitting ? "Connexion..." : "Se connecter"}
+                    </button>
+                  )}
+                </form.Subscribe>
+
+                <p className="text-xs font-mono text-center">
+                  Pas encore de compte ?{" "}
+                  <Link href="/auth/signup" className="underline">
+                    Créer un compte
+                  </Link>
+                </p>
+              </div>
+            </Form>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
