@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, password, firstName, lastName } = body;
+    const newsletter = "newsletter" in body && body.newsletter === true;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
         lastName,
         name: `${firstName} ${lastName}`,
         password: hashedPassword,
+        newsletter,
       },
     });
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { Checkbox } from "@/components/checkbox";
 import { Form } from "@/components/form";
 import { H1 } from "@/components/h1";
 import { TextField } from "@/components/text-field";
@@ -17,7 +18,13 @@ export function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm({
-    defaultValues: { firstName: "", lastName: "", email: "", password: "" },
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      newsletter: true,
+    },
     onSubmit: async ({ value }) => {
       setError(null);
 
@@ -116,6 +123,17 @@ export function SignUpForm() {
                 onChange={field.handleChange}
                 required
                 minLength={8}
+              />
+            )}
+          </form.Field>
+
+          <form.Field name="newsletter">
+            {(field) => (
+              <Checkbox
+                name={field.name}
+                label="Être informé des nouveautés"
+                checked={field.state.value}
+                onChange={field.handleChange}
               />
             )}
           </form.Field>
