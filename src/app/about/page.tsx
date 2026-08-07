@@ -1,5 +1,6 @@
 import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
@@ -14,36 +15,41 @@ export default function AboutPage() {
           />
         </div>
 
-        <div className="w-full grid grid-rows-[auto_1fr] gap-px">
+        <div className="w-full grid grid-rows-[auto_auto_1fr] gap-px">
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3 className="uppercase text-left">LA PLATEFORME</H3>
             <p className="font-mono text-sm text-left text-pretty">
-              <i>STOKHASTIK</i> est une plateforme expérimentale qui documente
-              mon séjour académique au Japon, réalisé dans le cadre de mon
-              mémoire de Master en Media Design à la HEAD – Genève, entre Genève
-              et Kyoto de juillet à septembre 2026.
-            </p>
-            <p className="font-mono text-sm text-left text-pretty">
-              À travers multiple médiums, <i>STOKHASTIK</i> partage différentes
-              facettes de cette recherche tout en proposant plusieurs façons de
-              soutenir financièrement ce projet, dont un store. La plateforme
-              évoluera progressivement tout au long de mon séjour, au rythme de
-              mes découvertes et expérimentations.
+              <i>STOKHASTIK</i> est une plateforme expérimentale qui accompagne
+              mon mémoire de Master en Media Design à la HEAD – Genève et
+              documente mon séjour de recherche à Kyoto, de juillet à septembre
+              2026. Elle évoluera progressivement au fil de mes découvertes,
+              rencontres et expérimentations, à travers différents médiums et
+              formes de participation.
             </p>
           </div>
 
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3>LE STORE</H3>
             <p className="font-mono text-sm text-left text-pretty">
-              Quelques informations importante à propos du store:
+              Le store est une manière de partager des fragments de mon séjour -
+              objets, trouvailles et expériences gustatives - tout en
+              contribuant au financement de cette recherche. Chaque item nourrit
+              également le projet, notamment à travers sa documentation, sa
+              numérisation et son exploration technique. Les objets sont
+              uniques, disponibles en un seul exemplaire, et seront distribués à
+              mon retour début octobre 2026.
             </p>
+          </div>
 
-            <ul className="font-mono text-left text-pretty list-decimal list-inside text-xs">
-              <li>Chaque item est unique, disponible en un seul exemplaire.</li>
-              <li>
-                Les items seront distribués à mon retour (début octobre 2026)
-              </li>
-            </ul>
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            <H3>ME CONTACTER</H3>
+            <p className="font-mono text-sm text-left text-pretty">
+              Pour toute question ou en cas de problème, vous pouvez me
+              contacter à l’adresse suivante{" "}
+              <Link href="mailto:hey@tekh.studio" className="underline">
+                hey[@]tekh.studio
+              </Link>
+            </p>
           </div>
         </div>
       </div>
