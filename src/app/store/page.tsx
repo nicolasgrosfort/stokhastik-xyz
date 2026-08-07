@@ -4,21 +4,14 @@ import { Item } from "@/components/item";
 import { Price } from "@/components/price";
 import { ToggleGroup } from "@/components/toggle-group";
 import { useGetItems } from "@/hooks/useGetItems";
+import { useStoreFilters } from "@/hooks/useStoreFilters";
 import { tokensToCHF } from "@/libs/pack";
-import { useMemo, useState } from "react";
-
-type SortKey = "price" | "name" | "date";
-type StatusFilter = "all" | "available" | "sold";
-
-const DEFAULT_SORT_KEY: SortKey = "date";
-const DEFAULT_STATUS_FILTER: StatusFilter = "all";
+import { useMemo } from "react";
 
 export default function StorePage() {
   const { items } = useGetItems();
-  const [sortKey, setSortKey] = useState<SortKey>(DEFAULT_SORT_KEY);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
-    DEFAULT_STATUS_FILTER,
-  );
+  const { sortKey, statusFilter, setSortKey, setStatusFilter } =
+    useStoreFilters();
 
   const soldItems = items?.filter((item) => item.status === "sold") ?? [];
   const availableItems =
