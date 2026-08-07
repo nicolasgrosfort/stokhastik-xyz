@@ -9,9 +9,13 @@ import { SubmitEvent, useState } from "react";
 
 type CheckoutFormProps = {
   onCancel: () => void;
+  callbackUrl?: string;
 };
 
-export default function CheckoutForm({ onCancel }: CheckoutFormProps) {
+export default function CheckoutForm({
+  onCancel,
+  callbackUrl,
+}: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isPaying, setIsPaying] = useState(false);
@@ -28,10 +32,18 @@ export default function CheckoutForm({ onCancel }: CheckoutFormProps) {
     setMessage(null);
 
     try {
+      const returnUrl = new URL(
+        "/auth/payment/result",
+        window.location.origin,
+      );
+      if (callbackUrl) {
+        returnUrl.searchParams.set("callbackUrl", callbackUrl);
+      }
+
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/auth/payment/result`,
+          return_url: returnUrl.toString(),
         },
       });
 

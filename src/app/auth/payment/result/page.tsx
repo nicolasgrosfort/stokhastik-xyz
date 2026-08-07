@@ -4,6 +4,7 @@ import { Separator } from "@/components/common/separator";
 import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
 import { loadStripe } from "@stripe/stripe-js";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -25,9 +26,17 @@ type PaymentState =
 
 function PaymentResult() {
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const [state, setState] = useState<PaymentState>("loading");
 
   const clientSecret = searchParams.get("payment_intent_client_secret");
+  const callbackUrlParam = searchParams.get("callbackUrl");
+  const callbackUrl =
+    callbackUrlParam &&
+    callbackUrlParam.startsWith("/") &&
+    !callbackUrlParam.startsWith("//")
+      ? callbackUrlParam
+      : null;
 
   useEffect(() => {
     async function retrievePayment() {
@@ -68,6 +77,13 @@ function PaymentResult() {
     void retrievePayment();
   }, [clientSecret]);
 
+  useEffect(() => {
+    if (state !== "succeeded") return;
+
+    queryClient.invalidateQueries({ queryKey: ["user-tokens"] });
+    queryClient.invalidateQueries({ queryKey: ["store-items"] });
+  }, [state, queryClient]);
+
   const messages: Record<PaymentState, string> = {
     loading: "Vérification de la recharge...",
     succeeded: "Recharge réussie 🎉",
@@ -98,16 +114,16 @@ function PaymentResult() {
 
             <div className="grid grid-cols-2 gap-2 w-full">
               <Link
-                href="/store"
+                href={callbackUrl ?? "/store"}
                 className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
               >
-                Store
+                {callbackUrl ? "Reprendre mon achat" : "Aller au store"}
               </Link>
               <Link
                 href="/auth/profile"
                 className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
               >
-                Profil
+                Voir mon profil
               </Link>
             </div>
           </div>

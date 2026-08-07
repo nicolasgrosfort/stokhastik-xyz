@@ -7,11 +7,23 @@ import { prisma } from "@/libs/prisma";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 
-export default async function PaymentPage() {
+export default async function PaymentPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
   const session = await getServerSession(authOptions);
+  const { callbackUrl } = await searchParams;
+  const safeCallbackUrl =
+    callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
+      ? callbackUrl
+      : undefined;
 
   if (!session) {
-    redirect("/auth/signin?callbackUrl=/payment");
+    const target = safeCallbackUrl
+      ? `/auth/payment?callbackUrl=${encodeURIComponent(safeCallbackUrl)}`
+      : "/auth/payment";
+    redirect(`/auth/signin?callbackUrl=${encodeURIComponent(target)}`);
   }
 
   const transactions = await prisma.transaction.findMany({
@@ -34,7 +46,7 @@ export default async function PaymentPage() {
         <div className="w-full grid grid-rows-[auto_1fr] gap-px">
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3 className="uppercase">Recharger mon compte</H3>
-            <Payment />
+            <Payment callbackUrl={safeCallbackUrl} />
           </div>
 
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">

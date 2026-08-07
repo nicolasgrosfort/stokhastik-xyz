@@ -81,7 +81,11 @@ function buildAppearance(): Appearance {
   };
 }
 
-export default function Payment() {
+type PaymentProps = {
+  callbackUrl?: string;
+};
+
+export default function Payment({ callbackUrl }: PaymentProps) {
   const [selectedPack, setSelectedPack] = useState<PackId>("small");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -184,7 +188,7 @@ export default function Payment() {
               : `Recharger · ${(packs.find((p) => p.id === selectedPack)?.tokens ?? 0).toLocaleString("fr-CH")} STKH`}
           </button>
           <Link
-            href="/auth/profile"
+            href={callbackUrl ?? "/auth/profile"}
             className="flex items-center justify-center text-xs uppercase w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
           >
             Retour
@@ -200,7 +204,10 @@ export default function Payment() {
 
       {clientSecret && options && (
         <Elements stripe={stripePromise} options={options}>
-          <CheckoutForm onCancel={() => setClientSecret(null)} />
+          <CheckoutForm
+            onCancel={() => setClientSecret(null)}
+            callbackUrl={callbackUrl}
+          />
         </Elements>
       )}
     </section>

@@ -1,13 +1,13 @@
 "use client";
 
 import { Badge } from "@/components/badge";
+import { Separator } from "@/components/common/separator";
 import { FormatedDate } from "@/components/formated-date";
 import { H3 } from "@/components/h3";
 import { Item } from "@/components/item";
 import { Price } from "@/components/price";
 import { useGetItems } from "@/hooks/useGetItems";
 import { useGetTokens } from "@/hooks/useGetTokens";
-import { Separator } from "@base-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
@@ -123,7 +123,10 @@ export const Details = ({ id }: { id: Item["id"] }) => {
       {insufficientTokens && (
         <p className="text-xs mt-1">
           Solde insuffisant pour cet achat.{" "}
-          <Link href="/auth/payment" className="underline">
+          <Link
+            href={`/auth/payment?callbackUrl=${encodeURIComponent(pathname)}`}
+            className="underline"
+          >
             Recharger mon compte
           </Link>
         </p>
