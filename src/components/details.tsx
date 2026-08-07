@@ -120,7 +120,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
         )}
       </div>
 
-      {insufficientTokens && (
+      {item.status === "available" && insufficientTokens && (
         <p className="text-xs mt-1">
           Solde insuffisant pour cet achat.{" "}
           <Link
