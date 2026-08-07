@@ -20,22 +20,17 @@
     "@tanstack/react-form": "^1.33.3",
     "@tanstack/react-query": "^5.101.4",
     "@types/three": "^0.185.4",
-    "add": "^2.0.9",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.4.0",
-    "i": "^0.3.7",
     "motion": "^13.0.0",
     "next": "16.3.0",
     "next-auth": "^4.24.15",
     "nodemailer": "^9.0.4",
-    "npm": "^12.0.2",
     "nuqs": "^2.9.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "stripe": "^22.4.0",
-    "swissqrbill": "^4.4.0",
-    "three": "^0.185.1",
-    "yarn": "^1.22.22"
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
