@@ -9,6 +9,7 @@ import { useGetItems } from "@/hooks/useGetItems";
 import { useGetTokens } from "@/hooks/useGetTokens";
 import { Separator } from "@base-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
@@ -76,9 +77,13 @@ export const Details = ({ id }: { id: Item["id"] }) => {
       <div className="grid grid-cols-2 gap-4 w-full items-center">
         {item.status === "available" ? (
           sessionStatus === "authenticated" ? (
-            <button
+            <motion.button
               onClick={handleBuyClick}
               disabled={buyMutation.isPending || insufficientTokens}
+              initial={needsConfirm ? { scale: 0.75 } : false}
+              animate={{ scale: 1 }}
+              key={needsConfirm ? "needsConfirm" : "confirm"}
+              transition={{ duration: 0.2, ease: "easeOut" }}
               className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background disabled:hover:no-underline"
             >
               {buyMutation.isPending
@@ -86,7 +91,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
                 : needsConfirm
                   ? "Confirmer ?"
                   : `Acheter · ${item.price} STKH`}
-            </button>
+            </motion.button>
           ) : (
             <Link
               href={`/auth/signin?callbackUrl=${encodeURIComponent(pathname)}`}

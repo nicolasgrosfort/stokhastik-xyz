@@ -69,11 +69,11 @@ function PaymentResult() {
   }, [clientSecret]);
 
   const messages: Record<PaymentState, string> = {
-    loading: "Vérification du paiement…",
-    succeeded: "Paiement réussi 🎉",
-    processing: "Le paiement est en cours de traitement.",
-    failed: "Le paiement n'a pas abouti.",
-    unknown: "Aucun paiement à vérifier.",
+    loading: "Vérification de la recharge...",
+    succeeded: "Recharge réussie 🎉",
+    processing: "La recharge est en cours de traitement.",
+    failed: "La recharge n'a pas abouti.",
+    unknown: "Aucune recharge à vérifier.",
   };
 
   return (
@@ -90,7 +90,7 @@ function PaymentResult() {
 
         <div className="w-full grid grid-rows-[auto_1fr] gap-px">
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
-            <H3 className="uppercase">Résultat du paiement</H3>
+            <H3 className="uppercase">Résultat de la recharge</H3>
 
             <p className="text-sm">{messages[state]}</p>
 
@@ -98,13 +98,13 @@ function PaymentResult() {
 
             <div className="grid grid-cols-2 gap-2 w-full">
               <Link
-                href="/auth/payment"
+                href="/store"
                 className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
               >
                 Store
               </Link>
               <Link
-                href="/auth/payment"
+                href="/auth/profile"
                 className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
               >
                 Profil

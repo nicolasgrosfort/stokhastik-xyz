@@ -18,7 +18,7 @@ export const Badge = ({
 
   return (
     <span
-      className={`bg-background text-foreground border border-foreground font-mono text-xs uppercase px-1 py-0.5 text-center ${className || ""}`}
+      className={`bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 text-center ${className || ""}`}
     >
       {statusText}
     </span>
