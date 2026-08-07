@@ -25,7 +25,7 @@ const Object = ({
 
   useFrame((_, delta) => {
     if (ref.current && !stopRotation) {
-      ref.current.rotation.y += delta * 0.5;
+      ref.current.rotation.y += delta * 0.1;
     }
   });
 
