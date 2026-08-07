@@ -129,7 +129,7 @@ function PaymentResult() {
           </div>
 
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
-            <p className="text-xs">Merci pour votre soutien !</p>
+            <p className="text-xs">Merci pour ton soutien !</p>
           </div>
         </div>
       </div>

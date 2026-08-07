@@ -101,7 +101,10 @@ export const Details = ({ id }: { id: Item["id"] }) => {
             </Link>
           )
         ) : (
-          <Badge status={item.status} className="w-full" />
+          <Badge
+            status={item.status}
+            className="w-full bg-foreground text-background! opacity-70"
+          />
         )}
         {needsConfirm ? (
           <button
