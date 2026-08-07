@@ -31,7 +31,7 @@ export default function CheckoutForm({ onCancel }: CheckoutFormProps) {
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/auth/profile`,
+          return_url: `${window.location.origin}/auth/payment/result`,
         },
       });
 

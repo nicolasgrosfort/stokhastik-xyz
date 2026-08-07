@@ -1,6 +1,10 @@
 "use client";
 
+import { Separator } from "@/components/common/separator";
+import { H3 } from "@/components/h3";
+import { Model } from "@/components/model";
 import { loadStripe } from "@stripe/stripe-js";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
@@ -66,25 +70,54 @@ function PaymentResult() {
 
   const messages: Record<PaymentState, string> = {
     loading: "Vérification du paiement…",
-    succeeded: "Paiement réussi.",
+    succeeded: "Paiement réussi 🎉",
     processing: "Le paiement est en cours de traitement.",
     failed: "Le paiement n'a pas abouti.",
     unknown: "Aucun paiement à vérifier.",
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background p-6 text-foreground">
-      <div className="w-full max-w-md bg-background p-8">
-        <h1 className="text-2xl font-semibold">{messages[state]}</h1>
+    <section className="text-foreground h-full w-full min-h-0">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+        <div className="bg-background w-full h-full min-h-0">
+          <Model
+            position={2.4}
+            rotation={Math.PI * 0.4}
+            model="/models/chien-place-de-jeu.glb"
+            stopRotation
+          />
+        </div>
 
-        <a
-          href="/payment"
-          className="mt-8 inline-block border border-foreground px-5 py-3 font-mono text-sm uppercase"
-        >
-          Retour
-        </a>
+        <div className="w-full grid grid-rows-[auto_1fr] gap-px">
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            <H3 className="uppercase">Résultat du paiement</H3>
+
+            <p className="text-sm">{messages[state]}</p>
+
+            <Separator />
+
+            <div className="grid grid-cols-2 gap-2 w-full">
+              <Link
+                href="/auth/payment"
+                className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+              >
+                Store
+              </Link>
+              <Link
+                href="/auth/payment"
+                className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+              >
+                Profil
+              </Link>
+            </div>
+          </div>
+
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            <p className="text-xs">Merci pour votre soutien !</p>
+          </div>
+        </div>
       </div>
-    </main>
+    </section>
   );
 }
 
