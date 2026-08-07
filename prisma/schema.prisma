@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  firstName     String?
+  lastName      String?
+  username      String?       @unique
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  newsletter    Boolean       @default(false)
+  tokens        Int           @default(0)
+  transactions  Transaction[]
+  storeItems    StoreItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StoreItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  model       String
+  thumbnail   String
+  price       Int
+  position    Float
+  rotation    Float
+  releaseDate DateTime
+
+  buyerId     String?
+  buyer       User?     @relation(fields: [buyerId], references: [id])
+  purchasedAt DateTime?
+
+  transactions Transaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([buyerId])
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+enum TransactionType {
+  PURCHASE
+  SPEND
+  REFUND
+  BONUS
+  ADJUSTMENT
+}
+
+model Transaction {
+  id     String            @id @default(cuid())
+  userId String
+  user   User              @relation(fields: [userId], references: [id])
+  type   TransactionType
+  status TransactionStatus @default(SUCCEEDED)
+  tokens Int // delta signé : + crédit, - dépense
+
+  // Détail Stripe, uniquement pour type = PURCHASE
+  packId                String?
+  amount                Int? // centimes CHF
+  currency              String? @default("chf")
+  stripePaymentIntentId String? @unique
+
+  // Référence vers l'objet source d'une dépense (type = SPEND)
+  storeItemId String?
+  storeItem   StoreItem? @relation(fields: [storeItemId], references: [id], onDelete: SetNull)
+
+  description String? // libellé figé au moment de la transaction
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([storeItemId])
+}

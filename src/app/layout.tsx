@@ -1,6 +1,7 @@
 import { Footer } from "@/components/common/footer";
 import { Header } from "@/components/common/header";
-import { QueryProvider } from "@/components/query-provider";
+import { QueryProvider } from "@/providers/query-provider";
+import { SessionProvider } from "@/providers/session-provider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -34,13 +35,15 @@ export default function RootLayout({
     <html lang="fr" className={`${mapleMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <NuqsAdapter>
-          <QueryProvider>
-            <div className="min-h-full h-full grid grid-rows-[auto_minmax(0,1fr)_auto] bg-foreground flex-1">
-              <Header />
-              <main className="flex flex-col h-full min-h-0">{children}</main>
-              <Footer />
-            </div>
-          </QueryProvider>
+          <SessionProvider>
+            <QueryProvider>
+              <div className="min-h-full h-full grid grid-rows-[auto_minmax(0,1fr)_auto] bg-foreground flex-1">
+                <Header />
+                <main className="flex flex-col h-full min-h-0">{children}</main>
+                <Footer />
+              </div>
+            </QueryProvider>
+          </SessionProvider>
         </NuqsAdapter>
       </body>
     </html>

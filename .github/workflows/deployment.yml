@@ -1,46 +1,30 @@
 name: Deploy to "stokhastik.xyz"
+
 on:
   workflow_dispatch:
-concurrency: ftp_deploy_production
+
 jobs:
-  web-deploy:
-    name: Deploy
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Get latest code
+      - name: Checkout repo
         uses: actions/checkout@v6
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.5"
-
-      - name: Install API dependencies
+      - name: Deploy with rsync
         run: |
-          cd api
-          composer install
+          sudo apt-get update
+          sudo apt-get install -y sshpass
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build Next.js
-        run: yarn build
-
-      - name: List output files
-        run: find out/ -print
-
-      - name: Deploy on FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
-        with:
-          server: ${{ secrets.SERVER }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          server-dir: /
-          local-dir: out/
+          sshpass -p "${{ secrets.PASSWORD }}" \
+            rsync -avz --delete \
+            -e "ssh -p ${{ secrets.PORT }} -o StrictHostKeyChecking=no" \
+            --exclude='.env' \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.next' \
+            --exclude='.vscode' \
+            --exclude='node_modules' \
+            --exclude='out' \
+            ./ \
+            ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/srv/customer/sites/stokhastik.xyz/

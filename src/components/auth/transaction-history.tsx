@@ -1,0 +1,54 @@
+import { FormatedDate } from "@/components/formated-date";
+import { Transaction } from "@prisma/client";
+
+const statusLabels = {
+  PENDING: "En attente",
+  SUCCEEDED: "Réussi",
+  FAILED: "Échoué",
+};
+
+const typeLabels = {
+  PURCHASE: "Recharge",
+  SPEND: "Achat",
+  REFUND: "Remboursement",
+  BONUS: "Bonus",
+  ADJUSTMENT: "Ajustement",
+};
+
+export function TransactionHistory({
+  transactions,
+}: {
+  transactions: Transaction[];
+}) {
+  if (transactions.length === 0) {
+    return <p className="text-xs">Aucune transaction pour l&apos;instant.</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-2 w-full">
+      {transactions.map((entry) => (
+        <div
+          key={entry.id}
+          className="grid grid-cols-4 items-center gap-4 border border-dark-green p-2 text-xs"
+        >
+          <FormatedDate date={entry.createdAt} />
+          <span className="text-left">
+            {entry.tokens >= 0 ? "+" : ""}
+            {entry.tokens} STKH
+          </span>
+          <span className="text-left text-ellipsis overflow-hidden whitespace-nowrap">
+            {entry.amount !== null
+              ? `${(entry.amount / 100).toFixed(2)} CHF`
+              : entry.description}
+          </span>
+          <span className="text-right">
+            {typeLabels[entry.type]}
+            {entry.status !== "SUCCEEDED"
+              ? ` — ${statusLabels[entry.status]}`
+              : ""}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}

@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type Status = "available" | "sold";
 
@@ -31,13 +31,18 @@ export type ItemWithStatus = Item & {
 
 export const Item = ({ item }: { item: ItemWithStatus }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [canHover, setCanHover] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setCanHover(window.matchMedia("(hover: hover)").matches);
+  }, []);
 
   return (
     <article
       className="flex flex-col items-center justify-center w-full h-full relative hover:bg-foreground/10 cursor-pointer overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => canHover && setIsHovered(true)}
+      onMouseLeave={() => canHover && setIsHovered(false)}
       onClick={() => router.push(`/store/${item.id}`)}
     >
       <header className="w-full h-6 flex items-center justify-between absolute top-2 px-2">
@@ -67,7 +72,7 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
             >
               <Link
                 href={`/store/${item.id}`}
-                className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:bg-foreground hover:text-background"
+                className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center"
               >
                 Fait voir !
               </Link>
@@ -76,7 +81,7 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
             <>
               <FormatedDate date={new Date(item.date)} />
               {item.status === "available" ? (
-                <Price price={item.price} />
+                <Price price={item.price} highlighted />
               ) : (
                 <Badge status={item.status} />
               )}

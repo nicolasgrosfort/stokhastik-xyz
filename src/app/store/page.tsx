@@ -4,6 +4,7 @@ import { Item } from "@/components/item";
 import { Price } from "@/components/price";
 import { ToggleGroup } from "@/components/toggle-group";
 import { useGetItems } from "@/hooks/useGetItems";
+import { tokensToCHF } from "@/libs/pack";
 import { useMemo, useState } from "react";
 
 type SortKey = "price" | "name" | "date";
@@ -104,13 +105,13 @@ export default function StorePage() {
           </p>
         )}
       </div>
-      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-4 gap-1 sticky bottom-8">
+      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-4 gap-1 sticky bottom-14 sm:bottom-8">
         <p className="font-mono text-xs text-center">
           {availableItems.length} disponibles | {soldItems.length} vendus |{" "}
           {items.length} total
         </p>
         <p className="font-mono text-xs text-center">
-          soutien {percentageSupport.toFixed(2)}% |{" "}
+          soutien {tokensToCHF(totalSupport).toLocaleString("fr-CH")} CHF |{" "}
           <Price price={totalSupport} />{" "}
         </p>
       </div>

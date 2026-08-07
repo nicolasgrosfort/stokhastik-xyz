@@ -15,7 +15,7 @@ type TextFieldProps = {
   onKeyDown?: (
     event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => void;
-  type?: "textarea" | "text" | "email" | "tel" | "number";
+  type?: "textarea" | "text" | "email" | "tel" | "number" | "password";
   className?: string;
 };
 
@@ -42,8 +42,9 @@ export const TextField = ({
       className={`flex w-full flex-col items-start gap-1 ${className}`}
     >
       {label && (
-        <Field.Label className="text-xs uppercase font-bold font-mono">
+        <Field.Label className="text-xs uppercase font-medium font-mono">
           {label}
+          {required && <sup>*</sup>}
         </Field.Label>
       )}
       <Field.Control
