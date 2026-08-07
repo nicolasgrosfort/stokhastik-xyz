@@ -24,7 +24,7 @@ export async function sendWelcomeEmail({
     to,
     bcc: adminBcc,
     subject: "Bienvenue sur Stokhastik",
-    text: `Hey ${firstName},\n\nTon compte Stokhastik vient d'être créé. Merci pour ton soutien et ton intérêt !\n\nAccède à ton compte : ${accountUrl}\n\nÀ bientôt,\nNicolas.`,
+    text: `Salut ${firstName},\n\nTon compte Stokhastik vient d'être créé. Merci pour ton soutien et ton intérêt !\n\nAccède à ton compte : ${accountUrl}\n\nÀ bientôt,\nNicolas.`,
     html: `
       <body style="margin: 0; padding: 24px 16px; background-color: #ffffff;">
         <div style="font-family: 'SFMono-Regular', Menlo, Consolas, monospace; max-width: 420px; margin: 0 auto; color: #171717; border: 1px solid #171717;">
@@ -32,7 +32,7 @@ export async function sendWelcomeEmail({
             <span style="font-size: 20px; font-weight: bold; letter-spacing: 0.05em;">STOKHASTIK</span>
           </div>
           <div style="padding: 24px 16px;">
-            <p style="margin: 0 0 16px;">Hey ${firstName},</p>
+            <p style="margin: 0 0 16px;">Salut ${firstName},</p>
             <p style="margin: 0 0 24px;">Ton compte Stokhastik vient d'être créé. Merci pour ton soutien et ton intérêt !</p>
             <a href="${accountUrl}" style="display: block; text-align: center; background-color: #171717; color: #ffffff; text-decoration: none; text-transform: uppercase; font-size: 12px; padding: 10px; border: 1px solid #171717;">
               Accéder à mon compte
@@ -64,8 +64,8 @@ export async function sendRechargeEmail({
     from: process.env.EMAIL_FROM,
     to,
     bcc: adminBcc,
-    subject: "Ta recharge Stokhastik a bien été effectuée",
-    text: `Bonjour ${firstName},\n\nTa recharge de ${tokens} tokens (${chf} CHF) a bien été créditée sur ton compte. Merci !\n\nÀ bientôt,\nL'équipe Stokhastik`,
+    subject: "Ton compte Stokhastik a bien été crédité !",
+    text: `Salut ${firstName},\n\nTa recharge de ${tokens} STKH (${chf} CHF) a bien été créditée sur ton compte. Merci !\n\nÀ bientôt,\nNicolas.`,
   });
 }
 
@@ -85,6 +85,6 @@ export async function sendPurchaseEmail({
     to,
     bcc: adminBcc,
     subject: "Ta commande Stokhastik est confirmée",
-    text: `Bonjour ${firstName},\n\nTon achat de « ${itemName} » (${price} tokens) a bien été confirmé. Merci !\n\nÀ bientôt,\nL'équipe Stokhastik`,
+    text: `Salut ${firstName},\n\nTon achat de « ${itemName} » (${price} STKH) est confirmé. Merci !\n\nÀ bientôt,\nNicolas.`,
   });
 }

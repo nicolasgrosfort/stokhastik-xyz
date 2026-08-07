@@ -81,7 +81,7 @@ function buildAppearance(): Appearance {
 }
 
 export default function Payment() {
-  const [selectedPack, setSelectedPack] = useState<PackId>("medium");
+  const [selectedPack, setSelectedPack] = useState<PackId>("small");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -138,7 +138,7 @@ export default function Payment() {
   );
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 w-full">
       <div className="grid grid-cols-4 gap-2">
         {packs.map((pack) => {
           const isSelected = pack.id === selectedPack;
@@ -174,13 +174,13 @@ export default function Payment() {
             type="button"
             onClick={preparePayment}
             disabled={isLoading}
-            className="w-full bg-foreground p-1 font-mono text-xs uppercase text-background disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+            className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
           >
             {isLoading ? "Chargement..." : "Recharger"}
           </button>
           <Link
             href="/auth/profile"
-            className="flex items-center justify-center text-xs uppercase sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+            className="flex items-center justify-center text-xs uppercase w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
           >
             Retour
           </Link>
@@ -188,10 +188,7 @@ export default function Payment() {
       )}
 
       {error && (
-        <p
-          role="alert"
-          className="border border-red-900 bg-red-950/40 p-4 text-sm text-red-300"
-        >
+        <p role="alert" className="text-red-500">
           {error}
         </p>
       )}

@@ -60,7 +60,7 @@ export default async function ProfilePage() {
         <div className="w-full flex min-h-0">
           <div className="gap-px h-full w-full grid grid-rows-[auto_minmax(0px,25%)] items-start min-h-0">
             <div className="h-full w-full bg-background flex flex-col items-center justify-center gap-4 p-4">
-              <div className="sm:max-w-120 w-full">
+              <div className="sm:max-w-120 w-full flex flex-col gap-4">
                 <H3 className="uppercase text-left">Profil</H3>
                 <div className="flex flex-col gap-4 w-full font-mono text-sm">
                   <div className="grid grid-cols-2 gap-4">
@@ -88,7 +88,7 @@ export default async function ProfilePage() {
                   <div className="grid grid-cols-2 gap-2">
                     <Link
                       href="/auth/payment"
-                      className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
+                      className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
                     >
                       Recharger mon compte
                     </Link>

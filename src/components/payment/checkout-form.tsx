@@ -59,20 +59,13 @@ export default function CheckoutForm({ onCancel }: CheckoutFormProps) {
         }}
       />
 
-      {message && (
-        <p
-          role="status"
-          className="mt-5 border border-neutral-700 p-3 text-sm text-neutral-300"
-        >
-          {message}
-        </p>
-      )}
+      {message && <p role="status">{message}</p>}
 
       <div className="mt-6 grid grid-cols-2 gap-2">
         <button
           type="submit"
           disabled={!stripe || !elements || isPaying}
-          className="flex-1 bg-foreground p-1 font-mono text-xs  uppercase text-background disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+          className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
         >
           {isPaying ? "Paiement…" : "Payer"}
         </button>
@@ -80,7 +73,7 @@ export default function CheckoutForm({ onCancel }: CheckoutFormProps) {
           type="button"
           onClick={onCancel}
           disabled={isPaying}
-          className="border border-neutral-600 p-1 font-mono text-xs uppercase disabled:opacity-50 cursor-pointer"
+          className="flex items-center justify-center text-xs uppercase w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
         >
           Retour
         </button>
