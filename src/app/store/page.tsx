@@ -29,10 +29,6 @@ export default function StorePage() {
       (acc, item) => acc + (item.status === "sold" ? item.price : 0),
       0,
     ) ?? 0;
-  const totalPrice = items?.reduce((acc, item) => acc + item.price, 0) ?? 0;
-
-  const percentageSupport =
-    totalPrice > 0 ? (totalSupport / totalPrice) * 100 : 0;
 
   const displayedItems = useMemo(() => {
     const filtered =
