@@ -76,6 +76,7 @@ export async function POST(
           to: buyer.email,
           firstName: buyer.firstName ?? "",
           itemName: item.name,
+          itemId: item.id,
           price: item.price,
         });
       }

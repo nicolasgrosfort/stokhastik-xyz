@@ -1,5 +1,6 @@
 "use client";
 
+import { Separator } from "@/components/common/separator";
 import CheckoutForm from "@/components/payment/checkout-form";
 import { PackId, packs, tokensToCHF } from "@/libs/pack";
 import { Elements } from "@stripe/react-stripe-js";
@@ -138,7 +139,7 @@ export default function Payment() {
   );
 
   return (
-    <section className="space-y-4 w-full">
+    <section className="w-full flex flex-col gap-2">
       <div className="grid grid-cols-4 gap-2">
         {packs.map((pack) => {
           const isSelected = pack.id === selectedPack;
@@ -168,6 +169,8 @@ export default function Payment() {
         })}
       </div>
 
+      <Separator />
+
       {!clientSecret && (
         <div className="grid grid-cols-2 gap-2">
           <button
@@ -176,7 +179,9 @@ export default function Payment() {
             disabled={isLoading}
             className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
           >
-            {isLoading ? "Chargement..." : "Recharger"}
+            {isLoading
+              ? "Chargement..."
+              : `Recharger · ${(packs.find((p) => p.id === selectedPack)?.tokens ?? 0).toLocaleString("fr-CH")} STKH`}
           </button>
           <Link
             href="/auth/profile"

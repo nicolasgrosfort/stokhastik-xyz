@@ -1,6 +1,7 @@
 "use client";
 
 import { Checkbox } from "@/components/checkbox";
+import { Separator } from "@/components/common/separator";
 import { Form } from "@/components/form";
 import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
@@ -64,7 +65,7 @@ export function SignUpForm() {
 
   return (
     <section className="text-foreground h-full w-full min-h-0">
-      <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
         <div className="bg-background w-full h-full min-h-0">
           <Model
             position={2.5}
@@ -74,8 +75,8 @@ export function SignUpForm() {
           />
         </div>
 
-        <div className="bg-background w-full flex items-center justify-center">
-          <div className="h-full sm:max-w-120 flex flex-col items-start justify-center p-4 gap-2 flex-1">
+        <div className="w-full grid grid-rows-[auto_1fr] gap-px">
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3 className="uppercase text-left">Créer un compte</H3>
 
             <Form
@@ -83,7 +84,7 @@ export function SignUpForm() {
                 form.handleSubmit();
               }}
             >
-              <div className="flex flex-col gap-4 sm:max-w-104 w-full">
+              <div className="flex flex-col gap-4 w-full">
                 <div className="flex gap-4">
                   <form.Field name="firstName">
                     {(field) => (
@@ -151,6 +152,8 @@ export function SignUpForm() {
                   )}
                 </form.Field>
 
+                <Separator />
+
                 {error && <p className="text-red-500 text-xs">{error}</p>}
 
                 <form.Subscribe selector={(state) => state.isSubmitting}>
@@ -164,15 +167,17 @@ export function SignUpForm() {
                     </button>
                   )}
                 </form.Subscribe>
-
-                <p className="text-xs font-mono text-center">
-                  Déjà un compte ?{" "}
-                  <Link href="/auth/signin" className="underline">
-                    Se connecter
-                  </Link>
-                </p>
               </div>
             </Form>
+          </div>
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            {" "}
+            <p className="text-xs font-mono text-center">
+              Déjà un compte ?{" "}
+              <Link href="/auth/signin" className="underline">
+                Se connecter
+              </Link>
+            </p>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { Item } from "@/components/item";
 import { Price } from "@/components/price";
 import { useGetItems } from "@/hooks/useGetItems";
 import { useGetTokens } from "@/hooks/useGetTokens";
+import { Separator } from "@base-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -59,7 +60,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
   return (
     <>
       <H3 className="uppercase">{item.name}</H3>
-      <div className="flex flex-col gap-2 w-full sm:max-w-104">
+      <div className="flex flex-col gap-2 w-full">
         <p className="font-mono text-sm">{item.description}</p>
 
         <div className="flex gap-4 w-full items-center justify-between text-xs">
@@ -70,15 +71,15 @@ export const Details = ({ id }: { id: Item["id"] }) => {
         </div>
       </div>
 
-      <hr className="border-0 border-t sm:max-w-104 w-full my-2" />
+      <Separator />
 
-      <div className="flex gap-4 w-full items-center">
+      <div className="grid grid-cols-2 gap-4 w-full items-center">
         {item.status === "available" ? (
           sessionStatus === "authenticated" ? (
             <button
               onClick={handleBuyClick}
               disabled={buyMutation.isPending || insufficientTokens}
-              className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background disabled:hover:no-underline"
+              className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background disabled:hover:no-underline"
             >
               {buyMutation.isPending
                 ? "Achat..."
@@ -89,25 +90,25 @@ export const Details = ({ id }: { id: Item["id"] }) => {
           ) : (
             <Link
               href={`/auth/signin?callbackUrl=${encodeURIComponent(pathname)}`}
-              className="bg-foreground text-background hover:bg-background hover:text-foreground border border-foreground font-mono text-xs uppercase p-1 block sm:w-50 w-full cursor-pointer text-center hover:underline"
+              className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
             >
               Je le veux !
             </Link>
           )
         ) : (
-          <Badge status={item.status} className="sm:w-50 w-full" />
+          <Badge status={item.status} className="w-full" />
         )}
         {needsConfirm ? (
           <button
             onClick={() => setNeedsConfirm(false)}
-            className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+            className="text-xs uppercase block w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
           >
             Annuler
           </button>
         ) : (
           <Link
             href="/store"
-            className="text-xs uppercase block sm:w-50 w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
+            className="text-xs uppercase block w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
           >
             Retour
           </Link>

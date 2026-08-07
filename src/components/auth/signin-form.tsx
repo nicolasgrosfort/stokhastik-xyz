@@ -1,5 +1,6 @@
 "use client";
 
+import { Separator } from "@/components/common/separator";
 import { Form } from "@/components/form";
 import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
@@ -44,7 +45,7 @@ export function SignInForm() {
 
   return (
     <section className="text-foreground h-full w-full min-h-0">
-      <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
         <div className="bg-background w-full h-full min-h-0">
           <Model
             position={3}
@@ -54,16 +55,16 @@ export function SignInForm() {
           />
         </div>
 
-        <div className="bg-background w-full flex items-center justify-center">
-          <div className="h-full sm:max-w-120 flex flex-col items-start justify-center p-4 gap-2 flex-1">
-            <H3>Connexion</H3>
+        <div className="w-full grid grid-rows-[auto_1fr] gap-px">
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            <H3 className="uppercase">Connexion</H3>
 
             <Form
               onSubmit={() => {
                 form.handleSubmit();
               }}
             >
-              <div className="flex flex-col gap-4 sm:max-w-104 w-full">
+              <div className="flex flex-col gap-4 w-full">
                 <form.Field name="email">
                   {(field) => (
                     <TextField
@@ -92,6 +93,8 @@ export function SignInForm() {
                   )}
                 </form.Field>
 
+                <Separator />
+
                 {error && <p className="text-red-500 text-xs">{error}</p>}
 
                 <form.Subscribe selector={(state) => state.isSubmitting}>
@@ -105,15 +108,17 @@ export function SignInForm() {
                     </button>
                   )}
                 </form.Subscribe>
-
-                <p className="text-xs font-mono text-center">
-                  Pas encore de compte ?{" "}
-                  <Link href="/auth/signup" className="underline">
-                    Créer un compte
-                  </Link>
-                </p>
               </div>
             </Form>
+          </div>
+
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            <p className="text-xs font-mono text-center">
+              Pas encore de compte ?{" "}
+              <Link href="/auth/signup" className="underline">
+                Créer un compte
+              </Link>
+            </p>
           </div>
         </div>
       </div>

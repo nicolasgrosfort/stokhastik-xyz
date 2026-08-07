@@ -17,19 +17,28 @@ export default async function ItemPage({
   }
 
   return (
-    <div className="bg-background text-foreground p-2 h-full w-full min-h-0">
-      <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-[minmax(0,1fr)_auto] grid-cols-1 h-full w-full min-h-0">
-        <div className="w-full h-full min-h-0">
+    <div className="text-foreground h-full w-full min-h-0">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+        <div className="bg-background w-full h-full min-h-0">
           <Model
             position={item.position}
             rotation={item.rotation}
             model={item.model}
           />
         </div>
-        <div className="h-full w-full flex flex-col items-start justify-center p-2 gap-2 flex-1">
-          <Suspense fallback={null}>
-            <Details id={itemId} />
-          </Suspense>
+
+        <div className="w-full grid grid-rows-[auto_1fr] gap-px">
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            <Suspense fallback={null}>
+              <Details id={itemId} />
+            </Suspense>
+          </div>
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            <p className="text-xs">
+              Chaque item est unique et ne peut être acheté qu'une seule
+              fois.{" "}
+            </p>
+          </div>
         </div>
       </div>
     </div>

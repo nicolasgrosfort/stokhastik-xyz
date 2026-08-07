@@ -1,7 +1,9 @@
+import { TransactionHistory } from "@/components/auth/transaction-history";
 import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
 import Payment from "@/components/payment/payment";
 import { authOptions } from "@/libs/auth";
+import { prisma } from "@/libs/prisma";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 
@@ -12,9 +14,14 @@ export default async function PaymentPage() {
     redirect("/auth/signin?callbackUrl=/payment");
   }
 
+  const transactions = await prisma.transaction.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
     <section className="text-foreground h-full w-full min-h-0">
-      <div className="grid sm:grid-cols-2 sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(160px,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
         <div className="bg-background w-full h-full min-h-0">
           <Model
             position={2}
@@ -24,10 +31,15 @@ export default async function PaymentPage() {
           />
         </div>
 
-        <div className="bg-background w-full flex min-h-0 items-center justify-center">
-          <div className=" h-full sm:max-w-120 flex flex-col items-start justify-center p-4 gap-4 flex-1">
+        <div className="w-full grid grid-rows-[auto_1fr] gap-px">
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3 className="uppercase">Recharger mon compte</H3>
             <Payment />
+          </div>
+
+          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
+            <H3 className="uppercase">Transactions</H3>
+            <TransactionHistory transactions={transactions} />
           </div>
         </div>
       </div>

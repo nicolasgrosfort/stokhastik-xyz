@@ -47,7 +47,9 @@ export const Footer = () => {
           href="/auth/payment"
           className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/payment") ? activeClassName : inactiveClassName}`}
         >
-          {tokens !== undefined ? `${tokens} STKH` : "..."}
+          {tokens !== undefined
+            ? `${tokens.toLocaleString("fr-CH")} STKH`
+            : "..."}
         </Link>
       ) : (
         <Link
