@@ -72,7 +72,7 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
             >
               <Link
                 href={`/store/${item.id}`}
-                className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:bg-foreground hover:text-background"
+                className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center"
               >
                 Fait voir !
               </Link>
