@@ -32,10 +32,7 @@ export default function CheckoutForm({
     setMessage(null);
 
     try {
-      const returnUrl = new URL(
-        "/auth/payment/result",
-        window.location.origin,
-      );
+      const returnUrl = new URL("/auth/payment/result", window.location.origin);
       if (callbackUrl) {
         returnUrl.searchParams.set("callbackUrl", callbackUrl);
       }
@@ -71,7 +68,11 @@ export default function CheckoutForm({
         }}
       />
 
-      {message && <p role="status">{message}</p>}
+      {message && (
+        <p role="status" className=" text-xs pt-4">
+          {message}
+        </p>
+      )}
 
       <div className="mt-6 grid grid-cols-2 gap-2">
         <button

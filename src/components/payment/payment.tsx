@@ -77,6 +77,10 @@ function buildAppearance(): Appearance {
         border: `1px solid ${foreground}`,
         boxShadow: "none",
       },
+
+      ".Error": {
+        fontSize: "12px",
+      },
     },
   };
 }
