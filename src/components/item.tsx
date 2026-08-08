@@ -3,6 +3,7 @@
 import { Badge } from "@/components/badge";
 import { FormatedDate } from "@/components/formated-date";
 import { Price } from "@/components/price";
+import { useStoreModel } from "@/hooks/useStoreModel";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,6 +35,8 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
   const [canHover, setCanHover] = useState(false);
   const router = useRouter();
 
+  const { setModelUrl } = useStoreModel();
+
   useEffect(() => {
     setCanHover(window.matchMedia("(hover: hover)").matches);
   }, []);
@@ -43,7 +46,10 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
       className="flex flex-col items-center justify-center w-full h-full relative hover:bg-foreground/10 cursor-pointer overflow-hidden"
       onMouseEnter={() => canHover && setIsHovered(true)}
       onMouseLeave={() => canHover && setIsHovered(false)}
-      onClick={() => router.push(`/store/${item.id}`)}
+      onClick={() => {
+        setModelUrl(item.model);
+        // router.push(`/store/${item.id}`);
+      }}
     >
       <header className="w-full h-6 flex items-center justify-between absolute top-2 px-2">
         <p className="font-mono text-sm uppercase">{item.name}</p>

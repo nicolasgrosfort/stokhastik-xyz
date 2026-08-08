@@ -1,6 +1,7 @@
 "use client";
 
 import { Item } from "@/components/item";
+import { useStoreModel } from "@/hooks/useStoreModel";
 import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
@@ -49,6 +50,10 @@ export const Model = ({
 }) => {
   const [isControlling, setIsControlling] = useState(false);
 
+  const { modelUrl } = useStoreModel();
+
+  const modelToLoad = modelUrl || model;
+
   return (
     <div className="relative w-full h-full min-h-0">
       <Canvas
@@ -57,7 +62,7 @@ export const Model = ({
         camera={{ position: [position, position, position], fov: 50 }}
       >
         <ambientLight intensity={2} />
-        {model ? (
+        {modelToLoad ? (
           <Suspense
             fallback={
               <Html center>
@@ -66,7 +71,7 @@ export const Model = ({
             }
           >
             <Object
-              model={model}
+              model={modelToLoad}
               rotation={rotation}
               stopRotation={stopRotation || isControlling}
             />
