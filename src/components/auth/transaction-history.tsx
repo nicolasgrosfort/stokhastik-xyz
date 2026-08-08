@@ -32,20 +32,21 @@ export function TransactionHistory({
           className="grid grid-cols-4 items-center gap-4 border border-dark-green p-2 text-xs"
         >
           <FormatedDate date={entry.createdAt} />
-          <span className="text-left">
-            {entry.tokens >= 0 ? "+" : ""}
-            {entry.tokens} STKH
-          </span>
           <span className="text-left text-ellipsis overflow-hidden whitespace-nowrap">
-            {entry.amount !== null
-              ? `${(entry.amount / 100).toFixed(2)} CHF`
-              : entry.description}
-          </span>
-          <span className="text-right">
             {typeLabels[entry.type]}
             {entry.status !== "SUCCEEDED"
               ? ` — ${statusLabels[entry.status]}`
               : ""}
+          </span>
+          <span className="text-right text-ellipsis overflow-hidden whitespace-nowrap">
+            {entry.amount !== null
+              ? `${(entry.amount / 100).toFixed(2)} CHF`
+              : entry.description}
+          </span>
+
+          <span className="text-right text-ellipsis overflow-hidden whitespace-nowrap">
+            {entry.tokens >= 0 ? "+" : ""}
+            {entry.tokens} STKH
           </span>
         </div>
       ))}
