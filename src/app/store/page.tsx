@@ -9,7 +9,7 @@ import { tokensToCHF } from "@/libs/pack";
 import { useMemo } from "react";
 
 export default function StorePage() {
-  const { items } = useGetItems();
+  const { items, isPending } = useGetItems();
   const { sortKey, statusFilter, setSortKey, setStatusFilter } =
     useStoreFilters();
 
@@ -71,7 +71,11 @@ export default function StorePage() {
         </div>
       </div>
       <div className="grid content-start gap-px bg-foreground grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 h-full">
-        {displayedItems.length > 0 ? (
+        {isPending ? (
+          <p className="col-span-full text-center bg-background font-mono text-xs uppercase p-4">
+            Chargement...
+          </p>
+        ) : displayedItems.length > 0 ? (
           <>
             {displayedItems.map((item) => (
               <article key={item.id} className="aspect-3/4 bg-background ">
