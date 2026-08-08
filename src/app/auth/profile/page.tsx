@@ -15,7 +15,7 @@ export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/auth/signin?callbackUrl=/profile");
+    redirect("/auth/signin?callbackUrl=/auth/profile");
   }
 
   const user = await prisma.user.findUnique({
@@ -31,7 +31,7 @@ export default async function ProfilePage() {
   });
 
   if (!user) {
-    redirect("/auth/signin?callbackUrl=/profile");
+    redirect("/auth/signin?callbackUrl=/auth/profile");
   }
 
   const history = user.transactions;
@@ -73,6 +73,15 @@ export default async function ProfilePage() {
                 <p className="text-xs uppercase font-bold">Solde</p>
                 <ProfileBalance initialTokens={user.tokens} />
               </div>
+
+              {user.role === "ADMIN" && (
+                <div>
+                  <p className="text-xs uppercase font-bold">Rôle</p>
+                  <Link href="/admin" className="hover:underline">
+                    Administrateur
+                  </Link>
+                </div>
+              )}
 
               <Separator />
 

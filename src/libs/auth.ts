@@ -33,7 +33,12 @@ export const authOptions: AuthOptions = {
           return null;
         }
 
-        return { id: user.id, email: user.email, name: user.name };
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
       },
     }),
   ],
@@ -44,6 +49,7 @@ export const authOptions: AuthOptions = {
     jwt: ({ token, user }) => {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
@@ -52,6 +58,7 @@ export const authOptions: AuthOptions = {
       user: {
         ...session.user,
         id: token.id as string,
+        role: token.role as string,
       },
     }),
   },
