@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "docker-compose up -d && next dev",
+    "docker": "docker-compose --env-file /dev/null up -d",
+    "dev": "yarn docker && next dev",
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "eslint"

@@ -58,6 +58,7 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
           fill
           draggable={false}
           className="object-cover"
+          sizes="(max-width: 639px) 50vw, (max-width: 1279px) 25vw, 12.5vw"
         />
       </motion.section>
 
