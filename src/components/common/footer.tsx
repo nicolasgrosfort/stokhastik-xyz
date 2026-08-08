@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetTokens } from "@/hooks/useGetTokens";
+import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -47,9 +48,16 @@ export const Footer = () => {
           href="/auth/payment"
           className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/payment") ? activeClassName : inactiveClassName}`}
         >
-          {tokens !== undefined
-            ? `${tokens.toLocaleString("fr-CH")} STKH`
-            : "..."}
+          <motion.span
+            key={tokens}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="inline-block"
+          >
+            {tokens !== undefined
+              ? `${tokens.toLocaleString("fr-CH")} STKH`
+              : "..."}
+          </motion.span>
         </Link>
       ) : (
         <Link
