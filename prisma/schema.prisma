@@ -76,6 +76,9 @@ model Transaction {
   currency              String? @default("chf")
   stripePaymentIntentId String? @unique
 
+  // Référence Stripe, uniquement pour type = REFUND
+  stripeRefundId String? @unique
+
   // Référence vers l'objet source d'une dépense (type = SPEND)
   storeItemId String?
   storeItem   StoreItem? @relation(fields: [storeItemId], references: [id], onDelete: SetNull)
