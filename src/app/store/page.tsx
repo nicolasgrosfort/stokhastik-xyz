@@ -45,8 +45,8 @@ export default function StorePage() {
   }, [items, availableItems, soldItems, statusFilter, sortKey]);
 
   return (
-    <div className="grid grid-rows-[auto_auto_minmax(0,1fr)_auto] h-full min-h-full">
-      <div className="text-foreground font-mono text-xs uppercase border-b border-px border-foreground grid grid-cols-2 sm:grid-cols-4 gap-px items-center justify-items-center bg-foreground sticky top-18 sm:top-12 z-20">
+    <div className="grid grid-rows-[auto_auto_minmax(0,1fr)_auto] h-fit">
+      <div className="text-foreground font-mono text-xs uppercase border-b border-px border-foreground grid grid-cols-2 sm:grid-cols-4 gap-px items-center justify-items-center bg-foreground sticky top-0 z-10">
         <div className="sm:col-start-1 min-w-0 sm:col-span-2 bg-background  w-full h-full p-2">
           <ToggleGroup
             value={sortKey}
@@ -98,7 +98,7 @@ export default function StorePage() {
           </p>
         )}
       </div>
-      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-4 gap-1 sticky bottom-14 sm:bottom-8">
+      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-4 gap-1 sticky bottom-0">
         <p className="font-mono text-xs text-center">
           {availableItems.length} disponibles | {soldItems.length} vendus |{" "}
           {items.length} total

@@ -14,7 +14,7 @@ export const Footer = () => {
   const inactiveClassName = "bg-background text-foreground";
 
   return (
-    <footer className="sticky bottom-0 z-10 grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-px bg-foreground border-t border-px border-foreground">
+    <footer className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-px bg-foreground border-t border-px border-foreground">
       {session ? (
         <Link
           href="/auth/profile"

@@ -33,13 +33,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${mapleMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+      <body className="h-full">
         <NuqsAdapter>
           <SessionProvider>
             <QueryProvider>
-              <div className="min-h-full h-full grid grid-rows-[auto_minmax(0,1fr)_auto] bg-foreground flex-1">
+              <div className="h-full grid grid-rows-[auto_1fr_auto] bg-foreground">
                 <Header />
-                <main className="flex flex-col h-full min-h-0">{children}</main>
+                <main className="flex max-h-full flex-col h-full min-h-0 flex-1 overflow-y-auto">
+                  {children}
+                </main>
                 <Footer />
               </div>
             </QueryProvider>

@@ -15,7 +15,7 @@ export default function AboutPage() {
           />
         </div>
 
-        <div className="w-full grid grid-rows-[auto_auto_1fr] gap-px">
+        <div className="w-full grid grid-rows-[auto_auto_1fr] gap-px max-h-full overflow-y-auto">
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3 className="uppercase text-left">LA PLATEFORME</H3>
             <p className="font-mono text-sm text-left text-pretty">
