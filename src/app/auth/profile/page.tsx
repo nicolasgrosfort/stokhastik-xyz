@@ -1,12 +1,13 @@
 import { ProfileBalance } from "@/components/auth/profile-balance";
 import { SignOutButton } from "@/components/auth/signout-button";
-import { TransactionHistory } from "@/components/auth/transaction-history";
 import { Separator } from "@/components/common/separator";
+import { FormatedDate } from "@/components/formated-date";
 import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
 import { authOptions } from "@/libs/auth";
 import { prisma } from "@/libs/prisma";
 import { getServerSession } from "next-auth/next";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -22,6 +23,9 @@ export default async function ProfilePage() {
     include: {
       transactions: {
         orderBy: { createdAt: "desc" },
+      },
+      storeItems: {
+        orderBy: { purchasedAt: "desc" },
       },
     },
   });
@@ -85,9 +89,56 @@ export default async function ProfilePage() {
             </div>
           </div>
 
-          <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
-            <H3 className="uppercase text-left">Transactions</H3>
-            <TransactionHistory transactions={history} />
+          <div className="h-full flex flex-col items-start justify-start flex-1 bg-background">
+            <H3 className="uppercase text-left p-4">Bibliothèque</H3>
+            {user.storeItems.length > 0 ? (
+              <div className="grid grid-cols-3 gap-px bg-foreground w-full border-y border-foreground border-px">
+                {user.storeItems.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/store/${item.id}`}
+                    className="group aspect-square bg-background relative overflow-hidden"
+                  >
+                    <div className="absolute inset-x-0 top-0 p-2">
+                      <p className="font-mono text-xs uppercase truncate">
+                        {item.name}
+                      </p>
+                    </div>
+                    <Image
+                      src={item.thumbnail}
+                      alt={item.name}
+                      fill
+                      draggable={false}
+                      className="object-cover transition-transform duration-300 group-hover:scale-110"
+                      sizes="(max-width: 639px) 33vw, 186px"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-2 flex items-center justify-between gap-2">
+                      {item.price && (
+                        <p className="font-mono text-xs uppercase truncate">
+                          {item.price.toLocaleString("fr-CH")} STKH
+                        </p>
+                      )}
+                      {item.purchasedAt && (
+                        <FormatedDate date={item.purchasedAt} />
+                      )}
+                    </div>
+                  </Link>
+                ))}
+
+                {Array.from({
+                  length: (3 - (user.storeItems.length % 3)) % 3,
+                }).map((_, index) => (
+                  <div
+                    key={`filler-${index}`}
+                    className="aspect-square bg-background"
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="font-mono text-xs uppercase">
+                Aucun objet acheté pour le moment.
+              </p>
+            )}
           </div>
         </div>
       </div>
