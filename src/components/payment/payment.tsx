@@ -195,7 +195,7 @@ export default function Payment({ callbackUrl }: PaymentProps) {
             href={callbackUrl ?? "/auth/profile"}
             className="flex items-center justify-center text-xs uppercase w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
           >
-            Retour
+            Retour au profil
           </Link>
         </div>
       )}

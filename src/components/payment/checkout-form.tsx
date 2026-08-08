@@ -88,7 +88,7 @@ export default function CheckoutForm({
           disabled={isPaying}
           className="flex items-center justify-center text-xs uppercase w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
         >
-          Retour
+          Retour aux packs
         </button>
       </div>
     </form>

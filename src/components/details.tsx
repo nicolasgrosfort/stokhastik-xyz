@@ -89,7 +89,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
               {buyMutation.isPending
                 ? "Achat..."
                 : needsConfirm
-                  ? "Confirmer ?"
+                  ? "T'es sûr ?"
                   : `Acheter · ${item.price} STKH`}
             </motion.button>
           ) : (
@@ -118,7 +118,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
             href="/store"
             className="text-xs uppercase block w-full cursor-pointer text-center border border-foreground font-mono p-1 hover:underline"
           >
-            Retour
+            Retour au shop
           </Link>
         )}
       </div>
