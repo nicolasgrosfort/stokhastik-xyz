@@ -46,7 +46,7 @@ export function TransactionHistory({
 
           <span className="text-right text-ellipsis overflow-hidden whitespace-nowrap">
             {entry.tokens >= 0 ? "+" : ""}
-            {entry.tokens} STKH
+            {entry.tokens.toLocaleString("fr-CH")} STKH
           </span>
         </div>
       ))}

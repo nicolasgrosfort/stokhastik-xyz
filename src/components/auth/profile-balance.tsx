@@ -1,5 +1,6 @@
 "use client";
 
+import { Scramble } from "@/components/common/scramble";
 import { useGetTokens } from "@/hooks/useGetTokens";
 
 type ProfileBalanceProps = {
@@ -9,5 +10,7 @@ type ProfileBalanceProps = {
 export function ProfileBalance({ initialTokens }: ProfileBalanceProps) {
   const { tokens } = useGetTokens();
 
-  return <p>{tokens ?? initialTokens} STKH</p>;
+  const text = `${(tokens ?? initialTokens).toLocaleString("fr-CH")} STKH`;
+
+  return <Scramble scrambleOnMount>{text}</Scramble>;
 }
