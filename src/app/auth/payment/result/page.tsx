@@ -5,8 +5,7 @@ import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
 import { loadStripe } from "@stripe/stripe-js";
 import { useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -25,6 +24,7 @@ type PaymentState =
   | "unknown";
 
 function PaymentResult() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const [state, setState] = useState<PaymentState>("loading");
@@ -84,12 +84,26 @@ function PaymentResult() {
     queryClient.invalidateQueries({ queryKey: ["store-items"] });
   }, [state, queryClient]);
 
+  useEffect(() => {
+    if (state === "succeeded") {
+      router.replace(callbackUrl ?? "/auth/profile");
+      return;
+    }
+
+    if (state === "failed" || state === "unknown") {
+      const target = callbackUrl
+        ? `/auth/payment?callbackUrl=${encodeURIComponent(callbackUrl)}`
+        : "/auth/payment";
+      router.replace(target);
+    }
+  }, [state, callbackUrl, router]);
+
   const messages: Record<PaymentState, string> = {
     loading: "Vérification de la recharge...",
-    succeeded: "Recharge réussie 🎉",
+    succeeded: "Recharge réussie 🎉 Redirection...",
     processing: "La recharge est en cours de traitement.",
-    failed: "La recharge n'a pas abouti.",
-    unknown: "Aucune recharge à vérifier.",
+    failed: "La recharge n'a pas abouti. Retour au paiement...",
+    unknown: "Aucune recharge à vérifier. Retour au paiement...",
   };
 
   return (
@@ -111,21 +125,6 @@ function PaymentResult() {
             <p className="text-sm">{messages[state]}</p>
 
             <Separator />
-
-            <div className="grid grid-cols-2 gap-2 w-full">
-              <Link
-                href={callbackUrl ?? "/store"}
-                className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
-              >
-                {callbackUrl ? "Reprendre mon achat" : "Aller au store"}
-              </Link>
-              <Link
-                href="/auth/profile"
-                className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
-              >
-                Voir mon profil
-              </Link>
-            </div>
           </div>
 
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">

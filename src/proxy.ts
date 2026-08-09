@@ -1,18 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const STRIPE_SCRIPT_SRC = "https://js.stripe.com";
 const STRIPE_CONNECT_SRC = "https://api.stripe.com https://m.stripe.network";
 const STRIPE_FRAME_SRC = "https://js.stripe.com https://hooks.stripe.com";
 
-export function proxy(request: NextRequest) {
+export function proxy() {
   const isProd = process.env.NODE_ENV === "production";
-  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
   const csp = [
     `default-src 'self'`,
-    isProd
-      ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https:`
-      : `script-src 'self' 'unsafe-eval' 'unsafe-inline' ${STRIPE_SCRIPT_SRC}`,
+    `script-src 'self' 'unsafe-inline' ${STRIPE_SCRIPT_SRC}${isProd ? "" : " 'unsafe-eval'"}`,
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob:`,
     `font-src 'self' data:`,
@@ -26,10 +23,7 @@ export function proxy(request: NextRequest) {
     ...(isProd ? [`upgrade-insecure-requests`] : []),
   ].join("; ");
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-nonce", nonce);
-
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  const response = NextResponse.next();
 
   response.headers.set("Content-Security-Policy", csp);
   response.headers.set("X-Content-Type-Options", "nosniff");

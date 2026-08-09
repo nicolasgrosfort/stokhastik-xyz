@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "docker": "docker-compose --env-file /dev/null up -d",
+    "migrate": "npx prisma migrate deploy",
+    "generate": "npx prisma generate",
     "dev": "yarn docker && next dev",
-    "build": "npx prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
