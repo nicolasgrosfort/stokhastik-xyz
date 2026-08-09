@@ -151,6 +151,7 @@ export default async function ProfilePage() {
                     />
                   ))}
                 </div>
+                <Separator />
               </>
             ) : (
               <p className="font-mono text-xs bg-background h-full w-full">
