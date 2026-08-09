@@ -25,7 +25,7 @@ export function SignUpForm() {
       lastName: "",
       email: "",
       password: "",
-      newsletter: true,
+      newsletter: false,
     },
     onSubmit: async ({ value }) => {
       setError(null);
