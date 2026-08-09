@@ -1,5 +1,6 @@
 "use client";
 
+import { Scramble } from "@/components/common/scramble";
 import { Separator } from "@/components/common/separator";
 import CheckoutForm from "@/components/payment/checkout-form";
 import { PackId, packs, tokensToCHF } from "@/libs/pack";
@@ -188,9 +189,11 @@ export default function Payment({ callbackUrl }: PaymentProps) {
             disabled={isLoading}
             className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
           >
-            {isLoading
-              ? "Chargement..."
-              : `Recharger · ${formatSwissNumber(packs.find((p) => p.id === selectedPack)?.tokens ?? 0)} STKH`}
+            <Scramble>
+              {isLoading
+                ? "Chargement..."
+                : `Recharger · ${formatSwissNumber(packs.find((p) => p.id === selectedPack)?.tokens ?? 0)} STKH`}
+            </Scramble>
           </button>
           <Link
             href={callbackUrl ?? "/auth/profile"}

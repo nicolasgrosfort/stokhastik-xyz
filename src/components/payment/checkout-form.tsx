@@ -1,11 +1,12 @@
 "use client";
 
+import { Scramble } from "@/components/common/scramble";
+import { PAYMENT_STATUS_STORAGE_KEY } from "@/libs/payment-status";
 import {
   PaymentElement,
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
-import { PAYMENT_STATUS_STORAGE_KEY } from "@/libs/payment-status";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { SubmitEvent, useState } from "react";
@@ -95,7 +96,9 @@ export default function CheckoutForm({
           disabled={!stripe || !elements || isPaying}
           className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
         >
-          {isPaying ? "Paiement…" : "Payer"}
+          <Scramble playOnMount={true}>
+            {isPaying ? "Paiement…" : "Payer"}
+          </Scramble>
         </button>
         <button
           type="button"
