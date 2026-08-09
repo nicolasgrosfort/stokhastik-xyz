@@ -15,12 +15,13 @@ async function fetchTokens(): Promise<TokensResponse> {
 
 export function useGetTokens() {
   const { status } = useSession();
-
   const { data, error, isPending } = useQuery({
     queryKey: ["user-tokens"],
     queryFn: fetchTokens,
     select: (response) => response.data.tokens,
     enabled: status === "authenticated",
+    refetchInterval: 1_000,
+    refetchIntervalInBackground: true,
   });
 
   return { tokens: data, error, isPending };
