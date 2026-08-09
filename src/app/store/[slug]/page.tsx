@@ -9,9 +9,9 @@ import { Suspense } from "react";
 export default async function ItemPage({
   params,
 }: {
-  params: Promise<{ item: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const itemSlug = (await params).item;
+  const itemSlug = (await params).slug;
   const item = await prisma.storeItem.findUnique({ where: { slug: itemSlug } });
 
   if (!item) {
@@ -83,10 +83,10 @@ export default async function ItemPage({
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ item: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const itemId = (await params).item;
-  const item = await prisma.storeItem.findUnique({ where: { id: itemId } });
+  const itemSlug = (await params).slug;
+  const item = await prisma.storeItem.findUnique({ where: { slug: itemSlug } });
 
   const baseUrl =
     process.env.NODE_ENV === "production"
