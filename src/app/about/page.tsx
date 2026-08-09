@@ -10,7 +10,7 @@ export default function AboutPage() {
           <Model
             position={2}
             rotation={Math.PI * 0.45}
-            stopRotation={true}
+            stopRotation={false}
             model="/models/banc-jardin-botanique.glb"
           />
         </div>

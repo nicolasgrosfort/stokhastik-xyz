@@ -39,7 +39,7 @@ export default async function PaymentPage({
             position={2}
             rotation={Math.PI * -0.5}
             model="/models/saisen-bako.glb"
-            stopRotation
+            stopRotation={false}
           />
         </div>
 

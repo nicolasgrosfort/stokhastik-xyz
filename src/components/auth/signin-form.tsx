@@ -60,7 +60,7 @@ export function SignInForm() {
           <Model
             position={0.5}
             rotation={Math.PI * 0.25}
-            stopRotation={true}
+            stopRotation={false}
             model="/models/hippopotamus.glb"
           />
         </div>

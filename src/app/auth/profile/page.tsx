@@ -45,7 +45,7 @@ export default async function ProfilePage() {
             position={1.25}
             rotation={Math.PI * 0.5}
             model="/models/cone-interdit-fumer.glb"
-            stopRotation
+            stopRotation={false}
           />
         </div>
 

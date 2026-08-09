@@ -10,7 +10,7 @@ export default function NotFound() {
           <Model
             position={6}
             rotation={Math.PI * 0.4}
-            stopRotation={true}
+            stopRotation={false}
             model="/models/torii-shimogamo-shina.glb"
           />
         </div>
