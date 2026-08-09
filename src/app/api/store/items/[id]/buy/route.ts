@@ -77,6 +77,7 @@ export async function POST(
           firstName: buyer.firstName ?? "",
           itemName: item.name,
           itemId: item.id,
+          itemImage: item.thumbnail,
           price: item.price,
         });
       }

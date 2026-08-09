@@ -101,15 +101,18 @@ export async function sendPurchaseEmail({
   firstName,
   itemName,
   itemId,
+  itemImage,
   price,
 }: {
   to: string;
   firstName: string;
   itemName: string;
   itemId: string;
+  itemImage: string;
   price: number;
 }) {
   const itemUrl = `${process.env.SITE_URL}/store/${itemId}`;
+  const itemImageUrl = `${process.env.SITE_URL}${itemImage}`;
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM,
@@ -120,6 +123,7 @@ export async function sendPurchaseEmail({
     html: renderEmailHtml({
       body: `
         <p style="margin: 0 0 16px;">Salut ${firstName},</p>
+        <img src="${itemImageUrl}" alt="${itemName}" width="388" style="display: block; width: 100%; max-width: 388px; margin: 0 0 16px;m">
         <p style="margin: 0 0 24px;">Ton achat de « ${itemName} » (${price} STKH) est confirmé. Merci !</p>
       `,
       ctaLabel: "Voir l'article",
