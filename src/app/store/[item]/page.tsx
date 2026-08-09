@@ -11,8 +11,8 @@ export default async function ItemPage({
 }: {
   params: Promise<{ item: string }>;
 }) {
-  const itemId = (await params).item;
-  const item = await prisma.storeItem.findUnique({ where: { id: itemId } });
+  const itemSlug = (await params).item;
+  const item = await prisma.storeItem.findUnique({ where: { slug: itemSlug } });
 
   if (!item) {
     notFound();
@@ -32,7 +32,7 @@ export default async function ItemPage({
         <div className="w-full grid grid-rows-[auto_1fr] gap-px max-h-full overflow-y-auto">
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <Suspense fallback={null}>
-              <Details id={itemId} />
+              <Details slug={itemSlug} />
             </Suspense>
           </div>
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">

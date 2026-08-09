@@ -2,6 +2,7 @@
 
 import { Scramble } from "@/components/common/scramble";
 import { useGetTokens } from "@/hooks/useGetTokens";
+import { formatSwissNumber } from "@/libs/utils";
 
 type ProfileBalanceProps = {
   initialTokens: number;
@@ -10,7 +11,7 @@ type ProfileBalanceProps = {
 export function ProfileBalance({ initialTokens }: ProfileBalanceProps) {
   const { tokens } = useGetTokens();
 
-  const text = `${(tokens ?? initialTokens).toLocaleString("fr-CH")} STKH`;
+  const text = `${formatSwissNumber(tokens ?? initialTokens)} STKH`;
 
   return <Scramble scrambleOnMount>{text}</Scramble>;
 }

@@ -2,6 +2,7 @@
 
 import { Scramble } from "@/components/common/scramble";
 import { useGetTokens } from "@/hooks/useGetTokens";
+import { formatSwissNumber } from "@/libs/utils";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,7 +38,7 @@ export const Footer = () => {
           href="https://www.tekh.studio"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:underline"
+          className="underline"
         >
           tèkh studio
         </Link>
@@ -49,9 +50,7 @@ export const Footer = () => {
           className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/payment") ? activeClassName : inactiveClassName}`}
         >
           <Scramble key={tokens ?? "pending"} scrambleOnMount>
-            {tokens !== undefined
-              ? `${tokens.toLocaleString("fr-CH")} STKH`
-              : "..."}
+            {tokens !== undefined ? `${formatSwissNumber(tokens)} STKH` : "..."}
           </Scramble>
         </Link>
       ) : (

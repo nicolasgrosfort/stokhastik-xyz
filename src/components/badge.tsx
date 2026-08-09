@@ -1,26 +1,15 @@
-import { Status } from "@/components/item";
-
-const STATUS_MAP: Record<Status, string | null> = {
-  available: null,
-  sold: "Vendu !",
-};
-
 export const Badge = ({
-  status,
+  children,
   className,
 }: {
-  status: Status;
+  children: React.ReactNode;
   className?: string;
 }) => {
-  const statusText = STATUS_MAP[status];
-
-  if (!statusText) return null;
-
   return (
     <span
       className={`bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 text-center ${className || ""}`}
     >
-      {statusText}
+      {children}
     </span>
   );
 };

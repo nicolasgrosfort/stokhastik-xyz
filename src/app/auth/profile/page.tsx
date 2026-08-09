@@ -8,6 +8,7 @@ import { H4 } from "@/components/h4";
 import { Model } from "@/components/model";
 import { authOptions } from "@/libs/auth";
 import { prisma } from "@/libs/prisma";
+import { formatSwissNumber } from "@/libs/utils";
 import { getServerSession } from "next-auth/next";
 import Image from "next/image";
 import Link from "next/link";
@@ -112,7 +113,7 @@ export default async function ProfilePage() {
                   {user.storeItems.map((item) => (
                     <Link
                       key={item.id}
-                      href={`/store/${item.id}`}
+                      href={`/store/${item.slug}`}
                       className="group aspect-square bg-background relative overflow-hidden"
                     >
                       <div className="absolute inset-x-0 top-0 p-2">
@@ -131,7 +132,7 @@ export default async function ProfilePage() {
                       <div className="absolute inset-x-0 bottom-0 p-2 flex items-center justify-between gap-2">
                         {item.price && (
                           <p className="font-mono text-xs uppercase truncate">
-                            {item.price.toLocaleString("fr-CH")} STKH
+                            {formatSwissNumber(item.price)} STKH
                           </p>
                         )}
                         {item.purchasedAt && (

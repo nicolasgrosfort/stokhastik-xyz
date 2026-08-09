@@ -1,4 +1,5 @@
 import { Scramble } from "@/components/common/scramble";
+import { formatSwissNumber } from "@/libs/utils";
 
 export const Price = ({
   price,
@@ -7,7 +8,7 @@ export const Price = ({
   price: number;
   highlighted?: boolean;
 }) => {
-  const text = `${price.toLocaleString("fr-CH")} STKH`;
+  const text = `${formatSwissNumber(price)} STKH`;
   return (
     <span
       className={`font-mono text-xs uppercase ${

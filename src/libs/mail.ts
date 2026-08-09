@@ -65,6 +65,33 @@ export async function sendWelcomeEmail({
   });
 }
 
+export async function sendVerificationEmail({
+  to,
+  firstName,
+  token,
+}: {
+  to: string;
+  firstName: string;
+  token: string;
+}) {
+  const verifyUrl = `${process.env.SITE_URL}/api/auth/verify-email?token=${token}`;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject: "Confirme ton adresse email — Stokhastik",
+    text: `Salut ${firstName},\n\nConfirme ton adresse email pour activer ton compte Stokhastik (lien valable 24h) :\n\n${verifyUrl}\n\nSi tu n'es pas à l'origine de cette demande, ignore cet email.\n\nÀ bientôt,\nNicolas.`,
+    html: renderEmailHtml({
+      body: `
+        <p style="margin: 0 0 16px;">Salut ${firstName},</p>
+        <p style="margin: 0 0 24px;">Confirme ton adresse email pour activer ton compte Stokhastik. Ce lien est valable 24h. Si tu n'es pas à l'origine de cette demande, ignore cet email.</p>
+      `,
+      ctaLabel: "Confirmer mon email",
+      ctaUrl: verifyUrl,
+    }),
+  });
+}
+
 export async function sendRechargeEmail({
   to,
   firstName,
@@ -100,18 +127,18 @@ export async function sendPurchaseEmail({
   to,
   firstName,
   itemName,
-  itemId,
+  itemSlug,
   itemImage,
   price,
 }: {
   to: string;
   firstName: string;
   itemName: string;
-  itemId: string;
+  itemSlug: string;
   itemImage: string;
   price: number;
 }) {
-  const itemUrl = `${process.env.SITE_URL}/store/${itemId}`;
+  const itemUrl = `${process.env.SITE_URL}/store/${itemSlug}`;
   const itemImageUrl = `${process.env.SITE_URL}${itemImage}`;
 
   await transporter.sendMail({

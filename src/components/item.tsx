@@ -3,33 +3,14 @@
 import { Badge } from "@/components/badge";
 import { FormatedDate } from "@/components/formated-date";
 import { Price } from "@/components/price";
+import { GetStoreItem } from "@/libs/store-item";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export type Status = "available" | "sold";
-
-export type Item = {
-  id: string;
-  name: string;
-  model: string;
-  thumbnail: string;
-  position: number;
-  rotation: number;
-  price: number;
-  description?: string;
-  date: string;
-};
-
-export type ItemWithStatus = Item & {
-  status: Status;
-  buyBy: string;
-  buyAt: string;
-};
-
-export const Item = ({ item }: { item: ItemWithStatus }) => {
+export const Item = ({ item }: { item: GetStoreItem }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [canHover, setCanHover] = useState(false);
   const router = useRouter();
@@ -43,7 +24,7 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
       className="flex flex-col items-center justify-center w-full h-full relative hover:bg-foreground/10 cursor-pointer overflow-hidden"
       onMouseEnter={() => canHover && setIsHovered(true)}
       onMouseLeave={() => canHover && setIsHovered(false)}
-      onClick={() => router.push(`/store/${item.id}`)}
+      onClick={() => router.push(`/store/${item.slug}`)}
     >
       <header className="w-full h-6 flex items-center justify-between absolute top-2 px-2">
         <p className="font-mono text-sm uppercase">{item.name}</p>
@@ -72,7 +53,7 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
               animate={{ scale: 1, opacity: 1 }}
             >
               <Link
-                href={`/store/${item.id}`}
+                href={`/store/${item.slug}`}
                 className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center"
               >
                 Fait voir !
@@ -80,11 +61,11 @@ export const Item = ({ item }: { item: ItemWithStatus }) => {
             </motion.div>
           ) : (
             <>
-              <FormatedDate date={new Date(item.date)} />
-              {item.status === "available" ? (
+              <FormatedDate date={item.releaseDate} />
+              {item.buyerId === null ? (
                 <Price price={item.price} highlighted />
               ) : (
-                <Badge status={item.status} />
+                <Badge>Vendu !</Badge>
               )}
             </>
           )}

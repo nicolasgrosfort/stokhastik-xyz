@@ -1,13 +1,14 @@
 "use client";
 
 import { Badge } from "@/components/badge";
+import { Scramble } from "@/components/common/scramble";
 import { Separator } from "@/components/common/separator";
 import { FormatedDate } from "@/components/formated-date";
 import { H3 } from "@/components/h3";
-import { Item } from "@/components/item";
 import { Price } from "@/components/price";
 import { useGetItems } from "@/hooks/useGetItems";
 import { useGetTokens } from "@/hooks/useGetTokens";
+import { GetStoreItem } from "@/libs/store-item";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
@@ -15,8 +16,8 @@ import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
 import { useState } from "react";
 
-export const Details = ({ id }: { id: Item["id"] }) => {
-  const { item, isPending } = useGetItems(id);
+export const Details = ({ slug }: { slug: GetStoreItem["slug"] }) => {
+  const { item, isPending } = useGetItems(slug);
   const { status: sessionStatus } = useSession();
   const { tokens } = useGetTokens();
   const pathname = usePathname();
@@ -26,7 +27,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
 
   const buyMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`/api/store/items/${id}/buy`, {
+      const response = await fetch(`/api/store/items/${item?.id}/buy`, {
         method: "POST",
       });
       const data = await response.json();
@@ -66,7 +67,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
 
         <div className="flex gap-4 w-full items-center justify-between text-xs">
           <span>
-            Mise en ligne le <FormatedDate date={new Date(item.date)} />
+            Mise en ligne le <FormatedDate date={item.releaseDate} />
           </span>
           <Price price={item.price} highlighted />
         </div>
@@ -75,22 +76,33 @@ export const Details = ({ id }: { id: Item["id"] }) => {
       <Separator />
 
       <div className="grid grid-cols-2 gap-4 w-full items-center">
-        {item.status === "available" ? (
+        {!item.buyerId ? (
           sessionStatus === "authenticated" ? (
             <motion.button
               onClick={handleBuyClick}
               disabled={buyMutation.isPending || insufficientTokens}
-              initial={needsConfirm ? { scale: 0.75 } : false}
-              animate={{ scale: 1 }}
+              // initial={needsConfirm ? { scale: 0.9 } : false}
+              // animate={{ scale: 1 }}
               key={needsConfirm ? "needsConfirm" : "confirm"}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
               className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background disabled:hover:no-underline"
             >
-              {buyMutation.isPending
-                ? "Achat..."
-                : needsConfirm
-                  ? "T'es sûr ?"
-                  : `Acheter · ${item.price} STKH`}
+              <Scramble
+                key={
+                  buyMutation.isPending
+                    ? "pending"
+                    : needsConfirm
+                      ? "confirm"
+                      : "default"
+                }
+                scrambleOnMount
+              >
+                {buyMutation.isPending
+                  ? "Achat..."
+                  : needsConfirm
+                    ? "T'es sûr ?"
+                    : `Acheter · ${item.price} STKH`}
+              </Scramble>
             </motion.button>
           ) : (
             <Link
@@ -101,10 +113,9 @@ export const Details = ({ id }: { id: Item["id"] }) => {
             </Link>
           )
         ) : (
-          <Badge
-            status={item.status}
-            className="w-full bg-foreground text-background! opacity-70"
-          />
+          <Badge className="w-full bg-foreground text-background! opacity-70">
+            Vendu !
+          </Badge>
         )}
         {needsConfirm ? (
           <button
@@ -123,7 +134,7 @@ export const Details = ({ id }: { id: Item["id"] }) => {
         )}
       </div>
 
-      {item.status === "available" && insufficientTokens && (
+      {!item.buyerId && insufficientTokens && (
         <p className="text-xs mt-1">
           Solde insuffisant pour cet achat.{" "}
           <Link
@@ -137,10 +148,10 @@ export const Details = ({ id }: { id: Item["id"] }) => {
 
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
 
-      {item.status === "sold" && (
+      {item.buyerId && item.purchasedAt && (
         <p className="text-xs mt-1">
-          Acheté par {item.buyBy} le{" "}
-          <FormatedDate date={new Date(item.buyAt)} />
+          Acheté par {item.buyer?.firstName} le{" "}
+          <FormatedDate date={item.purchasedAt} />
         </p>
       )}
     </>

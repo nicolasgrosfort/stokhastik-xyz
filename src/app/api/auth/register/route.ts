@@ -1,10 +1,24 @@
-import { sendWelcomeEmail } from "@/libs/mail";
+import { sendVerificationEmail } from "@/libs/mail";
 import { prisma } from "@/libs/prisma";
+import { getClientIp, isRateLimited } from "@/libs/rate-limit";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+
+const GENERIC_MESSAGE =
+  "Si cet email n'est pas déjà utilisé, tu vas recevoir un email de confirmation.";
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+
+    if (isRateLimited(`register:${ip}`, { limit: 5, windowMs: 15 * 60_000 })) {
+      return NextResponse.json(
+        { error: "Trop de tentatives. Réessaie dans quelques minutes." },
+        { status: 429 },
+      );
+    }
+
     const body: unknown = await request.json();
 
     if (
@@ -32,35 +46,54 @@ export async function POST(request: NextRequest) {
     const { email, password, firstName, lastName } = body;
     const newsletter = "newsletter" in body && body.newsletter === true;
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-
-    if (existingUser) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: "Un compte existe déjà avec cet email." },
-        { status: 409 },
+        { error: "Le mot de passe doit contenir au moins 8 caractères." },
+        { status: 400 },
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const existingUser = await prisma.user.findUnique({ where: { email } });
 
-    await prisma.user.create({
-      data: {
-        email,
-        firstName,
-        lastName,
-        name: `${firstName} ${lastName}`,
-        password: hashedPassword,
-        newsletter,
-      },
-    });
-
-    try {
-      await sendWelcomeEmail({ to: email, firstName });
-    } catch (error) {
-      console.error("Erreur envoi email de bienvenue :", error);
+    if (existingUser?.emailVerified) {
+      return NextResponse.json({ ok: true, message: GENERIC_MESSAGE });
     }
 
-    return NextResponse.json({ ok: true });
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60_000);
+
+    const data = {
+      email,
+      firstName,
+      lastName,
+      name: `${firstName} ${lastName}`,
+      password: hashedPassword,
+      newsletter,
+      emailVerificationToken: verificationToken,
+      emailVerificationTokenExpiresAt: verificationTokenExpiresAt,
+    };
+
+    // Compte existant mais jamais vérifié : on le "réclame" (nouveau mot de
+    // passe + nouveau token) plutôt que de bloquer, pour permettre au vrai
+    // propriétaire de l'email de reprendre la main sur un compte squatté.
+    if (existingUser) {
+      await prisma.user.update({ where: { id: existingUser.id }, data });
+    } else {
+      await prisma.user.create({ data });
+    }
+
+    try {
+      await sendVerificationEmail({
+        to: email,
+        firstName,
+        token: verificationToken,
+      });
+    } catch (error) {
+      console.error("Erreur envoi email de vérification :", error);
+    }
+
+    return NextResponse.json({ ok: true, message: GENERIC_MESSAGE });
   } catch (error) {
     console.error("Erreur register :", error);
 

@@ -3,6 +3,7 @@
 import { Separator } from "@/components/common/separator";
 import CheckoutForm from "@/components/payment/checkout-form";
 import { PackId, packs, tokensToCHF } from "@/libs/pack";
+import { formatSwissNumber } from "@/libs/utils";
 import { Elements } from "@stripe/react-stripe-js";
 import {
   Appearance,
@@ -166,7 +167,7 @@ export default function Payment({ callbackUrl }: PaymentProps) {
               ].join(" ")}
             >
               <span className="block font-semibold">
-                {pack.tokens.toLocaleString("fr-CH")}
+                {formatSwissNumber(pack.tokens)}
               </span>
               <span className="block font-mono text-xs uppercase">STKH</span>
               <span className="mt-4 block text-sm">
@@ -189,7 +190,7 @@ export default function Payment({ callbackUrl }: PaymentProps) {
           >
             {isLoading
               ? "Chargement..."
-              : `Recharger · ${(packs.find((p) => p.id === selectedPack)?.tokens ?? 0).toLocaleString("fr-CH")} STKH`}
+              : `Recharger · ${formatSwissNumber(packs.find((p) => p.id === selectedPack)?.tokens ?? 0)} STKH`}
           </button>
           <Link
             href={callbackUrl ?? "/auth/profile"}

@@ -12,20 +12,20 @@ enum Role {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  firstName     String?
-  lastName      String?
-  username      String?       @unique
-  email         String?       @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  newsletter    Boolean       @default(false)
-  tokens        Int           @default(0)
-  role          Role          @default(USER)
-  transactions  Transaction[]
-  storeItems    StoreItem[]
+  id                              String        @id @default(cuid())
+  name                            String?
+  firstName                       String?
+  lastName                        String?
+  email                           String?       @unique
+  emailVerified                   DateTime?
+  emailVerificationToken          String?       @unique
+  emailVerificationTokenExpiresAt DateTime?
+  password                        String?
+  newsletter                      Boolean       @default(false)
+  tokens                          Int           @default(0)
+  role                            Role          @default(USER)
+  transactions                    Transaction[]
+  storeItems                      StoreItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -33,6 +33,7 @@ model User {
 
 model StoreItem {
   id          String   @id @default(cuid())
+  slug        String   @unique
   name        String
   description String?  @db.Text
   model       String

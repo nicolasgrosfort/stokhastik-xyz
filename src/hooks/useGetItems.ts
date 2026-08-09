@@ -1,9 +1,9 @@
-import { Item, ItemWithStatus } from "@/components/item";
+import { GetStoreItem } from "@/libs/store-item";
 import { useQuery } from "@tanstack/react-query";
 
 type ItemsResponse = {
   success: boolean;
-  data: ItemWithStatus[];
+  data: GetStoreItem[];
 };
 
 async function fetchItems(): Promise<ItemsResponse> {
@@ -13,7 +13,7 @@ async function fetchItems(): Promise<ItemsResponse> {
   return response.json();
 }
 
-export function useGetItems(id: Item["id"] | null = null) {
+export function useGetItems(slug: GetStoreItem["slug"] | null = null) {
   const { data, error, isPending, isFetching } = useQuery({
     queryKey: ["store-items"],
     queryFn: fetchItems,
@@ -24,8 +24,8 @@ export function useGetItems(id: Item["id"] | null = null) {
 
   const items = data ?? [];
 
-  if (id) {
-    const item = items.find((item) => item.id === id);
+  if (slug) {
+    const item = items.find((item) => item.slug === slug);
     return { items, item, error, isPending, isFetching };
   }
 

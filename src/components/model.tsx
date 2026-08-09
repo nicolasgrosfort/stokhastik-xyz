@@ -1,6 +1,6 @@
 "use client";
 
-import { Item } from "@/components/item";
+import { GetStoreItem } from "@/libs/store-item";
 import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
@@ -14,8 +14,8 @@ const Object = ({
   model,
   rotation,
 }: {
-  model: Item["model"];
-  rotation: Item["rotation"];
+  model: GetStoreItem["model"];
+  rotation: GetStoreItem["rotation"];
   stopRotation?: boolean;
 }) => {
   const result = useLoader(GLTFLoader, model, (loader) => {
@@ -42,9 +42,9 @@ export const Model = ({
   model,
   stopRotation,
 }: {
-  position: Item["position"];
-  rotation: Item["rotation"];
-  model: Item["model"];
+  position: GetStoreItem["position"];
+  rotation: GetStoreItem["rotation"];
+  model: GetStoreItem["model"];
   stopRotation?: boolean;
 }) => {
   const [isControlling, setIsControlling] = useState(false);

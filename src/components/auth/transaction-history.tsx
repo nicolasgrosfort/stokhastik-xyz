@@ -1,4 +1,5 @@
 import { FormatedDate } from "@/components/formated-date";
+import { formatSwissNumber } from "@/libs/utils";
 import { Transaction } from "@prisma/client";
 
 const statusLabels = {
@@ -46,7 +47,7 @@ export function TransactionHistory({
 
           <span className="text-right text-ellipsis overflow-hidden whitespace-nowrap">
             {entry.tokens >= 0 ? "+" : ""}
-            {entry.tokens.toLocaleString("fr-CH")} STKH
+            {formatSwissNumber(entry.tokens)} STKH
           </span>
         </div>
       ))}

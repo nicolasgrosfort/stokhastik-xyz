@@ -7,6 +7,7 @@ import { ToggleGroup } from "@/components/toggle-group";
 import { useGetItems } from "@/hooks/useGetItems";
 import { useStoreFilters } from "@/hooks/useStoreFilters";
 import { tokensToCHF } from "@/libs/pack";
+import { formatSwissNumber } from "@/libs/utils";
 import { useMemo } from "react";
 
 export default function StorePage() {
@@ -14,15 +15,11 @@ export default function StorePage() {
   const { sortKey, statusFilter, setSortKey, setStatusFilter } =
     useStoreFilters();
 
-  const soldItems = items?.filter((item) => item.status === "sold") ?? [];
-  const availableItems =
-    items?.filter((item) => item.status === "available") ?? [];
+  const soldItems = items?.filter((item) => item.buyerId) ?? [];
+  const availableItems = items?.filter((item) => !item.buyerId) ?? [];
 
   const totalSupport =
-    items?.reduce(
-      (acc, item) => acc + (item.status === "sold" ? item.price : 0),
-      0,
-    ) ?? 0;
+    items?.reduce((acc, item) => acc + (item.buyerId ? item.price : 0), 0) ?? 0;
 
   const displayedItems = useMemo(() => {
     const filtered =
@@ -40,7 +37,9 @@ export default function StorePage() {
           return a.name.localeCompare(b.name);
         case "date":
         default:
-          return (b.date ?? "").localeCompare(a.date ?? "");
+          return (b.releaseDate ?? "")
+            .toString()
+            .localeCompare((a.releaseDate ?? "").toString());
       }
     });
   }, [items, availableItems, soldItems, statusFilter, sortKey]);
@@ -98,8 +97,19 @@ export default function StorePage() {
             ))}
           </>
         ) : (
-          <div className="col-span-full text-center bg-background font-mono text-xs uppercase p-4">
+          <div className="col-span-full text-center bg-background font-mono text-xs p-4">
             Aucun article ne correspond aux filtres sélectionnés.
+            <br />
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter("all");
+                setSortKey("date");
+              }}
+              className=" text-xs underline cursor-pointer"
+            >
+              Réinitialiser les filtres
+            </button>
           </div>
         )}
       </div>
@@ -109,7 +119,7 @@ export default function StorePage() {
           {items.length} total
         </p>
         <p className="font-mono text-xs text-center">
-          soutien {tokensToCHF(totalSupport).toLocaleString("fr-CH")} CHF |{" "}
+          soutien {formatSwissNumber(tokensToCHF(totalSupport))} CHF |{" "}
           <Price price={totalSupport} />{" "}
         </p>
       </div>

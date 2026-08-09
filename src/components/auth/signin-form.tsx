@@ -11,10 +11,18 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+const errorMessages: Record<string, string> = {
+  EMAIL_NOT_VERIFIED:
+    "Confirme ton adresse email avant de te connecter (vérifie ta boîte mail).",
+  TOO_MANY_ATTEMPTS: "Trop de tentatives. Réessaie dans quelques minutes.",
+};
+
 export function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+  const justVerified = searchParams.get("verified") === "1";
+  const verifyFailed = searchParams.get("verifyError") === "1";
 
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +40,9 @@ export function SignInForm() {
         });
 
         if (res?.error) {
-          setError("Email ou mot de passe incorrect.");
+          setError(
+            errorMessages[res.error] ?? "Email ou mot de passe incorrect.",
+          );
           return;
         }
 
@@ -58,6 +68,19 @@ export function SignInForm() {
         <div className="w-full grid grid-rows-[auto_1fr] gap-px max-h-full overflow-y-auto">
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3 className="uppercase">Connexion</H3>
+
+            {justVerified && (
+              <p className="text-xs font-mono text-green-600">
+                Email confirmé, tu peux te connecter.
+              </p>
+            )}
+
+            {verifyFailed && (
+              <p className="text-xs font-mono text-red-500">
+                Lien de confirmation invalide ou expiré. Recrée un compte avec
+                le même email pour recevoir un nouveau lien.
+              </p>
+            )}
 
             <Form
               onSubmit={() => {

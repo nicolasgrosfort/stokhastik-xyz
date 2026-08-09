@@ -7,17 +7,12 @@ import { H3 } from "@/components/h3";
 import { Model } from "@/components/model";
 import { TextField } from "@/components/text-field";
 import { useForm } from "@tanstack/react-form";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export function SignUpForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
-
   const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -44,19 +39,7 @@ export function SignUpForm() {
           return;
         }
 
-        const signInRes = await signIn("credentials", {
-          email: value.email,
-          password: value.password,
-          redirect: false,
-          callbackUrl,
-        });
-
-        if (signInRes?.error) {
-          setError("Compte créé, mais la connexion automatique a échoué.");
-          return;
-        }
-
-        router.push(callbackUrl);
+        setSubmitted(true);
       } catch {
         setError("Un erreur s'est produite.");
       }
@@ -79,6 +62,13 @@ export function SignUpForm() {
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3 className="uppercase text-left">Créer un compte</H3>
 
+            {submitted ? (
+              <p className="text-xs font-mono">
+                Si cet email n&apos;est pas déjà utilisé, tu vas recevoir un
+                email de confirmation. Clique sur le lien qu&apos;il contient
+                pour activer ton compte et te connecter.
+              </p>
+            ) : (
             <Form
               onSubmit={() => {
                 form.handleSubmit();
@@ -169,6 +159,7 @@ export function SignUpForm() {
                 </form.Subscribe>
               </div>
             </Form>
+            )}
           </div>
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             {" "}
