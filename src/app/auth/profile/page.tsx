@@ -4,6 +4,7 @@ import { SignOutButton } from "@/components/auth/signout-button";
 import { Separator } from "@/components/common/separator";
 import { FormatedDate } from "@/components/formated-date";
 import { H3 } from "@/components/h3";
+import { H4 } from "@/components/h4";
 import { Model } from "@/components/model";
 import { authOptions } from "@/libs/auth";
 import { prisma } from "@/libs/prisma";
@@ -101,10 +102,12 @@ export default async function ProfilePage() {
             </div>
           </div>
 
-          <div className="h-full flex flex-col items-start justify-start flex-1 bg-background">
-            <H3 className="uppercase text-left p-4">Bibliothèque</H3>
+          <div className="h-full flex flex-col items-start justify-start flex-1 bg-foreground gap-px">
+            <H4 className="uppercase text-left p-4 bg-background w-full">
+              Mes items
+            </H4>
             {user.storeItems.length > 0 ? (
-              <div className="grid grid-cols-3 gap-px bg-foreground w-full border-y border-foreground border-px">
+              <div className="grid grid-cols-3 gap-px bg-foreground w-full ">
                 {user.storeItems.map((item) => (
                   <Link
                     key={item.id}
