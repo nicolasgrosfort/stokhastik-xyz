@@ -1,5 +1,6 @@
 "use client";
 
+import { Scramble } from "@/components/common/scramble";
 import { Item } from "@/components/item";
 import { Price } from "@/components/price";
 import { ToggleGroup } from "@/components/toggle-group";
@@ -44,6 +45,14 @@ export default function StorePage() {
     });
   }, [items, availableItems, soldItems, statusFilter, sortKey]);
 
+  if (isPending) {
+    return (
+      <div className="w-full h-full text-center bg-background font-mono text-xs uppercase p-4">
+        <Scramble scrambleOnMount={true}>Chargement...</Scramble>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-rows-[auto_auto_minmax(0,1fr)_auto] min-h-full">
       <div className="text-foreground font-mono text-xs uppercase border-b border-px border-foreground grid grid-cols-2 sm:grid-cols-4 gap-px items-center justify-items-center bg-foreground sticky top-0 z-10">
@@ -71,11 +80,7 @@ export default function StorePage() {
         </div>
       </div>
       <div className="grid content-start gap-px bg-foreground grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 h-full">
-        {isPending ? (
-          <p className="col-span-full text-center bg-background font-mono text-xs uppercase p-4">
-            Chargement...
-          </p>
-        ) : displayedItems.length > 0 ? (
+        {displayedItems.length > 0 ? (
           <>
             {displayedItems.map((item) => (
               <article key={item.id} className="aspect-3/4 bg-background ">
@@ -93,9 +98,9 @@ export default function StorePage() {
             ))}
           </>
         ) : (
-          <p className="col-span-full text-center bg-background font-mono text-xs uppercase p-4">
+          <div className="col-span-full text-center bg-background font-mono text-xs uppercase p-4">
             Aucun article ne correspond aux filtres sélectionnés.
-          </p>
+          </div>
         )}
       </div>
       <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-2 h-fit min-h-full gap-1 sticky bottom-0">

@@ -1,6 +1,8 @@
 import { Details } from "@/components/details";
+import { H4 } from "@/components/h4";
 import { Model } from "@/components/model";
 import { prisma } from "@/libs/prisma";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -34,9 +36,39 @@ export default async function ItemPage({
             </Suspense>
           </div>
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
-            <p className="text-xs">
-              Chaque item est unique et ne peut être acheté qu'une seule
-              fois.{" "}
+            <H4 className="uppercase text-left">Comment ça marche ?</H4>
+            <ul className="text-xs list-decimal list-outside pl-6 flex flex-col gap-1 text-pretty">
+              <li>
+                Chaque item est unique et ne peut être acheté qu'une seule fois.
+              </li>
+              <li>
+                Après l'achat, l'item sera virtuellement disponible dans{" "}
+                <Link href="/auth/profile" className="underline">
+                  ton profil
+                </Link>
+                .
+              </li>
+              <li>
+                Tu recevras physiquement l'item à mon retour du Japon, à partir
+                d'octobre 2026.
+              </li>
+              <li>
+                La différence entre le prix d'achat de l'objet et son prix de
+                vente contribue à financer ce projet de recherche et mon séjour
+                d'études au Japon.
+              </li>
+            </ul>
+            <p className="font-mono text-xs text-left text-pretty">
+              De nouveaux items seront ajoutés régulièrement tout au long de mon
+              séjour. Tu peux t'inscrire aux nouveautés pour être prévenu·e lors
+              de leur mise en ligne.
+            </p>
+            <p className="font-mono text-xs text-left text-pretty">
+              Pour toute question ou en cas de problème, tu peux me contacter à
+              l'adresse suivante{" "}
+              <Link href="mailto:hey@tekh.studio" className="underline">
+                hey[@]tekh.studio
+              </Link>
             </p>
           </div>
         </div>

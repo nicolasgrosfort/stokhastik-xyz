@@ -44,8 +44,8 @@ export default function AboutPage() {
           <div className="h-full flex flex-col items-start justify-start p-4 gap-4 flex-1 bg-background">
             <H3>ME CONTACTER</H3>
             <p className="font-mono text-sm text-left text-pretty">
-              Pour toute question ou en cas de problème, vous pouvez me
-              contacter à l’adresse suivante{" "}
+              Pour toute question ou en cas de problème, tu peux me contacter à
+              l'adresse suivante{" "}
               <Link href="mailto:hey@tekh.studio" className="underline">
                 hey[@]tekh.studio
               </Link>
