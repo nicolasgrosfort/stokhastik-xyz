@@ -81,22 +81,10 @@ export const Details = ({ slug }: { slug: GetStoreItem["slug"] }) => {
             <motion.button
               onClick={handleBuyClick}
               disabled={buyMutation.isPending || insufficientTokens}
-              // initial={needsConfirm ? { scale: 0.9 } : false}
-              // animate={{ scale: 1 }}
-              key={needsConfirm ? "needsConfirm" : "confirm"}
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background disabled:hover:no-underline"
             >
-              <Scramble
-                key={
-                  buyMutation.isPending
-                    ? "pending"
-                    : needsConfirm
-                      ? "confirm"
-                      : "default"
-                }
-                scrambleOnMount
-              >
+              <Scramble>
                 {buyMutation.isPending
                   ? "Achat..."
                   : needsConfirm

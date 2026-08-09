@@ -13,5 +13,5 @@ export function ProfileBalance({ initialTokens }: ProfileBalanceProps) {
 
   const text = `${formatSwissNumber(tokens ?? initialTokens)} STKH`;
 
-  return <Scramble scrambleOnMount>{text}</Scramble>;
+  return <Scramble>{text}</Scramble>;
 }
