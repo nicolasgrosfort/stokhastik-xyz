@@ -108,13 +108,7 @@ export function PaymentStatusMessage({
 
   return (
     <p role="status" className={className}>
-      {status ? (
-        <Scramble key={status} scrambleOnMount>
-          {messages[status]}
-        </Scramble>
-      ) : (
-        fallback
-      )}
+      {status ? <Scramble>{messages[status]}</Scramble> : fallback}
     </p>
   );
 }

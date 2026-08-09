@@ -47,7 +47,7 @@ export default function StorePage() {
   if (isPending) {
     return (
       <div className="w-full h-full text-center bg-background font-mono text-xs uppercase p-4">
-        <Scramble scrambleOnMount={true}>Chargement...</Scramble>
+        <Scramble>Chargement...</Scramble>
       </div>
     );
   }

@@ -1,6 +1,12 @@
 import { useScramble } from "use-scramble";
 
-export const Scramble = ({ children }: { children: string }) => {
+export const Scramble = ({
+  children,
+  playOnMount = false,
+}: {
+  children: string;
+  playOnMount?: boolean;
+}) => {
   const { ref, replay } = useScramble({
     text: children,
     speed: 0.5,
@@ -9,7 +15,7 @@ export const Scramble = ({ children }: { children: string }) => {
     overflow: true,
     seed: 8,
     overdrive: true,
-    playOnMount: false,
+    playOnMount: playOnMount,
   });
   return <span ref={ref} onMouseOver={replay} onFocus={replay} />;
 };

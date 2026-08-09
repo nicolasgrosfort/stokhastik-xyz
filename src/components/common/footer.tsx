@@ -22,16 +22,14 @@ export const Footer = () => {
 
   const credit = (
     <>
-      <Scramble scrambleOnMount>Fait avec ❤️ par </Scramble>
+      <Scramble>Fait avec ❤️ par </Scramble>
       <Link
         href="https://www.tekh.studio"
         target="_blank"
         rel="noopener noreferrer"
         className="underline"
       >
-        <Scramble scrambleOnMount underline>
-          tèkh studio
-        </Scramble>
+        <Scramble>tèkh studio</Scramble>
       </Link>
     </>
   );
@@ -62,7 +60,7 @@ export const Footer = () => {
           href="/auth/payment"
           className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/payment") ? activeClassName : inactiveClassName}`}
         >
-          <Scramble key={tokens ?? "pending"} scrambleOnMount>
+          <Scramble key={tokens ?? "pending"}>
             {tokens !== undefined ? `${formatSwissNumber(tokens)} STKH` : "..."}
           </Scramble>
         </Link>
