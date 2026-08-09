@@ -60,8 +60,11 @@ export default async function ItemPage({
             </ul>
             <p className="font-mono text-xs text-left text-pretty">
               De nouveaux items seront ajoutés régulièrement tout au long de mon
-              séjour. Tu peux t'inscrire aux nouveautés pour être prévenu·e lors
-              de leur mise en ligne.
+              séjour. Tu peux{" "}
+              <Link href="/auth/profile" className="underline">
+                t'inscrire à la newsletter
+              </Link>{" "}
+              pour être prévenu·e lors de leur mise en ligne.
             </p>
             <p className="font-mono text-xs text-left text-pretty">
               Pour toute question ou en cas de problème, tu peux me contacter à
