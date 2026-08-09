@@ -1,4 +1,5 @@
 import { ProfileBalance } from "@/components/auth/profile-balance";
+import { ProfileNewsletter } from "@/components/auth/profile-newsletter";
 import { SignOutButton } from "@/components/auth/signout-button";
 import { Separator } from "@/components/common/separator";
 import { FormatedDate } from "@/components/formated-date";
@@ -33,8 +34,6 @@ export default async function ProfilePage() {
   if (!user) {
     redirect("/auth/signin?callbackUrl=/auth/profile");
   }
-
-  const history = user.transactions;
 
   return (
     <section className="text-foreground h-full w-full min-h-0">
@@ -82,6 +81,10 @@ export default async function ProfilePage() {
                   </Link>
                 </div>
               )}
+
+              <div>
+                <ProfileNewsletter initialNewsletter={user.newsletter} />
+              </div>
 
               <Separator />
 
