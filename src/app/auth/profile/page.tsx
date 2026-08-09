@@ -102,56 +102,58 @@ export default async function ProfilePage() {
             </div>
           </div>
 
-          <div className="h-full flex flex-col items-start justify-start flex-1 bg-foreground gap-px">
-            <H4 className="uppercase text-left p-4 bg-background w-full">
-              Mes items
-            </H4>
-            {user.storeItems.length > 0 ? (
-              <div className="grid grid-cols-3 gap-px bg-foreground w-full ">
-                {user.storeItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`/store/${item.id}`}
-                    className="group aspect-square bg-background relative overflow-hidden"
-                  >
-                    <div className="absolute inset-x-0 top-0 p-2">
-                      <p className="font-mono text-xs uppercase truncate">
-                        {item.name}
-                      </p>
-                    </div>
-                    <Image
-                      src={item.thumbnail}
-                      alt={item.name}
-                      fill
-                      draggable={false}
-                      className="object-cover transition-transform duration-300 group-hover:scale-110"
-                      sizes="(max-width: 639px) 33vw, 186px"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 p-2 flex items-center justify-between gap-2">
-                      {item.price && (
-                        <p className="font-mono text-xs uppercase truncate">
-                          {item.price.toLocaleString("fr-CH")} STKH
-                        </p>
-                      )}
-                      {item.purchasedAt && (
-                        <FormatedDate date={item.purchasedAt} />
-                      )}
-                    </div>
-                  </Link>
-                ))}
+          <div className="h-full flex flex-col items-start justify-start flex-1 bg-background p-4 gap-2">
+            <H4 className="uppercase text-left">Mes items</H4>
 
-                {Array.from({
-                  length: (3 - (user.storeItems.length % 3)) % 3,
-                }).map((_, index) => (
-                  <div
-                    key={`filler-${index}`}
-                    className="aspect-square bg-background"
-                  />
-                ))}
-              </div>
+            {user.storeItems.length > 0 ? (
+              <>
+                <Separator />
+                <div className="grid grid-cols-3 gap-px bg-foreground w-full ">
+                  {user.storeItems.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/store/${item.id}`}
+                      className="group aspect-square bg-background relative overflow-hidden"
+                    >
+                      <div className="absolute inset-x-0 top-0 p-2">
+                        <p className="font-mono text-xs uppercase truncate">
+                          {item.name}
+                        </p>
+                      </div>
+                      <Image
+                        src={item.thumbnail}
+                        alt={item.name}
+                        fill
+                        draggable={false}
+                        className="object-cover transition-transform duration-300 group-hover:scale-110"
+                        sizes="(max-width: 639px) 33vw, 186px"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 p-2 flex items-center justify-between gap-2">
+                        {item.price && (
+                          <p className="font-mono text-xs uppercase truncate">
+                            {item.price.toLocaleString("fr-CH")} STKH
+                          </p>
+                        )}
+                        {item.purchasedAt && (
+                          <FormatedDate date={item.purchasedAt} />
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+
+                  {Array.from({
+                    length: (3 - (user.storeItems.length % 3)) % 3,
+                  }).map((_, index) => (
+                    <div
+                      key={`filler-${index}`}
+                      className="aspect-square bg-background"
+                    />
+                  ))}
+                </div>
+              </>
             ) : (
-              <p className="font-mono text-xs uppercase">
-                Aucun objet acheté pour le moment.
+              <p className="font-mono text-xs bg-background h-full w-full">
+                Aucun item acheté pour le moment.
               </p>
             )}
           </div>
