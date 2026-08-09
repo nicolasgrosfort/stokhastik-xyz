@@ -1,11 +1,13 @@
 "use client";
 
+import { PaymentStatusMessage } from "@/components/common/payment-status-message";
 import { Scramble } from "@/components/common/scramble";
 import { useGetTokens } from "@/hooks/useGetTokens";
 import { formatSwissNumber } from "@/libs/utils";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 
 export const Footer = () => {
   const pathname = usePathname();
@@ -14,6 +16,25 @@ export const Footer = () => {
 
   const activeClassName = "bg-foreground text-background";
   const inactiveClassName = "bg-background text-foreground";
+
+  const creditClassName =
+    "bg-background col-span-2 font-mono text-xs text-center gap-2 py-2 h-full flex items-center justify-center sm:col-span-2 xl:col-span-6 order-last sm:order-0 p-2";
+
+  const credit = (
+    <>
+      <Scramble scrambleOnMount>Fait avec ❤️ par </Scramble>
+      <Link
+        href="https://www.tekh.studio"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline"
+      >
+        <Scramble scrambleOnMount underline>
+          tèkh studio
+        </Scramble>
+      </Link>
+    </>
+  );
 
   return (
     <footer className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-px bg-foreground border-t border-px border-foreground">
@@ -32,17 +53,9 @@ export const Footer = () => {
           CONNEXION
         </Link>
       )}
-      <p className="bg-background col-span-2 font-mono text-xs text-center gap-2 py-2 h-full flex items-center justify-center sm:col-span-2 xl:col-span-6 order-last sm:order-0 p-2">
-        Fait avec ❤️ par{" "}
-        <Link
-          href="https://www.tekh.studio"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline"
-        >
-          tèkh studio
-        </Link>
-      </p>
+      <Suspense fallback={<p className={creditClassName}>{credit}</p>}>
+        <PaymentStatusMessage className={creditClassName} fallback={credit} />
+      </Suspense>
 
       {session ? (
         <Link

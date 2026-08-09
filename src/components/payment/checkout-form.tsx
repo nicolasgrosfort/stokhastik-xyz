@@ -5,6 +5,9 @@ import {
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
+import { PAYMENT_STATUS_STORAGE_KEY } from "@/libs/payment-status";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { SubmitEvent, useState } from "react";
 
 type CheckoutFormProps = {
@@ -18,6 +21,8 @@ export default function CheckoutForm({
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [isPaying, setIsPaying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -32,16 +37,15 @@ export default function CheckoutForm({
     setMessage(null);
 
     try {
-      const returnUrl = new URL("/auth/payment/result", window.location.origin);
-      if (callbackUrl) {
-        returnUrl.searchParams.set("callbackUrl", callbackUrl);
-      }
+      const target = callbackUrl ?? "/auth/profile";
+      const returnUrl = new URL(target, window.location.origin);
 
-      const { error } = await stripe.confirmPayment({
+      const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: returnUrl.toString(),
         },
+        redirect: "if_required",
       });
 
       if (error) {
@@ -49,9 +53,20 @@ export default function CheckoutForm({
         return;
       }
 
-      setMessage(
-        "Paiement envoyé. La confirmation définitive arrivera par le webhook.",
-      );
+      if (paymentIntent?.status === "succeeded") {
+        queryClient.invalidateQueries({ queryKey: ["user-tokens"] });
+        queryClient.invalidateQueries({ queryKey: ["store-items"] });
+        sessionStorage.setItem(PAYMENT_STATUS_STORAGE_KEY, "succeeded");
+        router.push(target);
+        return;
+      }
+
+      if (paymentIntent?.status === "processing") {
+        setMessage("La recharge est en cours de traitement.");
+        return;
+      }
+
+      setMessage("Le paiement n'a pas abouti.");
     } catch (error) {
       console.error(error);
       setMessage("Une erreur est survenue pendant le paiement.");
