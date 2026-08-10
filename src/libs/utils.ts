@@ -17,6 +17,15 @@ export const formatSwissNumber = (value: number): string => {
     .join("");
 };
 
+export const slugify = (value: string): string =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 export const padArray = <T>(arr: T[], length: number, blankSlot: T): T[] => {
   const newArr = [...arr];
   while (newArr.length < length) {
