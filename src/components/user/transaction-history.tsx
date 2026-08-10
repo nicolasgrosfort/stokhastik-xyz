@@ -1,20 +1,10 @@
 import { FormatedDate } from "@/components/common/formated-date";
+import {
+  transactionStatusLabels as statusLabels,
+  transactionTypeLabels as typeLabels,
+} from "@/libs/transaction";
 import { formatSwissNumber } from "@/libs/utils";
 import { Transaction } from "@prisma/client";
-
-const statusLabels = {
-  PENDING: "En attente",
-  SUCCEEDED: "Réussi",
-  FAILED: "Échoué",
-};
-
-const typeLabels = {
-  PURCHASE: "Recharge",
-  SPEND: "Achat",
-  REFUND: "Remboursement",
-  BONUS: "Bonus",
-  ADJUSTMENT: "Ajustement",
-};
 
 export function TransactionHistory({
   transactions,
