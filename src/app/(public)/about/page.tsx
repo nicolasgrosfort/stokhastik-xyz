@@ -1,11 +1,11 @@
-import { H3 } from "@/components/h3";
-import { Model } from "@/components/model";
+import { H3 } from "@/components/common/h3";
+import { Model } from "@/components/common/model";
 import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <div className="text-foreground h-full w-full min-h-0">
-      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(40%,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,40%)] sm:grid-rows-1 grid-rows-[minmax(40%,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
         <div className="bg-background w-full h-full min-h-0">
           <Model
             position={2}
@@ -20,9 +20,10 @@ export default function AboutPage() {
             <H3 className="uppercase text-left">LA PLATEFORME</H3>
             <p className="font-mono text-sm text-left text-pretty">
               <i>STOKHASTIK</i> est une plateforme expérimentale qui accompagne
-              mon mémoire de Master en Media Design à la HEAD – Genève et
-              documente mon séjour de recherche à Kyoto, de juillet à septembre
-              2026. Elle évoluera progressivement au fil de mes découvertes,
+              ma thèse de Master en Media Design à la HEAD – Genève et documente
+              mon séjour de recherche à Kyoto, de juillet à septembre 2026.
+              <br />
+              La plateforme évoluera progressivement au fil de mes découvertes,
               rencontres et expérimentations, à travers différents médiums et
               formes de participation.
             </p>
@@ -33,11 +34,12 @@ export default function AboutPage() {
             <p className="font-mono text-sm text-left text-pretty">
               Le store est une manière de partager des fragments de mon séjour -
               objets, trouvailles et expériences gustatives - tout en
-              contribuant au financement de cette recherche. Chaque item nourrit
-              également le projet, notamment à travers sa documentation, sa
-              numérisation et son exploration technique. Les objets sont
-              uniques, disponibles en un seul exemplaire, et seront distribués à
-              mon retour début octobre 2026.
+              contribuant au financement de ce projet.
+              <br />
+              Chaque item nourrit également le projet, notamment à travers sa
+              documentation, sa numérisation et son exploration technique. Les
+              objets sont uniques, disponibles en un seul exemplaire, et seront
+              distribués à mon retour début octobre 2026.
             </p>
           </div>
 

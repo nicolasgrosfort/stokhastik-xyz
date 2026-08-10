@@ -46,7 +46,7 @@ export async function sendWelcomeEmail({
   to: string;
   firstName: string;
 }) {
-  const accountUrl = `${process.env.SITE_URL}/auth/profile`;
+  const accountUrl = `${process.env.SITE_URL}/user/profile`;
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM,
@@ -104,7 +104,7 @@ export async function sendRechargeEmail({
   amount: number;
 }) {
   const chf = (amount / 100).toFixed(2);
-  const accountUrl = `${process.env.SITE_URL}/auth/profile`;
+  const accountUrl = `${process.env.SITE_URL}/user/profile`;
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM,

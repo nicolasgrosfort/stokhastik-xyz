@@ -1,6 +1,6 @@
 "use client";
 
-import { H2 } from "@/components/h2";
+import { H2 } from "@/components/common/h2";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

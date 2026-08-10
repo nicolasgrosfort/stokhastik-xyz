@@ -1,6 +1,6 @@
 "use client";
 
-import { Checkbox } from "@/components/checkbox";
+import { Checkbox } from "@/components/common/checkbox";
 import { useState } from "react";
 
 type ProfileNewsletterProps = {

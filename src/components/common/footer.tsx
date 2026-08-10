@@ -38,15 +38,15 @@ export const Footer = () => {
     <footer className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-px bg-foreground border-t border-px border-foreground">
       {session ? (
         <Link
-          href="/auth/profile"
-          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/profile") ? activeClassName : inactiveClassName}`}
+          href="/user/profile"
+          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/user/profile") ? activeClassName : inactiveClassName}`}
         >
           {session.user?.name || "Profil"}
         </Link>
       ) : (
         <Link
           href="/auth/signin"
-          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/signin") ? activeClassName : inactiveClassName}`}
+          className={`hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/signin") ? activeClassName : inactiveClassName}`}
         >
           CONNEXION
         </Link>
@@ -57,17 +57,17 @@ export const Footer = () => {
 
       {session ? (
         <Link
-          href="/auth/payment"
-          className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/payment") ? activeClassName : inactiveClassName}`}
+          href="/user/payment"
+          className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/user/payment") ? activeClassName : inactiveClassName}`}
         >
-          <Scramble key={tokens ?? "pending"}>
+          <Scramble>
             {tokens !== undefined ? `${formatSwissNumber(tokens)} STKH` : "..."}
           </Scramble>
         </Link>
       ) : (
         <Link
           href="/auth/signup"
-          className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/auth/signup") ? activeClassName : inactiveClassName}`}
+          className={`uppercase hover:underline p-1 w-full text-xs h-full flex items-center justify-center ${pathname.startsWith("/signup") ? activeClassName : inactiveClassName}`}
         >
           Créer un compte
         </Link>

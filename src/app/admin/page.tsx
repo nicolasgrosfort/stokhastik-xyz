@@ -1,4 +1,4 @@
-import { H3 } from "@/components/h3";
+import { H3 } from "@/components/common/h3";
 
 export default function AdminPage() {
   return (

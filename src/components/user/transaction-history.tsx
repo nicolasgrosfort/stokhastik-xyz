@@ -1,4 +1,4 @@
-import { FormatedDate } from "@/components/formated-date";
+import { FormatedDate } from "@/components/common/formated-date";
 import { formatSwissNumber } from "@/libs/utils";
 import { Transaction } from "@prisma/client";
 

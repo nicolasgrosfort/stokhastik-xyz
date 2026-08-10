@@ -1,11 +1,11 @@
 "use client";
 
-import { Badge } from "@/components/badge";
+import { Badge } from "@/components/common/badge";
+import { FormatedDate } from "@/components/common/formated-date";
+import { H3 } from "@/components/common/h3";
+import { Price } from "@/components/common/price";
 import { Scramble } from "@/components/common/scramble";
 import { Separator } from "@/components/common/separator";
-import { FormatedDate } from "@/components/formated-date";
-import { H3 } from "@/components/h3";
-import { Price } from "@/components/price";
 import { useGetItems } from "@/hooks/useGetItems";
 import { useGetTokens } from "@/hooks/useGetTokens";
 import { GetStoreItem } from "@/libs/store-item";
@@ -126,7 +126,7 @@ export const Details = ({ slug }: { slug: GetStoreItem["slug"] }) => {
         <p className="text-xs mt-1">
           Solde insuffisant pour cet achat.{" "}
           <Link
-            href={`/auth/payment?callbackUrl=${encodeURIComponent(pathname)}`}
+            href={`/user/payment?callbackUrl=${encodeURIComponent(pathname)}`}
             className="underline"
           >
             Recharger mon compte

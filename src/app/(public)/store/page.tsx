@@ -1,9 +1,9 @@
 "use client";
 
+import { Price } from "@/components/common/price";
 import { Scramble } from "@/components/common/scramble";
-import { Item } from "@/components/item";
-import { Price } from "@/components/price";
-import { ToggleGroup } from "@/components/toggle-group";
+import { ToggleGroup } from "@/components/common/toggle-group";
+import { Item } from "@/components/store/item";
 import { useGetItems } from "@/hooks/useGetItems";
 import { useStoreFilters } from "@/hooks/useStoreFilters";
 import { tokensToCHF } from "@/libs/pack";
@@ -46,14 +46,16 @@ export default function StorePage() {
 
   if (isPending) {
     return (
-      <div className="w-full h-full text-center bg-background font-mono text-xs uppercase p-4">
-        <Scramble>Chargement...</Scramble>
+      <div className="w-full h-full text-center bg-background font-mono text-xs uppercase p-4 flex items-center justify-center">
+        <Scramble playOnMount playOnFocus playOnHover playRandomly>
+          Chargement...
+        </Scramble>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-rows-[auto_auto_minmax(0,1fr)_auto] min-h-full">
+    <div className="grid grid-rows-[auto_minmax(0,1fr)_auto] min-h-full shrink-0">
       <div className="text-foreground font-mono text-xs uppercase border-b border-px border-foreground grid grid-cols-2 sm:grid-cols-4 gap-px items-center justify-items-center bg-foreground sticky top-0 z-10">
         <div className="sm:col-start-1 min-w-0 sm:col-span-2 bg-background  w-full h-full p-2">
           <ToggleGroup
@@ -78,7 +80,11 @@ export default function StorePage() {
           />
         </div>
       </div>
-      <div className="grid content-start gap-px bg-foreground grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 h-full">
+      <div
+        className={`grid gap-px bg-foreground grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 h-full min-h-full ${
+          displayedItems.length < 0 ? "content-start" : ""
+        }`}
+      >
         {displayedItems.length > 0 ? (
           <>
             {displayedItems.map((item) => (
@@ -97,19 +103,25 @@ export default function StorePage() {
             ))}
           </>
         ) : (
-          <div className="col-span-full text-center bg-background font-mono text-xs p-4">
-            Aucun article ne correspond aux filtres sélectionnés.
-            <br />
-            <button
-              type="button"
-              onClick={() => {
-                setStatusFilter("all");
-                setSortKey("date");
-              }}
-              className=" text-xs underline cursor-pointer"
-            >
-              Réinitialiser les filtres
-            </button>
+          <div className="col-span-full h-full flex flex-col items-center justify-center text-center bg-background font-mono text-xs p-4">
+            <Scramble playOnMount playOnFocus playOnHover>
+              Aucun article n'est disponible.
+            </Scramble>
+            {sortKey !== "date" || statusFilter !== "all" ? (
+              <>
+                <br />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStatusFilter("all");
+                    setSortKey("date");
+                  }}
+                  className=" text-xs underline cursor-pointer"
+                >
+                  Réinitialiser les filtres
+                </button>
+              </>
+            ) : null}
           </div>
         )}
       </div>

@@ -51,15 +51,12 @@ export const authOptions: AuthOptions = {
           return null;
         }
 
-        if (!user.emailVerified) {
-          throw new Error("EMAIL_NOT_VERIFIED");
-        }
-
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           role: user.role,
+          emailVerified: !!user.emailVerified,
         };
       },
     }),
@@ -68,11 +65,32 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    jwt: ({ token, user }) => {
+    jwt: async ({ token, user }) => {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.emailVerified = !!user.emailVerified;
+        return token;
       }
+
+      // À chaque lecture de session (pas seulement au login), on
+      // resynchronise depuis la base : ça propage les changements de
+      // profil (nom, vérification d'email, rôle) et invalide la session
+      // si le compte a été supprimé entre-temps.
+      const dbUser = await prisma.user.findUnique({
+        where: { id: token.id as string },
+      });
+
+      if (!dbUser) {
+        // Non-standard mais supporté par next-auth à l'exécution : un jwt
+        // callback qui retourne une valeur falsy invalide la session.
+        return null as unknown as typeof token;
+      }
+
+      token.name = dbUser.name;
+      token.email = dbUser.email;
+      token.role = dbUser.role;
+      token.emailVerified = !!dbUser.emailVerified;
       return token;
     },
     session: ({ session, token }) => ({
@@ -81,6 +99,7 @@ export const authOptions: AuthOptions = {
         ...session.user,
         id: token.id as string,
         role: token.role as string,
+        emailVerified: token.emailVerified as boolean,
       },
     }),
   },

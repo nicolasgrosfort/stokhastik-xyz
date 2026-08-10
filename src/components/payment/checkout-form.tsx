@@ -38,7 +38,7 @@ export default function CheckoutForm({
     setMessage(null);
 
     try {
-      const target = callbackUrl ?? "/auth/profile";
+      const target = callbackUrl ?? "/user/profile";
       const returnUrl = new URL(target, window.location.origin);
 
       const { error, paymentIntent } = await stripe.confirmPayment({

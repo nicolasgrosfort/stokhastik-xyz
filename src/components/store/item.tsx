@@ -1,8 +1,8 @@
 "use client";
 
-import { Badge } from "@/components/badge";
-import { FormatedDate } from "@/components/formated-date";
-import { Price } from "@/components/price";
+import { Badge } from "@/components/common/badge";
+import { FormatedDate } from "@/components/common/formated-date";
+import { Price } from "@/components/common/price";
 import { GetStoreItem } from "@/libs/store-item";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";

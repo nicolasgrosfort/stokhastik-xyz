@@ -1,10 +1,10 @@
 "use client";
 
+import { Form } from "@/components/common/form";
+import { H3 } from "@/components/common/h3";
+import { Model } from "@/components/common/model";
 import { Separator } from "@/components/common/separator";
-import { Form } from "@/components/form";
-import { H3 } from "@/components/h3";
-import { Model } from "@/components/model";
-import { TextField } from "@/components/text-field";
+import { TextField } from "@/components/common/text-field";
 import { useForm } from "@tanstack/react-form";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -12,8 +12,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const errorMessages: Record<string, string> = {
-  EMAIL_NOT_VERIFIED:
-    "Confirme ton adresse email avant de te connecter (vérifie ta boîte mail).",
   TOO_MANY_ATTEMPTS: "Trop de tentatives. Réessaie dans quelques minutes.",
 };
 
@@ -55,13 +53,13 @@ export function SignInForm() {
 
   return (
     <section className="text-foreground h-full w-full min-h-0">
-      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(40%,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,40%)] sm:grid-rows-1 grid-rows-[minmax(40%,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
         <div className="bg-background w-full h-full min-h-0">
           <Model
-            position={0.5}
+            position={2.5}
             rotation={Math.PI * 0.25}
             stopRotation={false}
-            model="/models/hippopotamus.glb"
+            model="/models/sculpture-1-temple-kurama.glb"
           />
         </div>
 

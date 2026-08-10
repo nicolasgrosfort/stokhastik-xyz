@@ -1,11 +1,11 @@
-import { ProfileBalance } from "@/components/auth/profile-balance";
-import { ProfileNewsletter } from "@/components/auth/profile-newsletter";
 import { SignOutButton } from "@/components/auth/signout-button";
+import { FormatedDate } from "@/components/common/formated-date";
+import { H3 } from "@/components/common/h3";
+import { H4 } from "@/components/common/h4";
+import { Model } from "@/components/common/model";
 import { Separator } from "@/components/common/separator";
-import { FormatedDate } from "@/components/formated-date";
-import { H3 } from "@/components/h3";
-import { H4 } from "@/components/h4";
-import { Model } from "@/components/model";
+import { ProfileBalance } from "@/components/user/profile-balance";
+import { ProfileNewsletter } from "@/components/user/profile-newsletter";
 import { authOptions } from "@/libs/auth";
 import { prisma } from "@/libs/prisma";
 import { formatSwissNumber } from "@/libs/utils";
@@ -18,7 +18,7 @@ export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/auth/signin?callbackUrl=/auth/profile");
+    redirect("/auth/signin?callbackUrl=/user/profile");
   }
 
   const user = await prisma.user.findUnique({
@@ -34,17 +34,17 @@ export default async function ProfilePage() {
   });
 
   if (!user) {
-    redirect("/auth/signin?callbackUrl=/auth/profile");
+    redirect("/auth/signin?callbackUrl=/user/profile");
   }
 
   return (
     <section className="text-foreground h-full w-full min-h-0">
-      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(40%,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,40%)] sm:grid-rows-1 grid-rows-[minmax(40%,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
         <div className="bg-background w-full h-full min-h-0">
           <Model
-            position={1.25}
+            position={2.5}
             rotation={Math.PI * 0.5}
-            model="/models/cone-interdit-fumer.glb"
+            model="/models/lion-temple-kurama.glb"
             stopRotation={false}
           />
         </div>
@@ -92,7 +92,7 @@ export default async function ProfilePage() {
 
               <div className="grid grid-cols-2 gap-2">
                 <Link
-                  href="/auth/payment"
+                  href="/user/payment"
                   className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full cursor-pointer text-center hover:underline"
                 >
                   Recharger mon compte

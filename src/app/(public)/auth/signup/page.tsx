@@ -12,7 +12,7 @@ export default async function SignUpPage({
 
   if (session) {
     const { callbackUrl } = await searchParams;
-    redirect(callbackUrl ?? "/");
+    redirect(callbackUrl ?? "/user/profile");
   }
 
   return <SignUpForm />;

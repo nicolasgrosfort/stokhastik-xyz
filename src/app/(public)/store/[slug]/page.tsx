@@ -1,6 +1,6 @@
-import { Details } from "@/components/details";
-import { H4 } from "@/components/h4";
-import { Model } from "@/components/model";
+import { H4 } from "@/components/common/h4";
+import { Model } from "@/components/common/model";
+import { Details } from "@/components/store/details";
 import { prisma } from "@/libs/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,7 +20,7 @@ export default async function ItemPage({
 
   return (
     <div className="text-foreground h-full w-full min-h-0">
-      <div className="grid sm:grid-cols-[1fr_minmax(0,560px)] sm:grid-rows-1 grid-rows-[minmax(40%,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
+      <div className="grid sm:grid-cols-[1fr_minmax(0,40%)] sm:grid-rows-1 grid-rows-[minmax(40%,1fr)_auto] grid-cols-1 h-full w-full min-h-0 gap-px">
         <div className="bg-background w-full h-full min-h-0">
           <Model
             position={item.position}
@@ -43,7 +43,7 @@ export default async function ItemPage({
               </li>
               <li>
                 Après l'achat, l'item sera virtuellement disponible dans{" "}
-                <Link href="/auth/profile" className="underline">
+                <Link href="/user/profile" className="underline">
                   ton profil
                 </Link>
                 .
@@ -61,7 +61,7 @@ export default async function ItemPage({
             <p className="font-mono text-xs text-left text-pretty">
               De nouveaux items seront ajoutés régulièrement tout au long de mon
               séjour. Tu peux{" "}
-              <Link href="/auth/profile" className="underline">
+              <Link href="/user/profile" className="underline">
                 t'inscrire à la newsletter
               </Link>{" "}
               pour être prévenu·e lors de leur mise en ligne.
