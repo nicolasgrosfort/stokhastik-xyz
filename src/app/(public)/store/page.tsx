@@ -111,7 +111,7 @@ export default function StorePage() {
         ) : (
           <div className="col-span-full h-full flex flex-col items-center justify-center text-center bg-background font-mono text-xs p-4">
             <Scramble playOnMount playOnFocus playOnHover>
-              Aucun article n'est disponible.
+              Aucun article n'a été trouvé.
             </Scramble>
             {sortKey !== "date" || statusFilter !== "all" ? (
               <>
