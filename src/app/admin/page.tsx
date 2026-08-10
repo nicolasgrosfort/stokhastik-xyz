@@ -1,28 +1,38 @@
-import { H3 } from "@/components/common/h3";
+import { AdminStoreItemList } from "@/components/admin/store-item-list";
 import { AdminTransactionList } from "@/components/admin/transaction-list";
+import { H3 } from "@/components/common/h3";
+import { H4 } from "@/components/common/h4";
 import { prisma } from "@/libs/prisma";
+import { getStoreItemArgs } from "@/libs/store-item";
 import Link from "next/link";
 
 export default async function AdminPage() {
-  const transactions = await prisma.transaction.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: { select: { firstName: true, lastName: true, email: true } },
-    },
-  });
+  const [transactions, storeItems] = await Promise.all([
+    prisma.transaction.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { firstName: true, lastName: true, email: true } },
+      },
+    }),
+    prisma.storeItem.findMany(getStoreItemArgs),
+  ]);
 
   return (
     <section className="text-foreground bg-background h-full w-full min-h-0 flex flex-col items-start gap-4 p-4 overflow-y-auto">
       <H3 className="uppercase">Admin</H3>
       <div className="w-full flex flex-col items-start gap-4">
-        <Link
-          href="/admin/store-items/new"
-          className="font-mono text-xs uppercase underline"
-        >
-          + Ajouter un item
-        </Link>
+        <div className="w-full flex items-center justify-between">
+          <H4 className="uppercase">Store</H4>
+          <Link
+            href="/admin/store-items/new"
+            className="font-mono text-xs uppercase underline"
+          >
+            + Ajouter un item
+          </Link>
+        </div>
+        <AdminStoreItemList items={storeItems} />
 
-        <p className="font-mono text-xs uppercase">Transactions</p>
+        <H4 className="uppercase">Transactions</H4>
         <AdminTransactionList transactions={transactions} />
       </div>
     </section>

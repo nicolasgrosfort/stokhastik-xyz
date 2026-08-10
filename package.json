@@ -32,6 +32,7 @@
     "nuqs": "^2.9.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-error-boundary": "^6.1.2",
     "stripe": "^22.4.0",
     "three": "^0.185.1",
     "use-scramble": "^2.2.15",

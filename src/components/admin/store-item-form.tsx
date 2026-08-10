@@ -4,28 +4,30 @@ import { StoreItemPreview } from "@/components/admin/store-item-preview";
 import { Form } from "@/components/common/form";
 import { TextField } from "@/components/common/text-field";
 import { slugify } from "@/libs/utils";
+import { StoreItem } from "@prisma/client";
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-export function StoreItemForm() {
+export function StoreItemForm({ item }: { item?: StoreItem }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [slugTouched, setSlugTouched] = useState(false);
+  const [slugTouched, setSlugTouched] = useState(!!item);
 
   const form = useForm({
     defaultValues: {
-      name: "",
-      slug: "",
-      description: "",
-      model: "",
-      thumbnail: "",
-      price: "",
-      position: "2",
-      rotation: "0",
-      releaseDate: today(),
+      name: item?.name ?? "",
+      slug: item?.slug ?? "",
+      description: item?.description ?? "",
+      model: item?.model ?? "",
+      thumbnail: item?.thumbnail ?? "",
+      price: item ? String(item.price) : "",
+      position: item ? String(item.position) : "2",
+      rotation: item ? String(item.rotation) : "0",
+      releaseDate: item ? item.releaseDate.toISOString().slice(0, 10) : today(),
     },
     onSubmit: async ({ value }) => {
       setError(null);
@@ -44,21 +46,24 @@ export function StoreItemForm() {
       }
 
       try {
-        const res = await fetch("/api/admin/store-items", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: value.name,
-            slug: value.slug,
-            description: value.description || undefined,
-            model: value.model,
-            thumbnail: value.thumbnail,
-            price,
-            position,
-            rotation,
-            releaseDate: value.releaseDate,
-          }),
-        });
+        const res = await fetch(
+          item ? `/api/admin/store-items/${item.id}` : "/api/admin/store-items",
+          {
+            method: item ? "PATCH" : "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: value.name,
+              slug: value.slug,
+              description: value.description || undefined,
+              model: value.model,
+              thumbnail: value.thumbnail,
+              price,
+              position,
+              rotation,
+              releaseDate: value.releaseDate,
+            }),
+          },
+        );
 
         const data = await res.json();
 
@@ -226,17 +231,31 @@ export function StoreItemForm() {
 
         {error && <p className="text-red-500 text-xs">{error}</p>}
 
-        <form.Subscribe selector={(state) => state.isSubmitting}>
-          {(isSubmitting) => (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full enabled:cursor-pointer text-center enabled:hover:underline"
-            >
-              {isSubmitting ? "Création..." : "Créer l'item"}
-            </button>
-          )}
-        </form.Subscribe>
+        <div className="grid grid-cols-2 gap-4">
+          <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(isSubmitting) => (
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full enabled:cursor-pointer text-center enabled:hover:underline"
+              >
+                {item
+                  ? isSubmitting
+                    ? "Enregistrement..."
+                    : "Enregistrer"
+                  : isSubmitting
+                    ? "Création..."
+                    : "Créer l'item"}
+              </button>
+            )}
+          </form.Subscribe>
+          <Link
+            href="/admin"
+            className="bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 block w-full enabled:cursor-pointer text-center enabled:hover:underline"
+          >
+            Retour
+          </Link>
+        </div>
       </div>
     </Form>
   );

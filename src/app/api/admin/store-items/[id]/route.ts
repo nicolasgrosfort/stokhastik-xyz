@@ -4,13 +4,17 @@ import { parseStoreItemInput } from "@/libs/store-item";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Accès refusé." }, { status: 403 });
   }
 
+  const { id } = await params;
   const body: unknown = await request.json();
   const parsed = parseStoreItemInput(body);
 
@@ -19,25 +23,37 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const existing = await prisma.storeItem.findUnique({
-      where: { slug: parsed.data.slug },
+    const existing = await prisma.storeItem.findUnique({ where: { id } });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Item introuvable." },
+        { status: 404 },
+      );
+    }
+
+    const slugTaken = await prisma.storeItem.findFirst({
+      where: { slug: parsed.data.slug, NOT: { id } },
     });
 
-    if (existing) {
+    if (slugTaken) {
       return NextResponse.json(
         { error: "Ce slug est déjà utilisé par un autre item." },
         { status: 409 },
       );
     }
 
-    const item = await prisma.storeItem.create({ data: parsed.data });
+    const item = await prisma.storeItem.update({
+      where: { id },
+      data: parsed.data,
+    });
 
     return NextResponse.json({ ok: true, item });
   } catch (error) {
-    console.error("Erreur création store item :", error);
+    console.error("Erreur mise à jour store item :", error);
 
     return NextResponse.json(
-      { error: "Impossible de créer l'item." },
+      { error: "Impossible de mettre à jour l'item." },
       { status: 500 },
     );
   }

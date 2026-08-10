@@ -1,9 +1,9 @@
 "use client";
 
-import { ErrorBoundary } from "@/components/common/error-boundary";
 import { Model } from "@/components/common/model";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
 function useDebouncedValue<T>(value: T, delayMs: number) {
   const [debounced, setDebounced] = useState(value);
@@ -58,7 +58,7 @@ export function StoreItemPreview({
         <div className="relative w-full aspect-square border border-dark-green bg-background">
           {debouncedModel ? (
             <ErrorBoundary
-              key={debouncedModel}
+              resetKeys={[debouncedModel]}
               fallback={
                 <p className="absolute inset-0 flex items-center justify-center text-xs font-mono text-center p-2">
                   Modèle introuvable.
