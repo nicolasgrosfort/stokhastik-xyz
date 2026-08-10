@@ -61,7 +61,7 @@ export default function StorePage() {
   }
 
   return (
-    <div className="grid grid-rows-[auto_minmax(0,1fr)_auto] min-h-full shrink-0">
+    <div className="grid grid-rows-[auto_auto_minmax(0,1fr)] min-h-full shrink-0">
       <div className="text-foreground font-mono text-xs uppercase border-b border-px border-foreground grid grid-cols-2 sm:grid-cols-4 gap-px items-center justify-items-center bg-foreground sticky top-0 z-10">
         <div className="sm:col-start-1 min-w-0 sm:col-span-2 bg-background  w-full h-full p-2">
           <ToggleGroup
@@ -87,8 +87,8 @@ export default function StorePage() {
         </div>
       </div>
       <div
-        className={`grid gap-px bg-foreground grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 h-full min-h-full ${
-          displayedItems.length > 0 ? "content-start" : ""
+        className={`grid gap-px bg-foreground grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 ${
+          displayedItems.length > 0 ? "content-start" : "h-full min-h-full"
         }`}
       >
         {displayedItems.length > 0 ? (
@@ -130,7 +130,7 @@ export default function StorePage() {
           </div>
         )}
       </div>
-      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-2 h-fit min-h-full gap-1 sticky bottom-0 ">
+      <div className="flex flex-col justify-center bg-background border-t border-px border-foreground p-2 h-full gap-1 sticky bottom-0">
         <p className="font-mono text-xs text-center">
           {availableItems.length} disponibles | {soldItems.length} vendus |{" "}
           {items.length} total
