@@ -15,8 +15,14 @@ export default function StorePage() {
   const { sortKey, statusFilter, setSortKey, setStatusFilter } =
     useStoreFilters();
 
-  const soldItems = items?.filter((item) => item.buyerId) ?? [];
-  const availableItems = items?.filter((item) => !item.buyerId) ?? [];
+  const soldItems = useMemo(
+    () => items?.filter((item) => item.buyerId) ?? [],
+    [items],
+  );
+  const availableItems = useMemo(
+    () => items?.filter((item) => !item.buyerId) ?? [],
+    [items],
+  );
 
   const totalSupport =
     items?.reduce((acc, item) => acc + (item.buyerId ? item.price : 0), 0) ?? 0;

@@ -21,7 +21,7 @@ export function useGetTokens() {
     select: (response) => response.data.tokens,
     enabled: status === "authenticated",
     refetchInterval: 1_000,
-    refetchIntervalInBackground: true,
+    refetchIntervalInBackground: false,
   });
 
   return { tokens: data, error, isPending };
