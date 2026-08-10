@@ -88,7 +88,7 @@ export default function StorePage() {
       </div>
       <div
         className={`grid gap-px bg-foreground grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 h-full min-h-full ${
-          displayedItems.length < 0 ? "content-start" : ""
+          displayedItems.length > 0 ? "content-start" : ""
         }`}
       >
         {displayedItems.length > 0 ? (
@@ -130,7 +130,7 @@ export default function StorePage() {
           </div>
         )}
       </div>
-      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-2 h-fit min-h-full gap-1 sticky bottom-0">
+      <div className="flex-1 flex flex-col justify-center bg-background border-t border-px border-foreground p-2 h-fit min-h-full gap-1 sticky bottom-0 ">
         <p className="font-mono text-xs text-center">
           {availableItems.length} disponibles | {soldItems.length} vendus |{" "}
           {items.length} total
