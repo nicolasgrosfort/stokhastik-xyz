@@ -109,14 +109,13 @@ export default function StorePage() {
             </Scramble>
             {sortKey !== "date" || statusFilter !== "all" ? (
               <>
-                <br />
                 <button
                   type="button"
                   onClick={() => {
                     setStatusFilter("all");
                     setSortKey("date");
                   }}
-                  className=" text-xs underline cursor-pointer"
+                  className="text-xs underline cursor-pointer"
                 >
                   Réinitialiser les filtres
                 </button>
