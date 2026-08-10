@@ -29,6 +29,7 @@ export function StoreItemPreview({
 }) {
   const debouncedThumbnail = useDebouncedValue(thumbnail, 400);
   const debouncedModel = useDebouncedValue(model, 400);
+  const debouncedPosition = useDebouncedValue(position, 400);
 
   return (
     <div className="grid grid-cols-2 gap-4 w-full">
@@ -64,11 +65,15 @@ export function StoreItemPreview({
                 </p>
               }
             >
+              {/* react-three-fiber only applies the Canvas `camera` prop once,
+              on mount, so a position change needs a remount to take effect —
+              rotation doesn't, it's a regular per-render group prop. */}
               <Model
+                key={debouncedPosition}
                 model={debouncedModel}
-                position={position}
+                position={debouncedPosition}
                 rotation={rotation}
-                stopRotation={false}
+                stopRotation={true}
               />
             </ErrorBoundary>
           ) : (
