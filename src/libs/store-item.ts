@@ -114,17 +114,19 @@ export async function notifyNewsletterSubscribers(
   });
 
   await Promise.allSettled(
-    subscribers.map((subscriber) =>
-      sendStoreItemNotificationEmail({
-        to: subscriber.email as string,
+    subscribers.map((subscriber) => {
+      if (!subscriber.email) return;
+
+      return sendStoreItemNotificationEmail({
+        to: subscriber.email,
         firstName: subscriber.firstName ?? "",
         itemName: item.name,
         itemSlug: item.slug,
         itemImage: item.thumbnail,
         price: item.price,
         isNew,
-      }),
-    ),
+      });
+    }),
   );
 }
 
