@@ -1,6 +1,10 @@
 import { authOptions } from "@/libs/auth";
 import { prisma } from "@/libs/prisma";
-import { parseStoreItemInput } from "@/libs/store-item";
+import {
+  notifyNewsletterSubscribers,
+  parseNotifyNewsletter,
+  parseStoreItemInput,
+} from "@/libs/store-item";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -31,6 +35,10 @@ export async function POST(request: NextRequest) {
     }
 
     const item = await prisma.storeItem.create({ data: parsed.data });
+
+    if (parseNotifyNewsletter(body)) {
+      await notifyNewsletterSubscribers(item, { isNew: true });
+    }
 
     return NextResponse.json({ ok: true, item });
   } catch (error) {

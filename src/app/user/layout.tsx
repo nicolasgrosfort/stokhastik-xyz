@@ -11,7 +11,7 @@ export default async function UserLayout({
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/auth/signin?callbackUrl=/user");
+    redirect("/auth/signin?callbackUrl=/user/profile");
   }
 
   return (

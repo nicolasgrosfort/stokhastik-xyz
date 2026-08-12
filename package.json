@@ -6,7 +6,8 @@
     "docker": "docker-compose --env-file /dev/null up -d",
     "migrate": "npx prisma migrate deploy",
     "generate": "npx prisma generate",
-    "dev": "yarn docker && next dev",
+    "stripe": "stripe listen --forward-to localhost:3000/api/stripe/webhook",
+    "dev": "concurrently \"yarn docker\" \"next dev\" \"yarn stripe\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

@@ -123,6 +123,51 @@ export async function sendRechargeEmail({
   });
 }
 
+export async function sendStoreItemNotificationEmail({
+  to,
+  firstName,
+  itemName,
+  itemSlug,
+  itemImage,
+  price,
+  isNew,
+}: {
+  to: string;
+  firstName: string;
+  itemName: string;
+  itemSlug: string;
+  itemImage: string;
+  price: number;
+  isNew: boolean;
+}) {
+  const itemUrl = `${process.env.SITE_URL}/store/${itemSlug}`;
+  const itemImageUrl = `${process.env.SITE_URL}${itemImage}`;
+
+  const subject = isNew
+    ? "Nouvel item disponible sur Stokhastik"
+    : `« ${itemName} » a été mis à jour`;
+
+  const introText = isNew
+    ? `Un nouvel item, « ${itemName} » (${price} STKH), est maintenant disponible dans le store !`
+    : `L'item « ${itemName} » (${price} STKH) vient d'être mis à jour dans le store.`;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject,
+    text: `Salut ${firstName},\n\n${introText}\n\nVoir l'article : ${itemUrl}\n\nÀ bientôt,\nNicolas.`,
+    html: renderEmailHtml({
+      body: `
+        <p style="margin: 0 0 16px;">Salut ${firstName},</p>
+        <img src="${itemImageUrl}" alt="${itemName}" width="388" style="display: block; width: 100%; max-width: 388px; margin: 0 0 16px;">
+        <p style="margin: 0 0 24px;">${introText}</p>
+      `,
+      ctaLabel: "Voir l'article",
+      ctaUrl: itemUrl,
+    }),
+  });
+}
+
 export async function sendPurchaseEmail({
   to,
   firstName,
