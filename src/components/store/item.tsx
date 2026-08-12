@@ -27,7 +27,9 @@ export const Item = ({ item }: { item: GetStoreItem }) => {
       onClick={() => router.push(`/store/${item.slug}`)}
     >
       <header className="w-full h-6 flex items-center justify-between absolute top-2 px-2">
-        <p className="font-mono text-sm uppercase">{item.name}</p>
+        <p className="font-mono text-sm uppercase text-ellipsis overflow-hidden whitespace-nowrap">
+          {item.name}
+        </p>
       </header>
       <motion.section
         className="w-full h-full relative"
