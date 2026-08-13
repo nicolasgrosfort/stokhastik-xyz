@@ -247,7 +247,7 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
               />
               <AssetImportButton
                 type="thumbnails"
-                accept=".png,.jpg,.jpeg,.webp"
+                accept=".avif"
                 uploading={uploading.thumbnail}
                 error={uploadError.thumbnail}
                 onFile={(file) =>
