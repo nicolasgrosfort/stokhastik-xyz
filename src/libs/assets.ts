@@ -1,5 +1,5 @@
 import { slugify } from "@/libs/utils";
-import { mkdir, readdir, writeFile } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 
 export const ASSET_TYPES = ["models", "thumbnails"] as const;
@@ -66,14 +66,7 @@ export async function saveAssetFile(
   await mkdir(dir, { recursive: true });
 
   const baseName = slugify(path.basename(file.name, extension)) || "fichier";
-  const existing = new Set(await readdir(dir).catch(() => []));
-
-  let filename = `${baseName}${extension}`;
-  let suffix = 2;
-  while (existing.has(filename)) {
-    filename = `${baseName}-${suffix}${extension}`;
-    suffix += 1;
-  }
+  const filename = `${baseName}${extension}`;
 
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(dir, filename), buffer);
