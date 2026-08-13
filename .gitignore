@@ -45,5 +45,7 @@ next-env.d.ts
 vendor/
 
 # data
-/*/data/status.json
+data
+
+# prisma
 /src/generated/prisma

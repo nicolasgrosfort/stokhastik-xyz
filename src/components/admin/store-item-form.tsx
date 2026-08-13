@@ -13,10 +13,58 @@ import { useState } from "react";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
+function AssetImportButton({
+  type,
+  accept,
+  uploading,
+  error,
+  onFile,
+}: {
+  type: "models" | "thumbnails";
+  accept: string;
+  uploading: boolean;
+  error: string | null;
+  onFile: (file: File) => void;
+}) {
+  const inputId = `asset-import-${type}`;
+
+  return (
+    <div className="flex flex-col gap-1">
+      <label
+        htmlFor={inputId}
+        className="bg-background text-foreground border border-dark-green font-mono text-xs uppercase p-1 block w-fit cursor-pointer hover:underline"
+      >
+        {uploading ? "Import en cours..." : "Importer un fichier"}
+      </label>
+      <input
+        id={inputId}
+        type="file"
+        accept={accept}
+        className="hidden"
+        disabled={uploading}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onFile(file);
+          e.target.value = "";
+        }}
+      />
+      {error && <p className="text-red-500 text-xs">{error}</p>}
+    </div>
+  );
+}
+
 export function StoreItemForm({ item }: { item?: StoreItem }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [slugTouched, setSlugTouched] = useState(!!item);
+  const [uploading, setUploading] = useState<{
+    model: boolean;
+    thumbnail: boolean;
+  }>({ model: false, thumbnail: false });
+  const [uploadError, setUploadError] = useState<{
+    model: string | null;
+    thumbnail: string | null;
+  }>({ model: null, thumbnail: null });
 
   const form = useForm({
     defaultValues: {
@@ -83,6 +131,38 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
     },
   });
 
+  const handleFileImport = async (
+    type: "models" | "thumbnails",
+    field: "model" | "thumbnail",
+    file: File,
+  ) => {
+    setUploading((prev) => ({ ...prev, [field]: true }));
+    setUploadError((prev) => ({ ...prev, [field]: null }));
+
+    try {
+      const body = new FormData();
+      body.append("type", type);
+      body.append("file", file);
+
+      const res = await fetch("/api/admin/assets", { method: "POST", body });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setUploadError((prev) => ({
+          ...prev,
+          [field]: data.error ?? "Échec de l'import.",
+        }));
+        return;
+      }
+
+      form.setFieldValue(field, data.path);
+    } catch {
+      setUploadError((prev) => ({ ...prev, [field]: "Échec de l'import." }));
+    } finally {
+      setUploading((prev) => ({ ...prev, [field]: false }));
+    }
+  };
+
   return (
     <Form onSubmit={() => form.handleSubmit()}>
       <div className="flex flex-col gap-4 w-full max-w-md">
@@ -134,27 +214,47 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
 
         <form.Field name="model">
           {(field) => (
-            <TextField
-              name={field.name}
-              label="Modèle 3D"
-              placeholder="/models/mon-item.glb"
-              value={field.state.value}
-              onChange={field.handleChange}
-              required
-            />
+            <div className="flex flex-col gap-2 w-full">
+              <TextField
+                name={field.name}
+                label="Modèle 3D"
+                placeholder="/models/mon-item.glb"
+                value={field.state.value}
+                onChange={field.handleChange}
+                required
+              />
+              <AssetImportButton
+                type="models"
+                accept=".glb"
+                uploading={uploading.model}
+                error={uploadError.model}
+                onFile={(file) => handleFileImport("models", "model", file)}
+              />
+            </div>
           )}
         </form.Field>
 
         <form.Field name="thumbnail">
           {(field) => (
-            <TextField
-              name={field.name}
-              label="Miniature"
-              placeholder="/thumbnails/mon-item.png"
-              value={field.state.value}
-              onChange={field.handleChange}
-              required
-            />
+            <div className="flex flex-col gap-2 w-full">
+              <TextField
+                name={field.name}
+                label="Miniature"
+                placeholder="/thumbnails/mon-item.png"
+                value={field.state.value}
+                onChange={field.handleChange}
+                required
+              />
+              <AssetImportButton
+                type="thumbnails"
+                accept=".png,.jpg,.jpeg,.webp"
+                uploading={uploading.thumbnail}
+                error={uploadError.thumbnail}
+                onFile={(file) =>
+                  handleFileImport("thumbnails", "thumbnail", file)
+                }
+              />
+            </div>
           )}
         </form.Field>
 
