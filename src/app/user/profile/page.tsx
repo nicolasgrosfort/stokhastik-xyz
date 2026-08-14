@@ -109,7 +109,7 @@ export default async function ProfilePage() {
             {user.storeItems.length > 0 ? (
               <>
                 <Separator />
-                <div className="grid grid-cols-3 gap-px bg-foreground w-full ">
+                <div className="grid grid-cols-2 gap-px bg-foreground w-full ">
                   {user.storeItems.map((item) => (
                     <Link
                       key={item.id}
@@ -126,7 +126,7 @@ export default async function ProfilePage() {
                         alt={item.name}
                         fill
                         draggable={false}
-                        className="object-cover transition-transform duration-300 group-hover:scale-110"
+                        className="object-cover transition-transform duration-300 group-hover:scale-110 z-10"
                         sizes="(max-width: 639px) 33vw, 186px"
                       />
                       <div className="absolute inset-x-0 bottom-0 p-2 flex items-center justify-between gap-2">
@@ -143,7 +143,7 @@ export default async function ProfilePage() {
                   ))}
 
                   {Array.from({
-                    length: (3 - (user.storeItems.length % 3)) % 3,
+                    length: (2 - (user.storeItems.length % 2)) % 2,
                   }).map((_, index) => (
                     <div
                       key={`filler-${index}`}
