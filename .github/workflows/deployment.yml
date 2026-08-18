@@ -27,5 +27,6 @@ jobs:
             --exclude='node_modules' \
             --exclude='out' \
             --exclude='data' \
+            --exclude='.snap' \
             ./ \
             ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/srv/customer/sites/stokhastik.xyz/
