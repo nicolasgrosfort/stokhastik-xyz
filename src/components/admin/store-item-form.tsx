@@ -123,7 +123,7 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
           return;
         }
 
-        router.push(`/store/${data.item.slug}`);
+        router.push("/admin");
         router.refresh();
       } catch {
         setError("Une erreur s'est produite.");
