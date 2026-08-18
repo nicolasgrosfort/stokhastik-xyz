@@ -26,5 +26,6 @@ jobs:
             --exclude='.vscode' \
             --exclude='node_modules' \
             --exclude='out' \
+            --exclude='data' \
             ./ \
             ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/srv/customer/sites/stokhastik.xyz/
