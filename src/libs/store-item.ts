@@ -110,7 +110,7 @@ export async function notifyNewsletterSubscribers(
 ) {
   const subscribers = await prisma.user.findMany({
     where: { newsletter: true, email: { not: null } },
-    select: { email: true, firstName: true },
+    select: { id: true, email: true, firstName: true },
   });
 
   await Promise.allSettled(
@@ -119,6 +119,7 @@ export async function notifyNewsletterSubscribers(
 
       return sendStoreItemNotificationEmail({
         to: subscriber.email,
+        userId: subscriber.id,
         firstName: subscriber.firstName ?? "",
         itemName: item.name,
         itemSlug: item.slug,

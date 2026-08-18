@@ -1,3 +1,4 @@
+import { createUnsubscribeToken } from "@/libs/unsubscribe-token";
 import nodemailer from "nodemailer";
 
 const adminBcc = process.env.ADMIN_EMAIL || undefined;
@@ -14,10 +15,12 @@ function renderEmailHtml({
   body,
   ctaLabel,
   ctaUrl,
+  footerNote,
 }: {
   body: string;
   ctaLabel: string;
   ctaUrl: string;
+  footerNote?: string;
 }) {
   return `
     <body style="margin: 0; padding: 24px 16px; background-color: #ffffff;">
@@ -33,6 +36,7 @@ function renderEmailHtml({
         </div>
         <div style="padding: 16px; border-top: 1px solid #171717; text-align: center; font-size: 12px;">
           À bientôt,<br>Nicolas.
+          ${footerNote ? `<div style="margin-top: 12px; color: #737373;">${footerNote}</div>` : ""}
         </div>
       </div>
     </body>
@@ -125,6 +129,7 @@ export async function sendRechargeEmail({
 
 export async function sendStoreItemNotificationEmail({
   to,
+  userId,
   firstName,
   itemName,
   itemSlug,
@@ -133,6 +138,7 @@ export async function sendStoreItemNotificationEmail({
   isNew,
 }: {
   to: string;
+  userId: string;
   firstName: string;
   itemName: string;
   itemSlug: string;
@@ -142,6 +148,7 @@ export async function sendStoreItemNotificationEmail({
 }) {
   const itemUrl = `${process.env.SITE_URL}/store/${itemSlug}`;
   const itemImageUrl = `${process.env.SITE_URL}${itemImage}`;
+  const unsubscribeUrl = `${process.env.SITE_URL}/api/user/unsubscribe?uid=${userId}&token=${createUnsubscribeToken(userId)}`;
 
   const subject = isNew
     ? "Nouvel item disponible sur Stokhastik"
@@ -155,7 +162,7 @@ export async function sendStoreItemNotificationEmail({
     from: process.env.EMAIL_FROM,
     to,
     subject,
-    text: `Salut ${firstName},\n\n${introText}\n\nVoir l'article : ${itemUrl}\n\nÀ bientôt,\nNicolas.`,
+    text: `Salut ${firstName},\n\n${introText}\n\nVoir l'article : ${itemUrl}\n\nÀ bientôt,\nNicolas.\n\nSe désinscrire de la newsletter : ${unsubscribeUrl}`,
     html: renderEmailHtml({
       body: `
         <p style="margin: 0 0 16px;">Salut ${firstName},</p>
@@ -164,6 +171,7 @@ export async function sendStoreItemNotificationEmail({
       `,
       ctaLabel: "Voir l'article",
       ctaUrl: itemUrl,
+      footerNote: `<a href="${unsubscribeUrl}" style="color: #737373;">Se désinscrire de la newsletter</a>`,
     }),
   });
 }
