@@ -95,15 +95,6 @@ export function parseStoreItemInput(
   };
 }
 
-export function parseNotifyNewsletter(body: unknown): boolean {
-  return (
-    typeof body === "object" &&
-    body !== null &&
-    "notifyNewsletter" in body &&
-    body.notifyNewsletter === true
-  );
-}
-
 export async function notifyNewsletterSubscribers(
   item: StoreItem,
   { isNew }: { isNew: boolean },

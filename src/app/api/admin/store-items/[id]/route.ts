@@ -1,10 +1,6 @@
 import { authOptions } from "@/libs/auth";
 import { prisma } from "@/libs/prisma";
-import {
-  notifyNewsletterSubscribers,
-  parseNotifyNewsletter,
-  parseStoreItemInput,
-} from "@/libs/store-item";
+import { parseStoreItemInput } from "@/libs/store-item";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -51,10 +47,6 @@ export async function PATCH(
       where: { id },
       data: parsed.data,
     });
-
-    if (parseNotifyNewsletter(body)) {
-      await notifyNewsletterSubscribers(item, { isNew: false });
-    }
 
     return NextResponse.json({ ok: true, item });
   } catch (error) {

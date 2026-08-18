@@ -1,4 +1,5 @@
 import { StoreItemForm } from "@/components/admin/store-item-form";
+import { StoreItemNotify } from "@/components/admin/store-item-notify";
 import { H3 } from "@/components/common/h3";
 import { prisma } from "@/libs/prisma";
 import { notFound } from "next/navigation";
@@ -19,6 +20,7 @@ export default async function EditStoreItemPage({
     <section className="text-foreground bg-background h-full w-full min-h-0 flex flex-col items-center gap-4 p-4 overflow-y-auto">
       <H3 className="uppercase">Modifier l&apos;item</H3>
       <StoreItemForm item={item} />
+      <StoreItemNotify item={item} />
     </section>
   );
 }

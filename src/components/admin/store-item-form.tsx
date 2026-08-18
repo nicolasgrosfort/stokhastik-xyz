@@ -1,7 +1,6 @@
 "use client";
 
 import { StoreItemPreview } from "@/components/admin/store-item-preview";
-import { Checkbox } from "@/components/common/checkbox";
 import { Form } from "@/components/common/form";
 import { TextField } from "@/components/common/text-field";
 import { slugify } from "@/libs/utils";
@@ -77,7 +76,6 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
       position: item ? String(item.position) : "2",
       rotation: item ? String(item.rotation) : "0",
       releaseDate: item ? item.releaseDate.toISOString().slice(0, 10) : today(),
-      notifyNewsletter: false,
     },
     onSubmit: async ({ value }) => {
       setError(null);
@@ -111,7 +109,6 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
               position,
               rotation,
               releaseDate: value.releaseDate,
-              notifyNewsletter: value.notifyNewsletter,
             }),
           },
         );
@@ -331,21 +328,6 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
             )}
           </form.Field>
         </div>
-
-        <form.Field name="notifyNewsletter">
-          {(field) => (
-            <Checkbox
-              name={field.name}
-              label={
-                item
-                  ? "Notifier les abonnés à la newsletter de cette modification"
-                  : "Notifier les abonnés à la newsletter de ce nouvel item"
-              }
-              checked={field.state.value}
-              onChange={field.handleChange}
-            />
-          )}
-        </form.Field>
 
         {error && <p className="text-red-500 text-xs">{error}</p>}
 
