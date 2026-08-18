@@ -1,6 +1,7 @@
 "use client";
 
 import { StoreItemPreview } from "@/components/admin/store-item-preview";
+import { Checkbox } from "@/components/common/checkbox";
 import { Form } from "@/components/common/form";
 import { TextField } from "@/components/common/text-field";
 import { slugify } from "@/libs/utils";
@@ -76,6 +77,7 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
       position: item ? String(item.position) : "2",
       rotation: item ? String(item.rotation) : "0",
       releaseDate: item ? item.releaseDate.toISOString().slice(0, 10) : today(),
+      published: item?.published ?? false,
     },
     onSubmit: async ({ value }) => {
       setError(null);
@@ -109,6 +111,7 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
               position,
               rotation,
               releaseDate: value.releaseDate,
+              published: value.published,
             }),
           },
         );
@@ -328,6 +331,17 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
             )}
           </form.Field>
         </div>
+
+        <form.Field name="published">
+          {(field) => (
+            <Checkbox
+              name={field.name}
+              label="Visible dans le store"
+              checked={field.state.value}
+              onChange={field.handleChange}
+            />
+          )}
+        </form.Field>
 
         {error && <p className="text-red-500 text-xs">{error}</p>}
 

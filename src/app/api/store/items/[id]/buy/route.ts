@@ -27,7 +27,7 @@ export async function POST(
     const item = await prisma.$transaction(async (tx) => {
       const existing = await tx.storeItem.findUnique({ where: { id } });
 
-      if (!existing) {
+      if (!existing || !existing.published) {
         throw new Error("NOT_FOUND");
       }
 

@@ -13,6 +13,7 @@ export type StoreItemInput = {
   position: number;
   rotation: number;
   releaseDate: Date;
+  published: boolean;
 };
 
 export function parseStoreItemInput(
@@ -37,6 +38,8 @@ export function parseStoreItemInput(
     typeof body.position !== "number" ||
     typeof body.rotation !== "number" ||
     typeof body.releaseDate !== "string" ||
+    !("published" in body) ||
+    typeof body.published !== "boolean" ||
     !body.name.trim() ||
     !body.slug.trim() ||
     !body.model.trim() ||
@@ -58,6 +61,7 @@ export function parseStoreItemInput(
     position,
     rotation,
     releaseDate,
+    published,
   } = body;
 
   const description =
@@ -91,6 +95,7 @@ export function parseStoreItemInput(
       position,
       rotation,
       releaseDate: parsedReleaseDate,
+      published,
     },
   };
 }

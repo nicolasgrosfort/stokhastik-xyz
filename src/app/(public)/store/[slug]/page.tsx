@@ -12,7 +12,9 @@ export default async function ItemPage({
   params: Promise<{ slug: string }>;
 }) {
   const itemSlug = (await params).slug;
-  const item = await prisma.storeItem.findUnique({ where: { slug: itemSlug } });
+  const item = await prisma.storeItem.findFirst({
+    where: { slug: itemSlug, published: true },
+  });
 
   if (!item) {
     notFound();
@@ -86,7 +88,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const itemSlug = (await params).slug;
-  const item = await prisma.storeItem.findUnique({ where: { slug: itemSlug } });
+  const item = await prisma.storeItem.findFirst({
+    where: { slug: itemSlug, published: true },
+  });
 
   const baseUrl =
     process.env.NODE_ENV === "production"

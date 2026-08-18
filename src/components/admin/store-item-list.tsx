@@ -28,7 +28,8 @@ export function AdminStoreItemList({ items }: { items: GetStoreItem[] }) {
               className="object-cover"
             />
           </div>
-          <span className="text-left text-ellipsis overflow-hidden whitespace-nowrap">
+          <span className="text-left text-ellipsis overflow-hidden whitespace-nowrap flex items-center gap-4">
+            <Badge>{item.published ? "👀" : "🔒"}</Badge>
             {item.name}
           </span>
           <FormatedDate date={item.releaseDate} />

@@ -42,6 +42,7 @@ model StoreItem {
   position    Float
   rotation    Float
   releaseDate DateTime
+  published   Boolean  @default(true)
 
   buyerId     String?
   buyer       User?     @relation(fields: [buyerId], references: [id])
