@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/common/badge";
 import { DataGrid } from "@/components/common/data-grid/data-grid";
 import {
   createAppColumnHelper,
@@ -14,30 +15,25 @@ import {
 } from "@/components/common/data-grid/url-codecs";
 import { useUrlAtom } from "@/components/common/data-grid/use-url-atom";
 import { FormatedDate } from "@/components/common/formated-date";
-import {
-  GetTransaction,
-  transactionStatusLabels as statusLabels,
-  transactionTypeLabels as typeLabels,
-} from "@/libs/transaction";
 import { formatSwissNumber } from "@/libs/utils";
+import { GetUser } from "@/libs/user";
 
-function getUserLabel(user: GetTransaction["user"]) {
+const roleLabels = {
+  USER: "Utilisateur",
+  ADMIN: "Admin",
+};
+
+function getUserLabel(user: GetUser) {
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
   return name || user.email || "—";
 }
 
-const columnHelper = createAppColumnHelper<GetTransaction>();
+const columnHelper = createAppColumnHelper<GetUser>();
 
 const columns = columnHelper.columns([
-  columnHelper.accessor("createdAt", {
-    header: "Date",
-    sortFn: "datetime",
-    enableGlobalFilter: false,
-    cell: ({ getValue }) => <FormatedDate date={getValue()} />,
-  }),
-  columnHelper.accessor((entry) => getUserLabel(entry.user), {
-    id: "user",
-    header: "Utilisateur",
+  columnHelper.accessor((user) => getUserLabel(user), {
+    id: "name",
+    header: "Nom",
     sortFn: "alphanumeric",
     cell: ({ getValue }) => (
       <span className="whitespace-nowrap text-ellipsis overflow-hidden">
@@ -45,27 +41,19 @@ const columns = columnHelper.columns([
       </span>
     ),
   }),
-  columnHelper.accessor("type", {
-    header: "Type",
+  columnHelper.accessor("email", {
+    header: "Email",
     sortFn: "alphanumeric",
-    cell: ({ row }) => (
+    cell: ({ getValue }) => (
       <span className="whitespace-nowrap text-ellipsis overflow-hidden">
-        {typeLabels[row.original.type]}
-        {row.original.status !== "SUCCEEDED"
-          ? ` — ${statusLabels[row.original.status]}`
-          : ""}
+        {getValue() ?? "—"}
       </span>
     ),
   }),
-  columnHelper.accessor("amount", {
-    header: "Montant",
-    sortFn: "basic",
-    sortUndefined: "last",
-    enableGlobalFilter: false,
-    cell: ({ row }) =>
-      row.original.amount !== null
-        ? `${(row.original.amount / 100).toFixed(2)} CHF`
-        : row.original.description,
+  columnHelper.accessor("role", {
+    header: "Rôle",
+    sortFn: "alphanumeric",
+    cell: ({ getValue }) => <Badge>{roleLabels[getValue()]}</Badge>,
   }),
   columnHelper.accessor("tokens", {
     header: "STKH",
@@ -73,47 +61,54 @@ const columns = columnHelper.columns([
     enableGlobalFilter: false,
     cell: ({ getValue }) => (
       <span className="whitespace-nowrap">
-        {getValue() >= 0 ? "+" : ""}
         {formatSwissNumber(getValue())} STKH
       </span>
     ),
   }),
+  columnHelper.accessor("newsletter", {
+    header: "Newsletter",
+    enableSorting: false,
+    enableGlobalFilter: false,
+    cell: ({ getValue }) => <Badge>{getValue() ? "📰" : "🚫"}</Badge>,
+  }),
+  columnHelper.accessor("createdAt", {
+    header: "Inscrit le",
+    sortFn: "datetime",
+    enableGlobalFilter: false,
+    cell: ({ getValue }) => <FormatedDate date={getValue()} />,
+  }),
 ]);
 
-export function AdminTransactionList({
-  transactions,
-}: {
-  transactions: GetTransaction[];
-}) {
+export function AdminUserList({ users }: { users: GetUser[] }) {
   const globalFilter = useUrlAtom({
-    param: "transactions_q",
+    param: "users_q",
     defaultValue: "",
     parse: parseSearch,
     serialize: serializeSearch,
   });
   const sorting = useUrlAtom({
-    param: "transactions_sort",
+    param: "users_sort",
     defaultValue: [],
     parse: parseSorting,
     serialize: serializeSorting,
   });
 
   const table = useAppTable({
-    data: transactions,
+    data: users,
     columns,
     atoms: { globalFilter, sorting },
     initialState: { pagination: { pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE } },
   });
 
-  if (transactions.length === 0) {
-    return <p className="text-xs">Aucune transaction pour l&apos;instant.</p>;
+  if (users.length === 0) {
+    return <p className="text-xs">Aucun utilisateur pour l&apos;instant.</p>;
   }
 
   return (
     <DataGrid
       table={table}
-      emptyMessage="Aucune transaction ne correspond à cette recherche."
-      searchPlaceholder="Rechercher une transaction…"
+      emptyMessage="Aucun utilisateur ne correspond à cette recherche."
+      searchPlaceholder="Rechercher un utilisateur…"
     />
   );
 }
