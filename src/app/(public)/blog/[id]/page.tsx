@@ -14,7 +14,8 @@ export default function BlogPostPage() {
   return (
     <div className="text-foreground h-full w-full min-h-0">
       <div className="h-full w-full min-h-0 gap-px">
-        <article className="bg-background w-full h-full min-h-0 p-4 text-left">
+        <article className="bg-background w-full h-full min-h-0 overflow-y-auto p-4 text-left">
+          {" "}
           {isLoading && <p>Chargement…</p>}
           {!isLoading && (isError || !post) ? (
             <p>Article introuvable.</p>
