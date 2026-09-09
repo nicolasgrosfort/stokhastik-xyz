@@ -2,14 +2,107 @@ import { createUnsubscribeToken } from "@/libs/unsubscribe-token";
 import nodemailer from "nodemailer";
 
 const adminBcc = process.env.ADMIN_EMAIL || undefined;
+const emailPort = Number(process.env.EMAIL_PORT);
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
+  port: emailPort,
+  secure: emailPort === 465,
   auth: {
     user: process.env.EMAIL_USERNAME,
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+
+type MailDiagnostics = {
+  config: {
+    EMAIL_HOST: boolean;
+    EMAIL_PORT: boolean;
+    EMAIL_USERNAME: boolean;
+    EMAIL_PASSWORD: boolean;
+    EMAIL_FROM: boolean;
+    ADMIN_EMAIL: boolean;
+    SITE_URL: boolean;
+  };
+  adminEmail: string | null;
+  verify: { ok: boolean; error: string | null };
+  send: { ok: boolean; error: string | null; messageId: string | null } | null;
+};
+
+/**
+ * Vérifie la connexion SMTP et envoie un email de test à ADMIN_EMAIL
+ * (avec la même adresse en copie cachée que les emails transactionnels).
+ * Renvoie un diagnostic complet plutôt que de lever une exception.
+ */
+export async function runMailDiagnostics(): Promise<MailDiagnostics> {
+  const result: MailDiagnostics = {
+    config: {
+      EMAIL_HOST: Boolean(process.env.EMAIL_HOST),
+      EMAIL_PORT: Boolean(process.env.EMAIL_PORT),
+      EMAIL_USERNAME: Boolean(process.env.EMAIL_USERNAME),
+      EMAIL_PASSWORD: Boolean(process.env.EMAIL_PASSWORD),
+      EMAIL_FROM: Boolean(process.env.EMAIL_FROM),
+      ADMIN_EMAIL: Boolean(process.env.ADMIN_EMAIL),
+      SITE_URL: Boolean(process.env.SITE_URL),
+    },
+    adminEmail: adminBcc ?? null,
+    verify: { ok: false, error: null },
+    send: null,
+  };
+
+  try {
+    await transporter.verify();
+    result.verify.ok = true;
+  } catch (error) {
+    result.verify.error = error instanceof Error ? error.message : String(error);
+    return result;
+  }
+
+  const to = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM;
+
+  if (!to) {
+    result.send = {
+      ok: false,
+      error: "Aucune adresse de destination (ADMIN_EMAIL / EMAIL_FROM absents).",
+      messageId: null,
+    };
+    return result;
+  }
+
+  const now = new Date().toISOString();
+
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to,
+      bcc: adminBcc,
+      subject: `Test email Stokhastik — ${now}`,
+      text: `Ceci est un email de test envoyé depuis l'admin Stokhastik.\n\nDate : ${now}\nCopie cachée (bcc) : ${adminBcc ?? "aucune"}\n\nSi tu reçois ce message, l'envoi et la copie fonctionnent.`,
+      html: renderEmailHtml({
+        body: `
+          <p style="margin: 0 0 16px;">Ceci est un email de test envoyé depuis l'admin Stokhastik.</p>
+          <p style="margin: 0 0 8px;">Date : ${now}</p>
+          <p style="margin: 0 0 24px;">Copie cachée (bcc) : ${adminBcc ?? "aucune"}</p>
+        `,
+        ctaLabel: "Ouvrir Stokhastik",
+        ctaUrl: process.env.SITE_URL ?? "https://stokhastik.xyz",
+      }),
+    });
+
+    result.send = {
+      ok: true,
+      error: null,
+      messageId: info.messageId ?? null,
+    };
+  } catch (error) {
+    result.send = {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+      messageId: null,
+    };
+  }
+
+  return result;
+}
 
 function renderEmailHtml({
   body,

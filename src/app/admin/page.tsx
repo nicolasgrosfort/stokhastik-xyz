@@ -1,6 +1,7 @@
 import { AdminStoreItemList } from "@/components/admin/store-item-list";
 import { AdminTransactionList } from "@/components/admin/transaction-list";
 import { AdminUserList } from "@/components/admin/user-list";
+import { MailTest } from "@/components/admin/mail-test";
 import { H3 } from "@/components/common/h3";
 import { H4 } from "@/components/common/h4";
 import { prisma } from "@/libs/prisma";
@@ -36,6 +37,9 @@ export default async function AdminPage() {
 
         <H4 className="uppercase">Transactions</H4>
         <AdminTransactionList transactions={transactions} />
+
+        <H4 className="uppercase">Système</H4>
+        <MailTest />
       </div>
     </section>
   );
