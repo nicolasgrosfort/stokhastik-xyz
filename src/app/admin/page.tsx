@@ -1,6 +1,7 @@
 import { AdminStoreItemList } from "@/components/admin/store-item-list";
 import { AdminTransactionList } from "@/components/admin/transaction-list";
 import { AdminUserList } from "@/components/admin/user-list";
+import { GiftTokens } from "@/components/admin/gift-tokens";
 import { MailTest } from "@/components/admin/mail-test";
 import { H3 } from "@/components/common/h3";
 import { H4 } from "@/components/common/h4";
@@ -34,6 +35,7 @@ export default async function AdminPage() {
 
         <H4 className="uppercase">Utilisateurs</H4>
         <AdminUserList users={users} />
+        <GiftTokens users={users} />
 
         <H4 className="uppercase">Transactions</H4>
         <AdminTransactionList transactions={transactions} />

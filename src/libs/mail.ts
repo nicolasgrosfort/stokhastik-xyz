@@ -220,6 +220,37 @@ export async function sendRechargeEmail({
   });
 }
 
+export async function sendGiftEmail({
+  to,
+  firstName,
+  tokens,
+  message,
+}: {
+  to: string;
+  firstName: string;
+  tokens: number;
+  message?: string;
+}) {
+  const accountUrl = `${process.env.SITE_URL}/user/profile`;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    bcc: adminBcc,
+    subject: "Tu as reçu un cadeau sur Stokhastik",
+    text: `Salut ${firstName},\n\n${tokens} STKH viennent de t'être offerts sur ton compte Stokhastik.${message ? `\n\n${message}` : ""}\n\nAccède à ton compte : ${accountUrl}\n\nÀ bientôt,\nNicolas.`,
+    html: renderEmailHtml({
+      body: `
+        <p style="margin: 0 0 16px;">Salut ${firstName},</p>
+        <p style="margin: 0 0 ${message ? "16px" : "24px"};">${tokens} STKH viennent de t'être offerts sur ton compte Stokhastik.</p>
+        ${message ? `<p style="margin: 0 0 24px;">${message}</p>` : ""}
+      `,
+      ctaLabel: "Voir mon compte",
+      ctaUrl: accountUrl,
+    }),
+  });
+}
+
 export async function sendStoreItemNotificationEmail({
   to,
   userId,
