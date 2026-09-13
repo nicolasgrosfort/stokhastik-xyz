@@ -2,9 +2,18 @@
 
 import { Model } from "@/components/common/model";
 import { parseAsString, useQueryState } from "nuqs";
+import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 export default function ModelViewerPage() {
+  return (
+    <Suspense>
+      <ModelViewer />
+    </Suspense>
+  );
+}
+
+function ModelViewer() {
   const [file, setFile] = useQueryState("file", parseAsString.withDefault(""));
   const [position, setPosition] = useQueryState(
     "position",
