@@ -2,7 +2,7 @@
 
 import { Model } from "@/components/common/model";
 import { parseAsString, useQueryState } from "nuqs";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 export default function ModelViewerPage() {
@@ -19,6 +19,10 @@ function ModelViewer() {
     "position",
     parseAsString.withDefault(""),
   );
+  const [pageName, setPageName] = useQueryState(
+    "pageName",
+    parseAsString.withDefault(""),
+  );
 
   const modelUrl = file
     ? `/api/assets/models/${file.endsWith(".glb") ? file : `${file}.glb`}`
@@ -26,8 +30,15 @@ function ModelViewer() {
 
   const modelPosition = position ? parseFloat(position) : 0.5;
 
+  useEffect(() => {
+    if (pageName) {
+      document.title = pageName;
+    }
+  }, [pageName]);
+
   return (
     <section className="h-screen w-screen min-h-0 flex flex-col items-center fixed top-0 left-0 right-0 bottom-0 bg-background">
+      <title>{pageName}</title>
       <div className="relative w-full flex-1 min-h-0">
         {modelUrl ? (
           <ErrorBoundary
