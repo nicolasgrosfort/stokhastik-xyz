@@ -38,7 +38,6 @@ function ModelViewer() {
 
   return (
     <section className="h-screen w-screen min-h-0 flex flex-col items-center fixed top-0 left-0 right-0 bottom-0 bg-background">
-      <title>{pageName}</title>
       <div className="relative w-full flex-1 min-h-0">
         {modelUrl ? (
           <ErrorBoundary
