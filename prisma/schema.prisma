@@ -36,7 +36,7 @@ model StoreItem {
   slug        String   @unique
   name        String
   description String?  @db.Text
-  model       String
+  model       String?
   thumbnail   String
   price       Int
   position    Float

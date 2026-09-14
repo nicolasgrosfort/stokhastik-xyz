@@ -28,6 +28,7 @@ export default async function ItemPage({
             position={item.position}
             rotation={item.rotation}
             model={item.model}
+            thumbnail={!item.model ? item.thumbnail : undefined}
           />
         </div>
 

@@ -3,6 +3,7 @@
 import { GetStoreItem } from "@/libs/store-item";
 import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import Image from "next/image";
 import { Suspense, useRef, useState } from "react";
 import { Group } from "three";
 import { DRACOLoader, GLTFLoader } from "three/examples/jsm/Addons.js";
@@ -14,7 +15,7 @@ const Object = ({
   model,
   rotation,
 }: {
-  model: GetStoreItem["model"];
+  model: string;
   rotation: GetStoreItem["rotation"];
   stopRotation?: boolean;
 }) => {
@@ -40,14 +41,26 @@ export const Model = ({
   position,
   rotation,
   model,
+  thumbnail,
   stopRotation,
 }: {
   position: GetStoreItem["position"];
   rotation: GetStoreItem["rotation"];
   model: GetStoreItem["model"];
+  thumbnail?: GetStoreItem["thumbnail"];
   stopRotation?: boolean;
 }) => {
   const [isControlling, setIsControlling] = useState(false);
+
+  if (!model) {
+    if (!thumbnail) return null;
+
+    return (
+      <div className="relative w-full h-full min-h-0">
+        <Image src={thumbnail} alt="" fill className="object-cover" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-full min-h-0">
@@ -57,21 +70,19 @@ export const Model = ({
         camera={{ position: [position, position, position], fov: 50 }}
       >
         <ambientLight intensity={2} />
-        {model ? (
-          <Suspense
-            fallback={
-              <Html center>
-                <p className="font-mono text-xs uppercase">Chargement...</p>
-              </Html>
-            }
-          >
-            <Object
-              model={model}
-              rotation={rotation}
-              stopRotation={stopRotation || isControlling}
-            />
-          </Suspense>
-        ) : null}
+        <Suspense
+          fallback={
+            <Html center>
+              <p className="font-mono text-xs uppercase">Chargement...</p>
+            </Html>
+          }
+        >
+          <Object
+            model={model}
+            rotation={rotation}
+            stopRotation={stopRotation || isControlling}
+          />
+        </Suspense>
         <OrbitControls
           enablePan={false}
           onStart={() => setIsControlling(true)}

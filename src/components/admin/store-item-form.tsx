@@ -221,7 +221,6 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
                 placeholder="/models/mon-item.glb"
                 value={field.state.value}
                 onChange={field.handleChange}
-                required
               />
               <AssetImportButton
                 type="models"
@@ -240,7 +239,7 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
               <TextField
                 name={field.name}
                 label="Miniature"
-                placeholder="/thumbnails/mon-item.png"
+                placeholder="/thumbnails/mon-item.avif"
                 value={field.state.value}
                 onChange={field.handleChange}
                 required

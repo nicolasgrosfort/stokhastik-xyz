@@ -7,7 +7,7 @@ export type StoreItemInput = {
   name: string;
   slug: string;
   description: string | null;
-  model: string;
+  model: string | null;
   thumbnail: string;
   price: number;
   position: number;
@@ -24,7 +24,6 @@ export function parseStoreItemInput(
     body === null ||
     !("name" in body) ||
     !("slug" in body) ||
-    !("model" in body) ||
     !("thumbnail" in body) ||
     !("price" in body) ||
     !("position" in body) ||
@@ -32,7 +31,6 @@ export function parseStoreItemInput(
     !("releaseDate" in body) ||
     typeof body.name !== "string" ||
     typeof body.slug !== "string" ||
-    typeof body.model !== "string" ||
     typeof body.thumbnail !== "string" ||
     typeof body.price !== "number" ||
     typeof body.position !== "number" ||
@@ -42,12 +40,12 @@ export function parseStoreItemInput(
     typeof body.published !== "boolean" ||
     !body.name.trim() ||
     !body.slug.trim() ||
-    !body.model.trim() ||
     !body.thumbnail.trim() ||
     !Number.isFinite(body.price) ||
     body.price <= 0 ||
     !Number.isFinite(body.position) ||
-    !Number.isFinite(body.rotation)
+    !Number.isFinite(body.rotation) ||
+    ("model" in body && body.model !== null && typeof body.model !== "string")
   ) {
     return { error: "Merci de remplir correctement tous les champs requis." };
   }
@@ -55,7 +53,6 @@ export function parseStoreItemInput(
   const {
     name,
     slug,
-    model,
     thumbnail,
     price,
     position,
@@ -63,6 +60,11 @@ export function parseStoreItemInput(
     releaseDate,
     published,
   } = body;
+
+  const model =
+    "model" in body && typeof body.model === "string" && body.model.trim()
+      ? body.model
+      : null;
 
   const description =
     "description" in body &&
