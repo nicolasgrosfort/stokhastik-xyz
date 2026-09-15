@@ -224,7 +224,7 @@ export function StoreItemForm({ item }: { item?: StoreItem }) {
               />
               <AssetImportButton
                 type="models"
-                accept=".glb"
+                accept=".glb,.ply"
                 uploading={uploading.model}
                 error={uploadError.model}
                 onFile={(file) => handleFileImport("models", "model", file)}

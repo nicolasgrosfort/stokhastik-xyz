@@ -25,7 +25,7 @@ function ModelViewer() {
   );
 
   const modelUrl = file
-    ? `/api/assets/models/${file.endsWith(".glb") ? file : `${file}.glb`}`
+    ? `/api/assets/models/${/\.(glb|ply)$/i.test(file) ? file : `${file}`}`
     : null;
 
   const modelPosition = position ? parseFloat(position) : 0.5;

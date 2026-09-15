@@ -6,7 +6,7 @@ export const ASSET_TYPES = ["models", "thumbnails"] as const;
 export type AssetType = (typeof ASSET_TYPES)[number];
 
 const ALLOWED_EXTENSIONS: Record<AssetType, string[]> = {
-  models: [".glb"],
+  models: [".glb", ".ply"],
   thumbnails: [".avif"],
 };
 
@@ -17,6 +17,7 @@ const MAX_SIZE_BYTES: Record<AssetType, number> = {
 
 const CONTENT_TYPES: Record<string, string> = {
   ".glb": "model/gltf-binary",
+  ".ply": "application/octet-stream",
   ".avif": "image/avif",
 };
 

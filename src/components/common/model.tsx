@@ -4,11 +4,65 @@ import { GetStoreItem } from "@/libs/store-item";
 import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import Image from "next/image";
-import { Suspense, useRef, useState } from "react";
-import { Group } from "three";
-import { DRACOLoader, GLTFLoader } from "three/examples/jsm/Addons.js";
+import { Suspense, useMemo, useRef, useState } from "react";
+import { Float32BufferAttribute, Group } from "three";
+import {
+  DRACOLoader,
+  GLTFLoader,
+  PLYLoader,
+} from "three/examples/jsm/Addons.js";
 
 const dracoLoader = new DRACOLoader();
+
+const isPly = (model: string) => model.split(".").pop()?.toLowerCase() === "ply";
+
+const GltfObject = ({ model }: { model: string }) => {
+  const result = useLoader(GLTFLoader, model, (loader) => {
+    loader.setDRACOLoader(dracoLoader);
+  });
+
+  return <primitive object={result.scene} />;
+};
+
+// Spherical harmonics DC-term to RGB, as used by 3D Gaussian Splatting exports
+// (properties f_dc_0/1/2) that have no plain red/green/blue color.
+const SH_C0 = 0.28209479177387814;
+
+const configurePlyLoader = (loader: PLYLoader) => {
+  loader.setCustomPropertyNameMapping({
+    sh: ["f_dc_0", "f_dc_1", "f_dc_2"],
+  });
+};
+
+const PlyObject = ({ model }: { model: string }) => {
+  const geometry = useLoader(PLYLoader, model, configurePlyLoader);
+
+  useMemo(() => {
+    if (geometry.hasAttribute("color")) return;
+
+    const sh = geometry.getAttribute("sh");
+    if (!sh) return;
+
+    const colors = new Float32Array(sh.count * 3);
+    for (let i = 0; i < sh.count; i++) {
+      colors[i * 3] = Math.min(1, Math.max(0, 0.5 + SH_C0 * sh.getX(i)));
+      colors[i * 3 + 1] = Math.min(1, Math.max(0, 0.5 + SH_C0 * sh.getY(i)));
+      colors[i * 3 + 2] = Math.min(1, Math.max(0, 0.5 + SH_C0 * sh.getZ(i)));
+    }
+
+    geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
+  }, [geometry]);
+
+  return (
+    <points geometry={geometry}>
+      <pointsMaterial
+        size={0.01}
+        vertexColors={geometry.hasAttribute("color")}
+        sizeAttenuation
+      />
+    </points>
+  );
+};
 
 const Object = ({
   stopRotation,
@@ -19,9 +73,6 @@ const Object = ({
   rotation: GetStoreItem["rotation"];
   stopRotation?: boolean;
 }) => {
-  const result = useLoader(GLTFLoader, model, (loader) => {
-    loader.setDRACOLoader(dracoLoader);
-  });
   const ref = useRef<Group>(null);
 
   useFrame((_, delta) => {
@@ -32,7 +83,11 @@ const Object = ({
 
   return (
     <group ref={ref} rotation={[0, rotation, 0]}>
-      <primitive object={result.scene} />
+      {isPly(model) ? (
+        <PlyObject model={model} />
+      ) : (
+        <GltfObject model={model} />
+      )}
     </group>
   );
 };
