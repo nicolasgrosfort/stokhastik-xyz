@@ -73,27 +73,27 @@ export function ModelViewer() {
 
   return (
     <section className="h-screen w-screen min-h-0 flex flex-col items-center fixed top-0 left-0 right-0 bottom-0 bg-background">
-      <Toolbar.Root className="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center gap-2 border border-foreground bg-background/90 p-1 font-mono text-[10px] uppercase sm:text-xs">
+      <Toolbar.Root className="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/90 p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
         <Toolbar.Group className="flex items-center gap-1">
-          <label className="px-1 text-foreground/70">Position</label>
+          <label className="px-1 text-foreground/70">POS</label>
           <Toolbar.Input
             type="number"
             step="0.1"
             value={position}
             onChange={(e) => setPosition(e.target.value)}
-            className="w-16 border border-dark-green bg-background p-1 font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-10 bg-background p-1 font-mono focus:outline-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </Toolbar.Group>
         <Toolbar.Separator className="h-4 w-px bg-foreground" />
         <Toolbar.Group className="flex items-center gap-1">
-          <label className="px-1 text-foreground/70">Point size</label>
+          <label className="px-1 text-foreground/70">SIZE</label>
           <Toolbar.Input
             type="number"
             step="0.01"
             min="0"
             value={pointSize}
             onChange={(e) => setPointSize(e.target.value)}
-            className="w-16 border border-dark-green bg-background p-1 font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-10 bg-background p-1 font-mono focus:outline-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </Toolbar.Group>
         <Toolbar.Separator className="h-4 w-px bg-foreground" />
@@ -103,22 +103,22 @@ export function ModelViewer() {
             onClick={() =>
               setStopRotation(stopRotationValue ? "false" : "true")
             }
-            className="cursor-pointer px-2 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background"
+            className="cursor-pointer px-2 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background uppercase"
             data-pressed={stopRotationValue}
           >
-            Stop rotation
+            Rotation
           </Toolbar.Button>
           <Toolbar.Button
             aria-pressed={enablePanValue}
             onClick={() => setEnablePan(enablePanValue ? "false" : "true")}
-            className="cursor-pointer px-2 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background"
+            className="cursor-pointer px-2 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background uppercase"
             data-pressed={enablePanValue}
           >
-            Enable pan
+            Pan
           </Toolbar.Button>
         </Toolbar.Group>
       </Toolbar.Root>
-      <Toolbar.Root className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center gap-2 border border-foreground bg-background/90 p-1 font-mono text-[10px] uppercase sm:text-xs">
+      <Toolbar.Root className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/90 p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">Model</label>
           <Select.Root
@@ -131,10 +131,10 @@ export function ModelViewer() {
           >
             <Toolbar.Button
               render={<Select.Trigger />}
-              className="flex min-w-32 cursor-pointer items-center justify-between gap-2 border border-dark-green bg-background p-1 font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground"
+              className="flex min-w-32 max-w-40 cursor-pointer items-center justify-between gap-2 overflow-hidden  bg-background p-1 font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground"
             >
-              <Select.Value placeholder="Choisir…" />
-              <Select.Icon>▾</Select.Icon>
+              <Select.Value placeholder="Choisir…" className="truncate" />
+              <Select.Icon className="shrink-0">▾</Select.Icon>
             </Toolbar.Button>
             <Select.Portal>
               <Select.Positioner
@@ -191,7 +191,7 @@ export function ModelViewer() {
               model={modelUrl}
               position={modelPosition}
               rotation={0}
-              stopRotation={stopRotationValue}
+              stopRotation={!stopRotationValue}
               enablePan={enablePanValue}
               pointSize={pointSizeValue}
             />
