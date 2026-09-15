@@ -6,9 +6,14 @@ import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
+type ModelExtension = "glb" | "ply";
+
 export function ModelViewer() {
   const [file, setFile] = useQueryState("file", parseAsString.withDefault(""));
   const [modelFiles, setModelFiles] = useState<string[]>([]);
+  const [extensionFilter, setExtensionFilter] = useState<Set<ModelExtension>>(
+    new Set(),
+  );
 
   useEffect(() => {
     fetch("/api/assets/models")
@@ -16,6 +21,27 @@ export function ModelViewer() {
       .then((data: { files: string[] }) => setModelFiles(data.files ?? []))
       .catch(() => setModelFiles([]));
   }, []);
+
+  const toggleExtensionFilter = (extension: ModelExtension) => {
+    setExtensionFilter((previous) => {
+      const next = new Set(previous);
+      if (next.has(extension)) {
+        next.delete(extension);
+      } else {
+        next.add(extension);
+      }
+      return next;
+    });
+  };
+
+  const filteredModelFiles =
+    extensionFilter.size === 0
+      ? modelFiles
+      : modelFiles.filter((modelFile) =>
+          extensionFilter.has(
+            modelFile.split(".").pop()?.toLowerCase() as ModelExtension,
+          ),
+        );
 
   const [position, setPosition] = useQueryState(
     "position",
@@ -98,7 +124,7 @@ export function ModelViewer() {
           <Select.Root
             value={file}
             onValueChange={(value) => setFile(value ?? "")}
-            items={modelFiles.map((modelFile) => ({
+            items={filteredModelFiles.map((modelFile) => ({
               label: modelFile,
               value: modelFile,
             }))}
@@ -117,7 +143,7 @@ export function ModelViewer() {
                 sideOffset={4}
               >
                 <Select.Popup className="max-h-(--available-height) min-w-(--anchor-width) overflow-y-auto border border-foreground bg-background font-mono text-[10px] uppercase sm:text-xs">
-                  {modelFiles.map((modelFile) => (
+                  {filteredModelFiles.map((modelFile) => (
                     <Select.Item
                       key={modelFile}
                       value={modelFile}
@@ -130,6 +156,25 @@ export function ModelViewer() {
               </Select.Positioner>
             </Select.Portal>
           </Select.Root>
+        </Toolbar.Group>
+        <Toolbar.Separator className="h-4 w-px bg-foreground" />
+        <Toolbar.Group className="flex items-center gap-1">
+          <Toolbar.Button
+            aria-pressed={extensionFilter.has("glb")}
+            onClick={() => toggleExtensionFilter("glb")}
+            className="cursor-pointer px-2 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background"
+            data-pressed={extensionFilter.has("glb")}
+          >
+            GLB
+          </Toolbar.Button>
+          <Toolbar.Button
+            aria-pressed={extensionFilter.has("ply")}
+            onClick={() => toggleExtensionFilter("ply")}
+            className="cursor-pointer px-2 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background"
+            data-pressed={extensionFilter.has("ply")}
+          >
+            PLY
+          </Toolbar.Button>
         </Toolbar.Group>
       </Toolbar.Root>
       <div className="relative w-full flex-1 min-h-0">
