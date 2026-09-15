@@ -43,6 +43,12 @@ export function ModelViewer() {
           ),
         );
 
+  useEffect(() => {
+    if (!file && filteredModelFiles.length > 0) {
+      setFile(filteredModelFiles[0]);
+    }
+  }, [file, filteredModelFiles, setFile]);
+
   const [position, setPosition] = useQueryState(
     "position",
     parseAsString.withDefault("0.5"),
