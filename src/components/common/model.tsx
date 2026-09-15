@@ -2,9 +2,9 @@
 
 import { GetStoreItem } from "@/libs/store-item";
 import { Html, OrbitControls } from "@react-three/drei";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import Image from "next/image";
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Float32BufferAttribute, Group } from "three";
 import {
   DRACOLoader,
@@ -69,6 +69,16 @@ const PlyObject = ({
       />
     </points>
   );
+};
+
+const CameraDistance = ({ distance }: { distance: number }) => {
+  const camera = useThree((state) => state.camera);
+
+  useEffect(() => {
+    camera.position.set(distance, distance, distance);
+  }, [camera, distance]);
+
+  return null;
 };
 
 const Object = ({
@@ -138,6 +148,7 @@ export const Model = ({
         camera={{ position: [position, position, position], fov: 50 }}
       >
         <ambientLight intensity={2} />
+        <CameraDistance distance={position} />
         <Suspense
           fallback={
             <Html center>
