@@ -14,7 +14,8 @@ import {
 
 const dracoLoader = new DRACOLoader();
 
-const isPly = (model: string) => model.split(".").pop()?.toLowerCase() === "ply";
+const isPly = (model: string) =>
+  model.split(".").pop()?.toLowerCase() === "ply";
 
 const GltfObject = ({ model }: { model: string }) => {
   const result = useLoader(GLTFLoader, model, (loader) => {
@@ -34,7 +35,13 @@ const configurePlyLoader = (loader: PLYLoader) => {
   });
 };
 
-const PlyObject = ({ model }: { model: string }) => {
+const PlyObject = ({
+  model,
+  pointSize,
+}: {
+  model: string;
+  pointSize?: number;
+}) => {
   const geometry = useLoader(PLYLoader, model, configurePlyLoader);
 
   useMemo(() => {
@@ -56,7 +63,7 @@ const PlyObject = ({ model }: { model: string }) => {
   return (
     <points geometry={geometry}>
       <pointsMaterial
-        size={0.01}
+        size={pointSize ?? 0.01}
         vertexColors={geometry.hasAttribute("color")}
         sizeAttenuation
       />
@@ -68,10 +75,12 @@ const Object = ({
   stopRotation,
   model,
   rotation,
+  pointSize,
 }: {
   model: string;
   rotation: GetStoreItem["rotation"];
   stopRotation?: boolean;
+  pointSize?: number;
 }) => {
   const ref = useRef<Group>(null);
 
@@ -84,7 +93,7 @@ const Object = ({
   return (
     <group ref={ref} rotation={[0, rotation, 0]}>
       {isPly(model) ? (
-        <PlyObject model={model} />
+        <PlyObject model={model} pointSize={pointSize} />
       ) : (
         <GltfObject model={model} />
       )}
@@ -98,12 +107,16 @@ export const Model = ({
   model,
   thumbnail,
   stopRotation,
+  enablePan,
+  pointSize,
 }: {
   position: GetStoreItem["position"];
   rotation: GetStoreItem["rotation"];
   model: GetStoreItem["model"];
   thumbnail?: GetStoreItem["thumbnail"];
   stopRotation?: boolean;
+  enablePan?: boolean;
+  pointSize?: number;
 }) => {
   const [isControlling, setIsControlling] = useState(false);
 
@@ -135,11 +148,12 @@ export const Model = ({
           <Object
             model={model}
             rotation={rotation}
+            pointSize={pointSize}
             stopRotation={stopRotation || isControlling}
           />
         </Suspense>
         <OrbitControls
-          enablePan={false}
+          enablePan={enablePan ?? false}
           onStart={() => setIsControlling(true)}
           onEnd={() => setIsControlling(false)}
         />

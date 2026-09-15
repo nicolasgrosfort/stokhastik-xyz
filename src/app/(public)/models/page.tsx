@@ -28,7 +28,18 @@ function ModelViewer() {
     parseAsString.withDefault("false"),
   );
 
+  const [enablePan, setEnablePan] = useQueryState(
+    "enablePan",
+    parseAsString.withDefault("false"),
+  );
+  const [pointSize, setPointSize] = useQueryState(
+    "pointSize",
+    parseAsString.withDefault("0.01"),
+  );
+
   const stopRotationValue = stopRotation === "true";
+  const enablePanValue = enablePan === "true";
+  const pointSizeValue = parseFloat(pointSize) || 0.01;
 
   const modelUrl = file
     ? `/api/assets/models/${/\.(glb|ply)$/i.test(file) ? file : `${file}`}`
@@ -59,6 +70,8 @@ function ModelViewer() {
               position={modelPosition}
               rotation={0}
               stopRotation={stopRotationValue}
+              enablePan={enablePanValue}
+              pointSize={pointSizeValue}
             />
           </ErrorBoundary>
         ) : (
