@@ -1,16 +1,25 @@
 "use client";
 
 import { Model } from "@/components/common/model";
-import { Toolbar } from "@base-ui/react";
+import { Select, Toolbar } from "@base-ui/react";
 import { parseAsString, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 export function ModelViewer() {
-  const [file] = useQueryState("file", parseAsString.withDefault(""));
+  const [file, setFile] = useQueryState("file", parseAsString.withDefault(""));
+  const [modelFiles, setModelFiles] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/assets/models")
+      .then((res) => res.json())
+      .then((data: { files: string[] }) => setModelFiles(data.files ?? []))
+      .catch(() => setModelFiles([]));
+  }, []);
 
   const [position, setPosition] = useQueryState(
     "position",
-    parseAsString.withDefault(""),
+    parseAsString.withDefault("0.5"),
   );
   const [stopRotation, setStopRotation] = useQueryState(
     "stopRotation",
@@ -39,6 +48,41 @@ export function ModelViewer() {
   return (
     <section className="h-screen w-screen min-h-0 flex flex-col items-center fixed top-0 left-0 right-0 bottom-0 bg-background">
       <Toolbar.Root className="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center gap-2 border border-foreground bg-background/90 p-1 font-mono text-[10px] uppercase sm:text-xs">
+        <Toolbar.Group className="flex items-center gap-1">
+          <label className="px-1 text-foreground/70">Model</label>
+          <Select.Root
+            value={file}
+            onValueChange={(value) => setFile(value ?? "")}
+            items={modelFiles.map((modelFile) => ({
+              label: modelFile,
+              value: modelFile,
+            }))}
+          >
+            <Toolbar.Button
+              render={<Select.Trigger />}
+              className="flex min-w-32 cursor-pointer items-center justify-between gap-2 border border-dark-green bg-background p-1 font-mono focus:outline focus:-outline-offset-2 focus:outline-foreground"
+            >
+              <Select.Value placeholder="Choisir…" />
+              <Select.Icon>▾</Select.Icon>
+            </Toolbar.Button>
+            <Select.Portal>
+              <Select.Positioner className="z-20 outline-none" sideOffset={4}>
+                <Select.Popup className="max-h-(--available-height) min-w-(--anchor-width) overflow-y-auto border border-foreground bg-background font-mono text-[10px] uppercase sm:text-xs">
+                  {modelFiles.map((modelFile) => (
+                    <Select.Item
+                      key={modelFile}
+                      value={modelFile}
+                      className="cursor-pointer px-2 py-1 data-highlighted:bg-foreground data-highlighted:text-background"
+                    >
+                      <Select.ItemText>{modelFile}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Popup>
+              </Select.Positioner>
+            </Select.Portal>
+          </Select.Root>
+        </Toolbar.Group>
+        <Toolbar.Separator className="h-4 w-px bg-foreground" />
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">Position</label>
           <Toolbar.Input

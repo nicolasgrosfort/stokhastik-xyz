@@ -1,5 +1,5 @@
 import { slugify } from "@/libs/utils";
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, readdir, writeFile } from "fs/promises";
 import path from "path";
 
 export const ASSET_TYPES = ["models", "thumbnails"] as const;
@@ -56,6 +56,21 @@ export function validateAssetFile(
   }
 
   return { extension };
+}
+
+export async function listAssetFiles(type: AssetType): Promise<string[]> {
+  const dir = getAssetDir(type);
+
+  try {
+    const entries = await readdir(dir);
+    return entries
+      .filter((entry) =>
+        ALLOWED_EXTENSIONS[type].includes(path.extname(entry).toLowerCase()),
+      )
+      .sort((a, b) => a.localeCompare(b));
+  } catch {
+    return [];
+  }
 }
 
 export async function saveAssetFile(
