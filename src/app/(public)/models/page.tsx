@@ -23,6 +23,12 @@ function ModelViewer() {
     "pageName",
     parseAsString.withDefault(""),
   );
+  const [stopRotation, setStopRotation] = useQueryState(
+    "stopRotation",
+    parseAsString.withDefault("false"),
+  );
+
+  const stopRotationValue = stopRotation === "true";
 
   const modelUrl = file
     ? `/api/assets/models/${/\.(glb|ply)$/i.test(file) ? file : `${file}`}`
@@ -48,7 +54,12 @@ function ModelViewer() {
               </p>
             }
           >
-            <Model model={modelUrl} position={modelPosition} rotation={0} />
+            <Model
+              model={modelUrl}
+              position={modelPosition}
+              rotation={0}
+              stopRotation={stopRotationValue}
+            />
           </ErrorBoundary>
         ) : (
           <p className="absolute inset-0 flex items-center justify-center text-xs font-mono text-center p-2 uppercase">
