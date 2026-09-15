@@ -1,7 +1,7 @@
 "use client";
 
 import { Model } from "@/components/common/model";
-import { Select, Toolbar } from "@base-ui/react";
+import { Select, Slider, Toolbar } from "@base-ui/react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -82,25 +82,50 @@ export function ModelViewer() {
       <Toolbar.Root className="absolute top-[calc(0.5rem+env(safe-area-inset-top))] left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/90 p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">POS</label>
-          <Toolbar.Input
-            type="number"
-            step="0.1"
-            value={position}
-            onChange={(e) => setPosition(e.target.value)}
-            className="w-10 bg-background p-1 font-mono focus:outline-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
+          <Slider.Root
+            value={modelPosition}
+            min={0.1}
+            max={5}
+            step={0.1}
+            onValueChange={(value) => setPosition(String(value))}
+          >
+            <Slider.Control className="flex w-12 touch-none items-center py-1 select-none">
+              <Slider.Track className="relative h-1 w-full bg-foreground/20 select-none">
+                <Slider.Indicator className="bg-foreground select-none" />
+                <Slider.Thumb
+                  aria-label="Position"
+                  className="size-3 border border-foreground bg-background select-none focus:outline-none has-focus-visible:outline has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground"
+                />
+              </Slider.Track>
+            </Slider.Control>
+          </Slider.Root>
+          <span className="w-8 text-right tabular-nums text-foreground/70 select-none">
+            {modelPosition.toFixed(1)}
+          </span>
         </Toolbar.Group>
         <Toolbar.Separator className="h-4 w-px bg-foreground" />
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">SIZE</label>
-          <Toolbar.Input
-            type="number"
-            step="0.01"
-            min="0"
-            value={pointSize}
-            onChange={(e) => setPointSize(e.target.value)}
-            className="w-10 bg-background p-1 font-mono focus:outline-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
+          <Slider.Root
+            value={pointSizeValue}
+            min={0.001}
+            max={0.1}
+            step={0.001}
+            onValueChange={(value) => setPointSize(String(value))}
+          >
+            <Slider.Control className="flex w-12 touch-none items-center py-1 select-none">
+              <Slider.Track className="relative h-1 w-full bg-foreground/20 select-none">
+                <Slider.Indicator className="bg-foreground select-none" />
+                <Slider.Thumb
+                  aria-label="Taille du point"
+                  className="size-3 border border-foreground bg-background select-none focus:outline-none has-focus-visible:outline has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground"
+                />
+              </Slider.Track>
+            </Slider.Control>
+          </Slider.Root>
+          <span className="w-10 text-right tabular-nums text-foreground/70 select-none">
+            {pointSizeValue.toFixed(3)}
+          </span>
         </Toolbar.Group>
         <Toolbar.Separator className="h-4 w-px bg-foreground" />
         <Toolbar.Group className="flex items-center gap-1">
