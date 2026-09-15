@@ -2,7 +2,7 @@ import { Footer } from "@/components/common/footer";
 import { Header } from "@/components/common/header";
 import { QueryProvider } from "@/providers/query-provider";
 import { SessionProvider } from "@/providers/session-provider";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
@@ -24,6 +24,12 @@ const mapleMono = localFont({
 export const metadata: Metadata = {
   title: "Stokhastik",
   description: "Espace de prorotypage, d'expérimentation et de partage.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
