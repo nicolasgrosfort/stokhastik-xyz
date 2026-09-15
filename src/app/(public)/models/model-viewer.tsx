@@ -12,7 +12,7 @@ export function ModelViewer() {
   const [file, setFile] = useQueryState("file", parseAsString.withDefault(""));
   const [modelFiles, setModelFiles] = useState<string[]>([]);
   const [extensionFilter, setExtensionFilter] = useState<Set<ModelExtension>>(
-    new Set(),
+    new Set(["ply"]),
   );
 
   useEffect(() => {
