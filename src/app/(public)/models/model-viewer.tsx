@@ -1,12 +1,44 @@
 "use client";
 
-import { Model } from "@/components/common/model";
+import { Model, ModelAnnotation } from "@/components/common/model";
 import { Select, Slider, Toolbar } from "@base-ui/react";
-import { parseAsString, useQueryState } from "nuqs";
+import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 type ModelExtension = "glb" | "ply";
+
+const isVector3 = (value: unknown): value is [number, number, number] =>
+  Array.isArray(value) &&
+  value.length === 3 &&
+  value.every((coordinate) => typeof coordinate === "number");
+
+const parseAnnotations = (value: unknown): ModelAnnotation[] | null => {
+  if (!Array.isArray(value)) return null;
+
+  const annotations: ModelAnnotation[] = [];
+  for (const item of value) {
+    if (
+      typeof item !== "object" ||
+      item === null ||
+      typeof (item as { text?: unknown }).text !== "string" ||
+      !isVector3((item as { point?: unknown }).point)
+    ) {
+      return null;
+    }
+
+    const labelOffset = (item as { labelOffset?: unknown }).labelOffset;
+    if (labelOffset !== undefined && !isVector3(labelOffset)) return null;
+
+    annotations.push({
+      text: (item as { text: string }).text,
+      point: (item as { point: [number, number, number] }).point,
+      labelOffset: labelOffset as [number, number, number] | undefined,
+    });
+  }
+
+  return annotations;
+};
 
 export function ModelViewer() {
   const [file, setFile] = useQueryState("file", parseAsString.withDefault(""));
@@ -65,6 +97,10 @@ export function ModelViewer() {
   const [pointSize, setPointSize] = useQueryState(
     "pointSize",
     parseAsString.withDefault("0.01"),
+  );
+  const [annotations] = useQueryState(
+    "annotations",
+    parseAsJson(parseAnnotations).withDefault([]),
   );
 
   const stopRotationValue = stopRotation === "true";
@@ -225,6 +261,7 @@ export function ModelViewer() {
               stopRotation={!stopRotationValue}
               enablePan={enablePanValue}
               pointSize={pointSizeValue}
+              annotations={annotations}
             />
           </ErrorBoundary>
         ) : (
