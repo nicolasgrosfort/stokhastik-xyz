@@ -118,11 +118,13 @@ const Object = ({
   model,
   rotation,
   pointSize,
+  annotations,
 }: {
   model: string;
   rotation: GetStoreItem["rotation"];
   stopRotation?: boolean;
   pointSize?: number;
+  annotations?: ModelAnnotation[];
 }) => {
   const ref = useRef<Group>(null);
 
@@ -139,6 +141,9 @@ const Object = ({
       ) : (
         <GltfObject model={model} />
       )}
+      {annotations?.map((annotation, index) => (
+        <Annotation key={index} {...annotation} />
+      ))}
     </group>
   );
 };
@@ -195,11 +200,9 @@ export const Model = ({
             rotation={rotation}
             pointSize={pointSize}
             stopRotation={stopRotation || isControlling}
+            annotations={annotations}
           />
         </Suspense>
-        {annotations?.map((annotation, index) => (
-          <Annotation key={index} {...annotation} />
-        ))}
         <OrbitControls
           enablePan={enablePan ?? false}
           onStart={() => setIsControlling(true)}
