@@ -1,7 +1,7 @@
 "use client";
 
 import { GetStoreItem } from "@/libs/store-item";
-import { Html, OrbitControls } from "@react-three/drei";
+import { Html, Line, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -71,6 +71,39 @@ const PlyObject = ({
   );
 };
 
+export type ModelAnnotation = {
+  text: string;
+  point: [number, number, number];
+  labelOffset?: [number, number, number];
+};
+
+const Annotation = ({
+  text,
+  point,
+  labelOffset = [0.5, 0.5, 0],
+}: ModelAnnotation) => {
+  const labelPosition: [number, number, number] = [
+    point[0] + labelOffset[0],
+    point[1] + labelOffset[1],
+    point[2] + labelOffset[2],
+  ];
+
+  return (
+    <>
+      <Line points={[point, labelPosition]} color="white" lineWidth={1} />
+      <mesh position={point}>
+        <sphereGeometry args={[0.01, 16, 16]} />
+        <meshBasicMaterial color="white" />
+      </mesh>
+      <Html position={labelPosition} center>
+        <div className="border border-foreground bg-background/60 px-3 py-2 font-mono text-xs uppercase shadow-md backdrop-blur-sm select-none">
+          {text}
+        </div>
+      </Html>
+    </>
+  );
+};
+
 const CameraDistance = ({ distance }: { distance: number }) => {
   const camera = useThree((state) => state.camera);
 
@@ -119,6 +152,7 @@ export const Model = ({
   stopRotation,
   enablePan,
   pointSize,
+  annotations,
 }: {
   position: GetStoreItem["position"];
   rotation: GetStoreItem["rotation"];
@@ -127,6 +161,7 @@ export const Model = ({
   stopRotation?: boolean;
   enablePan?: boolean;
   pointSize?: number;
+  annotations?: ModelAnnotation[];
 }) => {
   const [isControlling, setIsControlling] = useState(false);
 
@@ -163,6 +198,9 @@ export const Model = ({
             stopRotation={stopRotation || isControlling}
           />
         </Suspense>
+        {annotations?.map((annotation, index) => (
+          <Annotation key={index} {...annotation} />
+        ))}
         <OrbitControls
           enablePan={enablePan ?? false}
           onStart={() => setIsControlling(true)}
