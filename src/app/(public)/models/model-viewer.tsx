@@ -46,6 +46,73 @@ const emptyAnnotation: ModelAnnotation = {
   labelOffset: [0.5, 0.5, 0],
 };
 
+const axisLabels = ["X", "Y", "Z"] as const;
+
+function AxisRow({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <Slider.Root
+      value={value}
+      min={-2}
+      max={2}
+      step={0.01}
+      onValueChange={(next) => onChange(next as number)}
+      className="min-w-0 flex-1"
+    >
+      <Slider.Control className="flex w-full touch-none items-center py-1 select-none">
+        <Slider.Track className="relative h-1 w-full bg-foreground/20 select-none">
+          <Slider.Indicator className="bg-foreground select-none" />
+          <Slider.Thumb
+            aria-label="Coordonnée"
+            className="size-3 border border-foreground bg-background select-none focus:outline-none has-focus-visible:outline has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground"
+          />
+        </Slider.Track>
+      </Slider.Control>
+    </Slider.Root>
+  );
+}
+
+function VectorField({
+  label,
+  vector,
+  onChange,
+}: {
+  label: string;
+  vector: [number, number, number];
+  onChange: (axis: 0 | 1 | 2, value: number) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <label className="text-foreground/70">{label}</label>
+      {vector.map((coordinate, axis) => (
+        <div key={axis} className="flex items-center gap-1">
+          <span className="w-2.5 shrink-0 text-foreground/50">
+            {axisLabels[axis]}
+          </span>
+          <AxisRow
+            value={coordinate}
+            onChange={(value) => onChange(axis as 0 | 1 | 2, value)}
+          />
+          <input
+            type="number"
+            step={0.05}
+            value={coordinate}
+            onChange={(event) =>
+              onChange(axis as 0 | 1 | 2, parseFloat(event.target.value) || 0)
+            }
+            className="w-12 min-w-0 shrink-0 border border-foreground/40 bg-background px-1 py-0.5 tabular-nums focus:outline-none focus:border-foreground"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function AnnotationsPanel({
   annotations,
   setAnnotations,
@@ -79,7 +146,7 @@ function AnnotationsPanel({
     setAnnotations([...annotations, { ...emptyAnnotation }]);
 
   return (
-    <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-64 -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/90 p-2 font-mono text-[10px] uppercase sm:text-xs">
+    <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-72 -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/90 p-2 font-mono text-[10px] uppercase sm:text-xs">
       <div className="flex items-center justify-between gap-2">
         <span className="text-foreground/70">Annotations</span>
         <button
@@ -118,48 +185,20 @@ function AnnotationsPanel({
               ×
             </button>
           </div>
-          <div className="flex items-center gap-1">
-            <label className="w-12 shrink-0 text-foreground/70">Point</label>
-            {annotation.point.map((coordinate, axis) => (
-              <input
-                key={axis}
-                type="number"
-                step={0.05}
-                value={coordinate}
-                onChange={(event) =>
-                  updateVector(
-                    index,
-                    "point",
-                    axis as 0 | 1 | 2,
-                    parseFloat(event.target.value) || 0,
-                  )
-                }
-                className="w-14 min-w-0 border border-foreground/40 bg-background px-1 py-0.5 tabular-nums focus:outline-none focus:border-foreground"
-              />
-            ))}
-          </div>
-          <div className="flex items-center gap-1">
-            <label className="w-12 shrink-0 text-foreground/70">Label</label>
-            {(annotation.labelOffset ?? [0.5, 0.5, 0]).map(
-              (coordinate, axis) => (
-                <input
-                  key={axis}
-                  type="number"
-                  step={0.05}
-                  value={coordinate}
-                  onChange={(event) =>
-                    updateVector(
-                      index,
-                      "labelOffset",
-                      axis as 0 | 1 | 2,
-                      parseFloat(event.target.value) || 0,
-                    )
-                  }
-                  className="w-14 min-w-0 border border-foreground/40 bg-background px-1 py-0.5 tabular-nums focus:outline-none focus:border-foreground"
-                />
-              ),
-            )}
-          </div>
+          <VectorField
+            label="Point"
+            vector={annotation.point}
+            onChange={(axis, value) =>
+              updateVector(index, "point", axis, value)
+            }
+          />
+          <VectorField
+            label="Label"
+            vector={annotation.labelOffset ?? [0.5, 0.5, 0]}
+            onChange={(axis, value) =>
+              updateVector(index, "labelOffset", axis, value)
+            }
+          />
         </div>
       ))}
     </div>
