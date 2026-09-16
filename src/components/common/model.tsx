@@ -90,13 +90,12 @@ const Annotation = ({
 
   return (
     <>
-      <Line points={[point, labelPosition]} color="white" lineWidth={1} />
-      <mesh position={point}>
-        <sphereGeometry args={[0.01, 16, 16]} />
-        <meshBasicMaterial color="white" />
-      </mesh>
+      <Line points={[point, labelPosition]} color="white" lineWidth={1.2} />
+      <Html position={point} center>
+        <div className="size-2 rounded-full border-2 border-white bg-black" />
+      </Html>
       <Html position={labelPosition} center>
-        <div className="border border-foreground bg-background/60 px-3 py-2 font-mono text-xs uppercase shadow-md backdrop-blur-sm select-none">
+        <div className="border border-foreground bg-background/60 px-2 py-2 font-mono text-xs uppercase shadow-md backdrop-blur-sm select-none">
           {text}
         </div>
       </Html>

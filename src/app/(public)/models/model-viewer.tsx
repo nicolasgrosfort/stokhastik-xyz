@@ -146,7 +146,7 @@ function AnnotationsPanel({
     setAnnotations([...annotations, { ...emptyAnnotation }]);
 
   return (
-    <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-72 -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/90 p-2 font-mono text-[10px] uppercase sm:text-xs">
+    <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-72 -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
       <div className="flex items-center justify-between gap-2">
         <span className="text-foreground/70">Annotations</span>
         <button
@@ -282,7 +282,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
 
   return (
     <section className="h-dvh w-screen min-h-0 flex flex-col items-center fixed top-0 left-0 right-0 bottom-0 bg-background">
-      <Toolbar.Root className="absolute top-[calc(0.5rem+env(safe-area-inset-top))] left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/90 p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
+      <Toolbar.Root className="absolute top-[calc(0.5rem+env(safe-area-inset-top))] left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">POS</label>
           <Slider.Root
@@ -352,7 +352,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
           </Toolbar.Button>
         </Toolbar.Group>
       </Toolbar.Root>
-      <Toolbar.Root className="absolute bottom-[calc(0.5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/90 p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
+      <Toolbar.Root className="absolute bottom-[calc(0.5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">Model</label>
           <Select.Root
