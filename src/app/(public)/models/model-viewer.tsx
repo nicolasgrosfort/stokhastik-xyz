@@ -40,6 +40,132 @@ const parseAnnotations = (value: unknown): ModelAnnotation[] | null => {
   return annotations;
 };
 
+const emptyAnnotation: ModelAnnotation = {
+  text: "Nouvelle annotation",
+  point: [0, 0, 0],
+  labelOffset: [0.5, 0.5, 0],
+};
+
+function AnnotationsPanel({
+  annotations,
+  setAnnotations,
+}: {
+  annotations: ModelAnnotation[];
+  setAnnotations: (annotations: ModelAnnotation[]) => void;
+}) {
+  const updateAnnotation = (index: number, patch: Partial<ModelAnnotation>) =>
+    setAnnotations(
+      annotations.map((annotation, i) =>
+        i === index ? { ...annotation, ...patch } : annotation,
+      ),
+    );
+
+  const updateVector = (
+    index: number,
+    key: "point" | "labelOffset",
+    axis: 0 | 1 | 2,
+    value: number,
+  ) => {
+    const current = annotations[index][key] ?? [0, 0, 0];
+    const next: [number, number, number] = [...current];
+    next[axis] = value;
+    updateAnnotation(index, { [key]: next });
+  };
+
+  const removeAnnotation = (index: number) =>
+    setAnnotations(annotations.filter((_, i) => i !== index));
+
+  const addAnnotation = () =>
+    setAnnotations([...annotations, { ...emptyAnnotation }]);
+
+  return (
+    <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-64 -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/90 p-2 font-mono text-[10px] uppercase sm:text-xs">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-foreground/70">Annotations</span>
+        <button
+          type="button"
+          onClick={addAnnotation}
+          className="cursor-pointer border border-foreground px-2 py-0.5"
+        >
+          + Ajouter
+        </button>
+      </div>
+      {annotations.length === 0 && (
+        <p className="text-foreground/50 normal-case">
+          Aucune annotation pour ce modèle.
+        </p>
+      )}
+      {annotations.map((annotation, index) => (
+        <div
+          key={index}
+          className="flex flex-col gap-1 border border-foreground/40 p-2"
+        >
+          <div className="flex items-center gap-1">
+            <input
+              type="text"
+              value={annotation.text}
+              onChange={(event) =>
+                updateAnnotation(index, { text: event.target.value })
+              }
+              className="min-w-0 flex-1 border border-foreground/40 bg-background px-1 py-0.5 normal-case focus:outline-none focus:border-foreground"
+            />
+            <button
+              type="button"
+              onClick={() => removeAnnotation(index)}
+              aria-label="Supprimer l'annotation"
+              className="shrink-0 cursor-pointer border border-foreground px-1.5 py-0.5"
+            >
+              ×
+            </button>
+          </div>
+          <div className="flex items-center gap-1">
+            <label className="w-12 shrink-0 text-foreground/70">Point</label>
+            {annotation.point.map((coordinate, axis) => (
+              <input
+                key={axis}
+                type="number"
+                step={0.05}
+                value={coordinate}
+                onChange={(event) =>
+                  updateVector(
+                    index,
+                    "point",
+                    axis as 0 | 1 | 2,
+                    parseFloat(event.target.value) || 0,
+                  )
+                }
+                className="w-14 min-w-0 border border-foreground/40 bg-background px-1 py-0.5 tabular-nums focus:outline-none focus:border-foreground"
+              />
+            ))}
+          </div>
+          <div className="flex items-center gap-1">
+            <label className="w-12 shrink-0 text-foreground/70">Label</label>
+            {(annotation.labelOffset ?? [0.5, 0.5, 0]).map(
+              (coordinate, axis) => (
+                <input
+                  key={axis}
+                  type="number"
+                  step={0.05}
+                  value={coordinate}
+                  onChange={(event) =>
+                    updateVector(
+                      index,
+                      "labelOffset",
+                      axis as 0 | 1 | 2,
+                      parseFloat(event.target.value) || 0,
+                    )
+                  }
+                  className="w-14 min-w-0 border border-foreground/40 bg-background px-1 py-0.5 tabular-nums focus:outline-none focus:border-foreground"
+                />
+              ),
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ModelViewer() {
   const [file, setFile] = useQueryState("file", parseAsString.withDefault(""));
   const [modelFiles, setModelFiles] = useState<string[]>([]);
@@ -98,9 +224,11 @@ export function ModelViewer() {
     "pointSize",
     parseAsString.withDefault("0.01"),
   );
-  const [annotations] = useQueryState(
+  const [annotations, setAnnotations] = useQueryState(
     "annotations",
-    parseAsJson(parseAnnotations).withDefault([]),
+    parseAsJson(parseAnnotations)
+      .withDefault([])
+      .withOptions({ history: "replace" }),
   );
 
   const stopRotationValue = stopRotation === "true";
@@ -244,6 +372,10 @@ export function ModelViewer() {
           </Toolbar.Button>
         </Toolbar.Group>
       </Toolbar.Root>
+      <AnnotationsPanel
+        annotations={annotations}
+        setAnnotations={(next) => setAnnotations(next)}
+      />
       <div className="relative w-full flex-1 min-h-0">
         {modelUrl ? (
           <ErrorBoundary
