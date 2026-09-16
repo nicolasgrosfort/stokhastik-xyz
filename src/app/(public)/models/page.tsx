@@ -1,4 +1,6 @@
+import { authOptions } from "@/libs/auth";
 import type { Metadata } from "next";
+import { getServerSession } from "next-auth/next";
 import { Suspense } from "react";
 import { ModelViewer } from "./model-viewer";
 
@@ -12,10 +14,13 @@ export async function generateMetadata({
   return pageName ? { title: pageName } : {};
 }
 
-export default function ModelViewerPage() {
+export default async function ModelViewerPage() {
+  const session = await getServerSession(authOptions);
+  const isAdmin = session?.user.role === "ADMIN";
+
   return (
     <Suspense>
-      <ModelViewer />
+      <ModelViewer isAdmin={isAdmin} />
     </Suspense>
   );
 }

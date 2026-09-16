@@ -205,7 +205,7 @@ function AnnotationsPanel({
   );
 }
 
-export function ModelViewer() {
+export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
   const [file, setFile] = useQueryState("file", parseAsString.withDefault(""));
   const [modelFiles, setModelFiles] = useState<string[]>([]);
   const [extensionFilter, setExtensionFilter] = useState<Set<ModelExtension>>(
@@ -411,10 +411,12 @@ export function ModelViewer() {
           </Toolbar.Button>
         </Toolbar.Group>
       </Toolbar.Root>
-      <AnnotationsPanel
-        annotations={annotations}
-        setAnnotations={(next) => setAnnotations(next)}
-      />
+      {isAdmin && (
+        <AnnotationsPanel
+          annotations={annotations}
+          setAnnotations={(next) => setAnnotations(next)}
+        />
+      )}
       <div className="relative w-full flex-1 min-h-0">
         {modelUrl ? (
           <ErrorBoundary
