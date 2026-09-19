@@ -23,7 +23,7 @@ const mapleMono = localFont({
 
 export const metadata: Metadata = {
   title: "Stokhastik",
-  description: "Espace de prorotypage, d'expérimentation et de partage.",
+  description: "Espace de prototypage, d'expérimentation et de partage.",
 };
 
 export const viewport: Viewport = {
