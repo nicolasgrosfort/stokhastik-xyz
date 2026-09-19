@@ -1,8 +1,18 @@
 "use client";
 
-import { Model, ModelAnnotation } from "@/components/common/model";
+import {
+  CameraPosition,
+  Model,
+  ModelAnnotation,
+} from "@/components/common/model";
 import { Select, Slider, Toolbar } from "@base-ui/react";
-import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import {
+  parseAsArrayOf,
+  parseAsFloat,
+  parseAsJson,
+  parseAsString,
+  useQueryState,
+} from "nuqs";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -31,8 +41,7 @@ const parseAnnotations = (value: unknown): ModelAnnotation[] | null => {
     if (labelOffset !== undefined && !isVector3(labelOffset)) return null;
 
     const labelModel = (item as { labelModel?: unknown }).labelModel;
-    if (labelModel !== undefined && typeof labelModel !== "string")
-      return null;
+    if (labelModel !== undefined && typeof labelModel !== "string") return null;
 
     const labelModelScale = (item as { labelModelScale?: unknown })
       .labelModelScale;
@@ -226,9 +235,7 @@ function AnnotationsPanel({
           </div>
           {annotation.labelModel && (
             <div className="flex items-center gap-1">
-              <span className="w-2.5 shrink-0 text-foreground/50">
-                Scale
-              </span>
+              <span className="w-2.5 shrink-0 text-foreground/50">Scale</span>
               <AxisRow
                 value={annotation.labelModelScale ?? 0.2}
                 onChange={(value) =>
@@ -299,6 +306,10 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
     "position",
     parseAsString.withDefault("0.5"),
   );
+  const [camera, setCamera] = useQueryState(
+    "camera",
+    parseAsArrayOf(parseAsFloat, ",").withOptions({ history: "replace" }),
+  );
   const [stopRotation, setStopRotation] = useQueryState(
     "stopRotation",
     parseAsString.withDefault("false"),
@@ -325,7 +336,18 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
 
   const modelUrl = file ? `/api/assets/models/${file}` : null;
 
+  const cameraPosition: CameraPosition | undefined =
+    camera?.length === 3 && camera.every(Number.isFinite)
+      ? [camera[0], camera[1], camera[2]]
+      : undefined;
+
   const modelPosition = position ? parseFloat(position) : 0.5;
+
+  // The POS slider is the distance along the (1,1,1) diagonal; once the user
+  // has orbited, show the distance of the actual camera instead.
+  const displayedPosition = cameraPosition
+    ? Math.hypot(...cameraPosition) / Math.sqrt(3)
+    : modelPosition;
 
   const resolvedAnnotations = annotations.map((annotation) =>
     annotation.labelModel
@@ -342,11 +364,14 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">POS</label>
           <Slider.Root
-            value={modelPosition}
+            value={displayedPosition}
             min={0.1}
             max={5}
             step={0.1}
-            onValueChange={(value) => setPosition(String(value))}
+            onValueChange={(value) => {
+              setCamera(null);
+              setPosition(String(value));
+            }}
           >
             <Slider.Control className="flex w-12 touch-none items-center py-1 select-none">
               <Slider.Track className="relative h-1 w-full bg-foreground/20 select-none">
@@ -359,7 +384,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
             </Slider.Control>
           </Slider.Root>
           <span className="w-8 text-right tabular-nums text-foreground/70 select-none">
-            {modelPosition.toFixed(1)}
+            {displayedPosition.toFixed(1)}
           </span>
         </Toolbar.Group>
         <Toolbar.Separator className="h-4 w-px bg-foreground" />
@@ -491,6 +516,10 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
               enablePan={enablePanValue}
               pointSize={pointSizeValue}
               annotations={resolvedAnnotations}
+              cameraPosition={cameraPosition}
+              onCameraChange={(next) =>
+                setCamera(next.map((value) => Math.round(value * 1000) / 1000))
+              }
             />
           </ErrorBoundary>
         ) : (

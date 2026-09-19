@@ -5,7 +5,7 @@ import { Html, Line, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Float32BufferAttribute, Group } from "three";
+import { Camera, Float32BufferAttribute, Group } from "three";
 import {
   DRACOLoader,
   GLTFLoader,
@@ -164,10 +164,25 @@ const Annotation = ({
   );
 };
 
-const CameraDistance = ({ distance }: { distance: number }) => {
+export type CameraPosition = [number, number, number];
+
+const CAMERA_SETTLE_DELAY = 400;
+
+const CameraDistance = ({
+  distance,
+  keepInitialPosition,
+}: {
+  distance: number;
+  keepInitialPosition: boolean;
+}) => {
   const camera = useThree((state) => state.camera);
+  const lastDistance = useRef<number | null>(
+    keepInitialPosition ? distance : null,
+  );
 
   useEffect(() => {
+    if (lastDistance.current === distance) return;
+    lastDistance.current = distance;
     camera.position.set(distance, distance, distance);
   }, [camera, distance]);
 
@@ -218,6 +233,8 @@ export const Model = ({
   enablePan,
   pointSize,
   annotations,
+  cameraPosition,
+  onCameraChange,
 }: {
   position: GetStoreItem["position"];
   rotation: GetStoreItem["rotation"];
@@ -227,8 +244,15 @@ export const Model = ({
   enablePan?: boolean;
   pointSize?: number;
   annotations?: ModelAnnotation[];
+  cameraPosition?: CameraPosition;
+  onCameraChange?: (position: CameraPosition) => void;
 }) => {
   const [isControlling, setIsControlling] = useState(false);
+  const initialCameraPosition = useRef(cameraPosition);
+  const settleTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const cameraRef = useRef<Camera>(null);
+
+  useEffect(() => () => clearTimeout(settleTimeout.current), []);
 
   if (!model) {
     if (!thumbnail) return null;
@@ -245,10 +269,23 @@ export const Model = ({
       <Canvas
         className="cursor-move"
         style={{ position: "absolute", inset: 0 }}
-        camera={{ position: [position, position, position], fov: 50 }}
+        onCreated={({ camera }) => {
+          cameraRef.current = camera;
+        }}
+        camera={{
+          position: initialCameraPosition.current ?? [
+            position,
+            position,
+            position,
+          ],
+          fov: 50,
+        }}
       >
         <ambientLight intensity={2} />
-        <CameraDistance distance={position} />
+        <CameraDistance
+          distance={position}
+          keepInitialPosition={!!initialCameraPosition.current}
+        />
         <Suspense
           fallback={
             <Html center>
@@ -266,8 +303,25 @@ export const Model = ({
         </Suspense>
         <OrbitControls
           enablePan={enablePan ?? false}
-          onStart={() => setIsControlling(true)}
-          onEnd={() => setIsControlling(false)}
+          onStart={() => {
+            clearTimeout(settleTimeout.current);
+            setIsControlling(true);
+          }}
+          onEnd={() => {
+            setIsControlling(false);
+            const camera = cameraRef.current;
+            if (!onCameraChange || !camera) return;
+
+            // Damping keeps moving the camera after the pointer is released.
+            clearTimeout(settleTimeout.current);
+            settleTimeout.current = setTimeout(() => {
+              onCameraChange([
+                camera.position.x,
+                camera.position.y,
+                camera.position.z,
+              ]);
+            }, CAMERA_SETTLE_DELAY);
+          }}
         />
       </Canvas>
     </div>
