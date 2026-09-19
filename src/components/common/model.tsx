@@ -75,12 +75,32 @@ export type ModelAnnotation = {
   text: string;
   point: [number, number, number];
   labelOffset?: [number, number, number];
+  labelModel?: string;
+  labelModelScale?: number;
 };
+
+const AnnotationModel = ({
+  model,
+  position,
+  scale = 0.2,
+}: {
+  model: string;
+  position: [number, number, number];
+  scale?: number;
+}) => (
+  <Suspense fallback={null}>
+    <group position={position} scale={scale}>
+      <GltfObject model={model} />
+    </group>
+  </Suspense>
+);
 
 const Annotation = ({
   text,
   point,
   labelOffset = [0.5, 0.5, 0],
+  labelModel,
+  labelModelScale,
 }: ModelAnnotation) => {
   const labelPosition: [number, number, number] = [
     point[0] + labelOffset[0],
@@ -94,11 +114,19 @@ const Annotation = ({
       <Html position={point} center>
         <div className="size-2 rounded-full border-2 border-white bg-black" />
       </Html>
-      <Html position={labelPosition} center>
-        <div className="border border-foreground bg-background/60 px-2 py-2 font-mono text-xs uppercase shadow-md backdrop-blur-sm select-none">
-          {text}
-        </div>
-      </Html>
+      {labelModel ? (
+        <AnnotationModel
+          model={labelModel}
+          position={labelPosition}
+          scale={labelModelScale}
+        />
+      ) : (
+        <Html position={labelPosition} center>
+          <div className="border border-foreground bg-background/60 px-2 py-2 font-mono text-xs uppercase shadow-md backdrop-blur-sm select-none">
+            {text}
+          </div>
+        </Html>
+      )}
     </>
   );
 };

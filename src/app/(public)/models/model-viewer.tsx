@@ -30,10 +30,21 @@ const parseAnnotations = (value: unknown): ModelAnnotation[] | null => {
     const labelOffset = (item as { labelOffset?: unknown }).labelOffset;
     if (labelOffset !== undefined && !isVector3(labelOffset)) return null;
 
+    const labelModel = (item as { labelModel?: unknown }).labelModel;
+    if (labelModel !== undefined && typeof labelModel !== "string")
+      return null;
+
+    const labelModelScale = (item as { labelModelScale?: unknown })
+      .labelModelScale;
+    if (labelModelScale !== undefined && typeof labelModelScale !== "number")
+      return null;
+
     annotations.push({
       text: (item as { text: string }).text,
       point: (item as { point: [number, number, number] }).point,
       labelOffset: labelOffset as [number, number, number] | undefined,
+      labelModel: labelModel as string | undefined,
+      labelModelScale: labelModelScale as number | undefined,
     });
   }
 
@@ -199,6 +210,44 @@ function AnnotationsPanel({
               updateVector(index, "labelOffset", axis, value)
             }
           />
+          <div className="flex flex-col gap-0.5">
+            <label className="text-foreground/70">Modèle du label</label>
+            <input
+              type="text"
+              placeholder="ex: chaise.glb"
+              value={annotation.labelModel ?? ""}
+              onChange={(event) =>
+                updateAnnotation(index, {
+                  labelModel: event.target.value || undefined,
+                })
+              }
+              className="min-w-0 border border-foreground/40 bg-background px-1 py-0.5 normal-case focus:outline-none focus:border-foreground"
+            />
+          </div>
+          {annotation.labelModel && (
+            <div className="flex items-center gap-1">
+              <span className="w-2.5 shrink-0 text-foreground/50">
+                Scale
+              </span>
+              <AxisRow
+                value={annotation.labelModelScale ?? 0.2}
+                onChange={(value) =>
+                  updateAnnotation(index, { labelModelScale: value })
+                }
+              />
+              <input
+                type="number"
+                step={0.05}
+                value={annotation.labelModelScale ?? 0.2}
+                onChange={(event) =>
+                  updateAnnotation(index, {
+                    labelModelScale: parseFloat(event.target.value) || 0.2,
+                  })
+                }
+                className="w-12 min-w-0 shrink-0 border border-foreground/40 bg-background px-1 py-0.5 tabular-nums focus:outline-none focus:border-foreground"
+              />
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -274,11 +323,18 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
   const enablePanValue = enablePan === "true";
   const pointSizeValue = parseFloat(pointSize) || 0.01;
 
-  const modelUrl = file
-    ? `/api/assets/models/${/\.(glb|ply)$/i.test(file) ? file : `${file}`}`
-    : null;
+  const modelUrl = file ? `/api/assets/models/${file}` : null;
 
   const modelPosition = position ? parseFloat(position) : 0.5;
+
+  const resolvedAnnotations = annotations.map((annotation) =>
+    annotation.labelModel
+      ? {
+          ...annotation,
+          labelModel: `/api/assets/models/${annotation.labelModel}`,
+        }
+      : annotation,
+  );
 
   return (
     <section className="h-dvh w-screen min-h-0 flex flex-col items-center fixed top-0 left-0 right-0 bottom-0 bg-background">
@@ -434,7 +490,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
               stopRotation={!stopRotationValue}
               enablePan={enablePanValue}
               pointSize={pointSizeValue}
-              annotations={annotations}
+              annotations={resolvedAnnotations}
             />
           </ErrorBoundary>
         ) : (
