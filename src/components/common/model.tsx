@@ -79,21 +79,59 @@ export type ModelAnnotation = {
   labelModelScale?: number;
 };
 
-const AnnotationModel = ({
+const RotatingModel = ({
   model,
-  position,
-  scale = 0.2,
+  scale = 1,
+  spin,
 }: {
   model: string;
-  position: [number, number, number];
   scale?: number;
-}) => (
-  <Suspense fallback={null}>
-    <group position={position} scale={scale}>
+  spin: boolean;
+}) => {
+  const ref = useRef<Group>(null);
+
+  useFrame((_, delta) => {
+    if (ref.current && spin) {
+      ref.current.rotation.y += delta * 0.5;
+    }
+  });
+
+  return (
+    <group ref={ref} scale={scale}>
       <GltfObject model={model} />
     </group>
-  </Suspense>
-);
+  );
+};
+
+const AnnotationModelLabel = ({
+  model,
+  scale,
+}: {
+  model: string;
+  scale?: number;
+}) => {
+  const [isControlling, setIsControlling] = useState(false);
+
+  return (
+    <div
+      className="size-24 touch-none cursor-grab select-none active:cursor-grabbing"
+      onPointerDown={(event) => event.stopPropagation()}
+      onWheel={(event) => event.stopPropagation()}
+    >
+      <Canvas camera={{ position: [1.2, 1.2, 1.2], fov: 40 }}>
+        <ambientLight intensity={2} />
+        <Suspense fallback={null}>
+          <RotatingModel model={model} scale={scale} spin={!isControlling} />
+        </Suspense>
+        <OrbitControls
+          enablePan={false}
+          onStart={() => setIsControlling(true)}
+          onEnd={() => setIsControlling(false)}
+        />
+      </Canvas>
+    </div>
+  );
+};
 
 const Annotation = ({
   text,
@@ -114,19 +152,14 @@ const Annotation = ({
       <Html position={point} center>
         <div className="size-2 rounded-full border-2 border-white bg-black" />
       </Html>
-      {labelModel ? (
-        <AnnotationModel
-          model={labelModel}
-          position={labelPosition}
-          scale={labelModelScale}
-        />
-      ) : (
-        <Html position={labelPosition} center>
-          <div className="border border-foreground bg-background/60 px-2 py-2 font-mono text-xs uppercase shadow-md backdrop-blur-sm select-none">
-            {text}
-          </div>
-        </Html>
-      )}
+      <Html position={labelPosition} center>
+        <div className="flex flex-col items-center gap-1 border border-foreground bg-background/60 p-2 shadow-md backdrop-blur-sm select-none">
+          <span className="font-mono text-xs uppercase">{text}</span>
+          {labelModel && (
+            <AnnotationModelLabel model={labelModel} scale={labelModelScale} />
+          )}
+        </div>
+      </Html>
     </>
   );
 };
