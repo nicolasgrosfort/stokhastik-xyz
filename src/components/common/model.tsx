@@ -114,7 +114,7 @@ const AnnotationModelLabel = ({
 
   return (
     <div
-      className="size-24 touch-none cursor-grab select-none active:cursor-grabbing"
+      className="size-16 touch-none cursor-grab select-none active:cursor-grabbing"
       onPointerDown={(event) => event.stopPropagation()}
       onWheel={(event) => event.stopPropagation()}
     >
