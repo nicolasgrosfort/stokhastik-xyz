@@ -13,7 +13,7 @@ import {
   parseAsString,
   useQueryState,
 } from "nuqs";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 type ModelExtension = "glb" | "ply";
@@ -261,7 +261,16 @@ function AnnotationsPanel({
   );
 }
 
+const subscribeNever = () => () => {};
+
 export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
+  // The camera distance comes from the URL and yields long-decimal slider
+  // percentages, which never hydrate cleanly: render that slider client-side.
+  const isClient = useSyncExternalStore(
+    subscribeNever,
+    () => true,
+    () => false,
+  );
   const [file, setFile] = useQueryState("file", parseAsString.withDefault(""));
   const [modelFiles, setModelFiles] = useState<string[]>([]);
   const [extensionFilter, setExtensionFilter] = useState<Set<ModelExtension>>(
@@ -346,7 +355,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
   // The POS slider is the distance along the (1,1,1) diagonal; once the user
   // has orbited, show the distance of the actual camera instead.
   const displayedPosition = cameraPosition
-    ? Math.hypot(...cameraPosition) / Math.sqrt(3)
+    ? Math.round((Math.hypot(...cameraPosition) / Math.sqrt(3)) * 10) / 10
     : modelPosition;
 
   const resolvedAnnotations = annotations.map((annotation) =>
@@ -363,26 +372,30 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
       <Toolbar.Root className="absolute top-[calc(0.5rem+env(safe-area-inset-top))] left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">POS</label>
-          <Slider.Root
-            value={displayedPosition}
-            min={0.1}
-            max={5}
-            step={0.1}
-            onValueChange={(value) => {
-              setCamera(null);
-              setPosition(String(value));
-            }}
-          >
-            <Slider.Control className="flex w-12 touch-none items-center py-1 select-none">
-              <Slider.Track className="relative h-1 w-full bg-foreground/20 select-none">
-                <Slider.Indicator className="bg-foreground select-none" />
-                <Slider.Thumb
-                  aria-label="Position"
-                  className="size-3 border border-foreground bg-background select-none focus:outline-none has-focus-visible:outline has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground"
-                />
-              </Slider.Track>
-            </Slider.Control>
-          </Slider.Root>
+          {isClient ? (
+            <Slider.Root
+              value={displayedPosition}
+              min={0.1}
+              max={5}
+              step={0.1}
+              onValueChange={(value) => {
+                setCamera(null);
+                setPosition(String(value));
+              }}
+            >
+              <Slider.Control className="flex w-12 touch-none items-center py-1 select-none">
+                <Slider.Track className="relative h-1 w-full bg-foreground/20 select-none">
+                  <Slider.Indicator className="bg-foreground select-none" />
+                  <Slider.Thumb
+                    aria-label="Position"
+                    className="size-3 border border-foreground bg-background select-none focus:outline-none has-focus-visible:outline has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground"
+                  />
+                </Slider.Track>
+              </Slider.Control>
+            </Slider.Root>
+          ) : (
+            <div className="h-5 w-12" />
+          )}
           <span className="w-8 text-right tabular-nums text-foreground/70 select-none">
             {displayedPosition.toFixed(1)}
           </span>
