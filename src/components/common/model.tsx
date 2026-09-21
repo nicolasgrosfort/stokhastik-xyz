@@ -1,7 +1,8 @@
 "use client";
 
+import { useAudio } from "@/hooks/useAudio";
 import { GetStoreItem } from "@/libs/store-item";
-import { Html, Line, OrbitControls } from "@react-three/drei";
+import { Html, Line, OrbitControls, PositionalAudio } from "@react-three/drei";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -189,18 +190,37 @@ const CameraDistance = ({
   return null;
 };
 
+const ModelAudio = ({ url, distance }: { url: string; distance: number }) => {
+  const enabled = useAudio((state) => state.enabled);
+  const registerSource = useAudio((state) => state.registerSource);
+
+  useEffect(() => registerSource(), [registerSource]);
+
+  if (!enabled) return null;
+
+  return (
+    <Suspense fallback={null}>
+      <PositionalAudio url={url} distance={distance} loop autoplay />
+    </Suspense>
+  );
+};
+
 const Object = ({
   stopRotation,
   model,
   rotation,
   pointSize,
   annotations,
+  audio,
+  audioDistance,
 }: {
   model: string;
   rotation: GetStoreItem["rotation"];
   stopRotation?: boolean;
   pointSize?: number;
   annotations?: ModelAnnotation[];
+  audio?: string;
+  audioDistance: number;
 }) => {
   const ref = useRef<Group>(null);
 
@@ -220,6 +240,7 @@ const Object = ({
       {annotations?.map((annotation, index) => (
         <Annotation key={index} {...annotation} />
       ))}
+      {audio && <ModelAudio url={audio} distance={audioDistance} />}
     </group>
   );
 };
@@ -233,6 +254,7 @@ export const Model = ({
   enablePan,
   pointSize,
   annotations,
+  audio,
   cameraPosition,
   onCameraChange,
 }: {
@@ -244,6 +266,7 @@ export const Model = ({
   enablePan?: boolean;
   pointSize?: number;
   annotations?: ModelAnnotation[];
+  audio?: string;
   cameraPosition?: CameraPosition;
   onCameraChange?: (position: CameraPosition) => void;
 }) => {
@@ -299,6 +322,8 @@ export const Model = ({
             pointSize={pointSize}
             stopRotation={stopRotation || isControlling}
             annotations={annotations}
+            audio={audio}
+            audioDistance={position}
           />
         </Suspense>
         <OrbitControls
