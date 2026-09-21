@@ -192,9 +192,6 @@ const CameraDistance = ({
 
 const ModelAudio = ({ url, distance }: { url: string; distance: number }) => {
   const enabled = useAudio((state) => state.enabled);
-  const registerSource = useAudio((state) => state.registerSource);
-
-  useEffect(() => registerSource(), [registerSource]);
 
   if (!enabled) return null;
 

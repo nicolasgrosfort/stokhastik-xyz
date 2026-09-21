@@ -1,5 +1,6 @@
 "use client";
 
+import { AudioToggle } from "@/components/common/audio-toggle";
 import {
   CameraPosition,
   Model,
@@ -332,6 +333,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
     "pointSize",
     parseAsString.withDefault("0.01"),
   );
+  const [audio] = useQueryState("audio", parseAsString);
   const [annotations, setAnnotations] = useQueryState(
     "annotations",
     parseAsJson(parseAnnotations)
@@ -444,6 +446,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
           >
             Pan
           </Toolbar.Button>
+          {audio && <AudioToggle />}
         </Toolbar.Group>
       </Toolbar.Root>
       <Toolbar.Root className="absolute bottom-[calc(0.5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
@@ -529,6 +532,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
               enablePan={enablePanValue}
               pointSize={pointSizeValue}
               annotations={resolvedAnnotations}
+              audio={audio ?? undefined}
               cameraPosition={cameraPosition}
               onCameraChange={(next) =>
                 setCamera(next.map((value) => Math.round(value * 1000) / 1000))

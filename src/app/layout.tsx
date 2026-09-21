@@ -1,4 +1,3 @@
-import { AudioToggle } from "@/components/common/audio-toggle";
 import { Footer } from "@/components/common/footer";
 import { Header } from "@/components/common/header";
 import { QueryProvider } from "@/providers/query-provider";
@@ -50,7 +49,6 @@ export default function RootLayout({
                   {children}
                 </main>
                 <Footer />
-                <AudioToggle />
               </div>
             </QueryProvider>
           </SessionProvider>
