@@ -78,8 +78,8 @@ function AxisRow({
   return (
     <Slider.Root
       value={value}
-      min={-2}
-      max={2}
+      min={-100}
+      max={100}
       step={0.01}
       onValueChange={(next) => onChange(next as number)}
       className="min-w-0 flex-1"
@@ -376,7 +376,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
             <Slider.Root
               value={displayedPosition}
               min={0.1}
-              max={5}
+              max={100}
               step={0.1}
               onValueChange={(value) => {
                 setCamera(null);
