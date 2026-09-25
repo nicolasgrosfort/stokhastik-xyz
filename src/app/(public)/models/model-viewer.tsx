@@ -262,6 +262,108 @@ function AnnotationsPanel({
   );
 }
 
+const formatCoordinate = (value: number) => Math.round(value * 100) / 100;
+
+function CameraPathPanel({
+  livePosition,
+  capturedPoints,
+  onCapture,
+  onRemove,
+  onClear,
+}: {
+  livePosition: CameraPosition | null;
+  capturedPoints: CameraPosition[];
+  onCapture: () => void;
+  onRemove: (index: number) => void;
+  onClear: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const copyCode = () => {
+    const points = capturedPoints
+      .map(
+        ([x, y, z]) =>
+          `    new THREE.Vector3(${x}, ${y}, ${z}),`,
+      )
+      .join("\n");
+    const code = `const curve = new THREE.CatmullRomCurve3(\n  [\n${points}\n  ],\n  true,\n);`;
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    });
+  };
+
+  return (
+    <div className="absolute right-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-64 -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-foreground/70">Caméra</span>
+        <button
+          type="button"
+          onClick={onCapture}
+          disabled={!livePosition}
+          className="cursor-pointer border border-foreground px-2 py-0.5 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          + Capturer
+        </button>
+      </div>
+      <div className="flex items-center gap-1 text-foreground/70 normal-case">
+        {livePosition ? (
+          <span className="tabular-nums">
+            x {formatCoordinate(livePosition[0])} · y{" "}
+            {formatCoordinate(livePosition[1])} · z{" "}
+            {formatCoordinate(livePosition[2])}
+          </span>
+        ) : (
+          <span className="text-foreground/50">
+            Active le mode FPS pour suivre la caméra.
+          </span>
+        )}
+      </div>
+      {capturedPoints.length > 0 && (
+        <>
+          <div className="flex flex-col gap-1">
+            {capturedPoints.map(([x, y, z], index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between gap-1 border border-foreground/40 px-1.5 py-1 tabular-nums normal-case"
+              >
+                <span>
+                  {formatCoordinate(x)}, {formatCoordinate(y)},{" "}
+                  {formatCoordinate(z)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onRemove(index)}
+                  aria-label="Supprimer le point"
+                  className="shrink-0 cursor-pointer border border-foreground px-1.5"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={copyCode}
+              className="cursor-pointer border border-foreground px-2 py-0.5"
+            >
+              {copied ? "Copié !" : "Copier le code"}
+            </button>
+            <button
+              type="button"
+              onClick={onClear}
+              className="cursor-pointer border border-foreground px-2 py-0.5"
+            >
+              Vider
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 const subscribeNever = () => () => {};
 
 export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
@@ -329,6 +431,11 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
     "enablePan",
     parseAsString.withDefault("false"),
   );
+  const [fpsMode, setFpsMode] = useState(false);
+  const [livePosition, setLivePosition] = useState<CameraPosition | null>(
+    null,
+  );
+  const [capturedPoints, setCapturedPoints] = useState<CameraPosition[]>([]);
   const [pointSize, setPointSize] = useQueryState(
     "pointSize",
     parseAsString.withDefault("0.01"),
@@ -446,6 +553,14 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
           >
             Pan
           </Toolbar.Button>
+          <Toolbar.Button
+            aria-pressed={fpsMode}
+            onClick={() => setFpsMode((previous) => !previous)}
+            className="cursor-pointer px-2 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background uppercase"
+            data-pressed={fpsMode}
+          >
+            FPS
+          </Toolbar.Button>
           {audio && <AudioToggle />}
         </Toolbar.Group>
       </Toolbar.Root>
@@ -514,6 +629,22 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
           setAnnotations={(next) => setAnnotations(next)}
         />
       )}
+      {isAdmin && (
+        <CameraPathPanel
+          livePosition={livePosition}
+          capturedPoints={capturedPoints}
+          onCapture={() =>
+            livePosition &&
+            setCapturedPoints((previous) => [...previous, livePosition])
+          }
+          onRemove={(index) =>
+            setCapturedPoints((previous) =>
+              previous.filter((_, i) => i !== index),
+            )
+          }
+          onClear={() => setCapturedPoints([])}
+        />
+      )}
       <div className="relative w-full flex-1 min-h-0">
         {modelUrl ? (
           <ErrorBoundary
@@ -537,6 +668,8 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
               onCameraChange={(next) =>
                 setCamera(next.map((value) => Math.round(value * 1000) / 1000))
               }
+              fpsMode={fpsMode}
+              onCameraFrame={isAdmin ? setLivePosition : undefined}
             />
           </ErrorBoundary>
         ) : (

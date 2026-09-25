@@ -2,11 +2,19 @@
 
 import { useAudio } from "@/hooks/useAudio";
 import { GetStoreItem } from "@/libs/store-item";
-import { Html, Line, OrbitControls, PositionalAudio } from "@react-three/drei";
+import {
+  Html,
+  KeyboardControls,
+  Line,
+  OrbitControls,
+  PointerLockControls,
+  PositionalAudio,
+  useKeyboardControls,
+} from "@react-three/drei";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Float32BufferAttribute, Group } from "three";
+import { Camera, Float32BufferAttribute, Group, Vector3 } from "three";
 import {
   DRACOLoader,
   GLTFLoader,
@@ -190,6 +198,81 @@ const CameraDistance = ({
   return null;
 };
 
+type FpsControlName = "forward" | "backward" | "left" | "right" | "up" | "down";
+
+const fpsKeyboardMap: { name: FpsControlName; keys: string[] }[] = [
+  { name: "forward", keys: ["KeyW", "ArrowUp"] },
+  { name: "backward", keys: ["KeyS", "ArrowDown"] },
+  { name: "left", keys: ["KeyA", "ArrowLeft"] },
+  { name: "right", keys: ["KeyD", "ArrowRight"] },
+  { name: "up", keys: ["Space", "KeyE"] },
+  { name: "down", keys: ["ShiftLeft", "ShiftRight", "KeyQ"] },
+];
+
+const FPS_SPEED = 4;
+const CAMERA_REPORT_INTERVAL = 0.1;
+
+const FreeFlyMovement = () => {
+  const [, getKeys] = useKeyboardControls<FpsControlName>();
+  const direction = useRef(new Vector3());
+  const forward = useRef(new Vector3());
+  const right = useRef(new Vector3());
+
+  useFrame(({ camera }, delta) => {
+    const keys = getKeys();
+    if (
+      !keys.forward &&
+      !keys.backward &&
+      !keys.left &&
+      !keys.right &&
+      !keys.up &&
+      !keys.down
+    ) {
+      return;
+    }
+
+    camera.getWorldDirection(forward.current);
+    right.current.crossVectors(forward.current, camera.up).normalize();
+
+    direction.current.set(0, 0, 0);
+    if (keys.forward) direction.current.add(forward.current);
+    if (keys.backward) direction.current.sub(forward.current);
+    if (keys.right) direction.current.add(right.current);
+    if (keys.left) direction.current.sub(right.current);
+    if (keys.up) direction.current.y += 1;
+    if (keys.down) direction.current.y -= 1;
+
+    if (direction.current.lengthSq() === 0) return;
+    direction.current.normalize().multiplyScalar(FPS_SPEED * delta);
+    camera.position.add(direction.current);
+  });
+
+  return null;
+};
+
+const CameraPositionReporter = ({
+  onFrame,
+}: {
+  onFrame: (position: CameraPosition) => void;
+}) => {
+  const lastReport = useRef(0);
+
+  useFrame(({ camera, clock }) => {
+    if (clock.elapsedTime - lastReport.current < CAMERA_REPORT_INTERVAL) return;
+    lastReport.current = clock.elapsedTime;
+    onFrame([camera.position.x, camera.position.y, camera.position.z]);
+  });
+
+  return null;
+};
+
+const FpsControls = ({ onLockChange }: { onLockChange: (locked: boolean) => void }) => (
+  <PointerLockControls
+    onLock={() => onLockChange(true)}
+    onUnlock={() => onLockChange(false)}
+  />
+);
+
 const ModelAudio = ({ url, distance }: { url: string; distance: number }) => {
   const enabled = useAudio((state) => state.enabled);
 
@@ -254,6 +337,8 @@ export const Model = ({
   audio,
   cameraPosition,
   onCameraChange,
+  fpsMode,
+  onCameraFrame,
 }: {
   position: GetStoreItem["position"];
   rotation: GetStoreItem["rotation"];
@@ -266,8 +351,11 @@ export const Model = ({
   audio?: string;
   cameraPosition?: CameraPosition;
   onCameraChange?: (position: CameraPosition) => void;
+  fpsMode?: boolean;
+  onCameraFrame?: (position: CameraPosition) => void;
 }) => {
   const [isControlling, setIsControlling] = useState(false);
+  const [isPointerLocked, setIsPointerLocked] = useState(false);
   const initialCameraPosition = useRef(cameraPosition);
   const settleTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
   const cameraRef = useRef<Camera>(null);
@@ -286,66 +374,83 @@ export const Model = ({
 
   return (
     <div className="relative w-full h-full min-h-0">
-      <Canvas
-        className="cursor-move"
-        style={{ position: "absolute", inset: 0 }}
-        onCreated={({ camera }) => {
-          cameraRef.current = camera;
-        }}
-        camera={{
-          position: initialCameraPosition.current ?? [
-            position,
-            position,
-            position,
-          ],
-          fov: 50,
-        }}
-      >
-        <ambientLight intensity={2} />
-        <CameraDistance
-          distance={position}
-          keepInitialPosition={!!initialCameraPosition.current}
-        />
-        <Suspense
-          fallback={
-            <Html center>
-              <p className="font-mono text-xs uppercase">Chargement...</p>
-            </Html>
-          }
+      <KeyboardControls map={fpsKeyboardMap}>
+        <Canvas
+          className={fpsMode ? "cursor-crosshair" : "cursor-move"}
+          style={{ position: "absolute", inset: 0 }}
+          onCreated={({ camera }) => {
+            cameraRef.current = camera;
+          }}
+          camera={{
+            position: initialCameraPosition.current ?? [
+              position,
+              position,
+              position,
+            ],
+            fov: 50,
+          }}
         >
-          <Object
-            model={model}
-            rotation={rotation}
-            pointSize={pointSize}
-            stopRotation={stopRotation || isControlling}
-            annotations={annotations}
-            audio={audio}
-            audioDistance={position}
+          <ambientLight intensity={2} />
+          <CameraDistance
+            distance={position}
+            keepInitialPosition={!!initialCameraPosition.current}
           />
-        </Suspense>
-        <OrbitControls
-          enablePan={enablePan ?? false}
-          onStart={() => {
-            clearTimeout(settleTimeout.current);
-            setIsControlling(true);
-          }}
-          onEnd={() => {
-            setIsControlling(false);
-            const camera = cameraRef.current;
-            if (!onCameraChange || !camera) return;
+          <Suspense
+            fallback={
+              <Html center>
+                <p className="font-mono text-xs uppercase">Chargement...</p>
+              </Html>
+            }
+          >
+            <Object
+              model={model}
+              rotation={rotation}
+              pointSize={pointSize}
+              stopRotation={stopRotation || isControlling}
+              annotations={annotations}
+              audio={audio}
+              audioDistance={position}
+            />
+          </Suspense>
+          {fpsMode ? (
+            <>
+              <FreeFlyMovement />
+              <FpsControls onLockChange={setIsPointerLocked} />
+            </>
+          ) : (
+            <OrbitControls
+              enablePan={enablePan ?? false}
+              onStart={() => {
+                clearTimeout(settleTimeout.current);
+                setIsControlling(true);
+              }}
+              onEnd={() => {
+                setIsControlling(false);
+                const camera = cameraRef.current;
+                if (!onCameraChange || !camera) return;
 
-            // Damping keeps moving the camera after the pointer is released.
-            clearTimeout(settleTimeout.current);
-            settleTimeout.current = setTimeout(() => {
-              onCameraChange([
-                camera.position.x,
-                camera.position.y,
-                camera.position.z,
-              ]);
-            }, CAMERA_SETTLE_DELAY);
-          }}
-        />
-      </Canvas>
+                // Damping keeps moving the camera after the pointer is released.
+                clearTimeout(settleTimeout.current);
+                settleTimeout.current = setTimeout(() => {
+                  onCameraChange([
+                    camera.position.x,
+                    camera.position.y,
+                    camera.position.z,
+                  ]);
+                }, CAMERA_SETTLE_DELAY);
+              }}
+            />
+          )}
+          {onCameraFrame && <CameraPositionReporter onFrame={onCameraFrame} />}
+        </Canvas>
+      </KeyboardControls>
+      {fpsMode && !isPointerLocked && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <p className="border border-foreground bg-background/60 px-3 py-1.5 font-mono text-xs uppercase shadow-md backdrop-blur-sm">
+            Cliquer pour naviguer · WASD + souris · Q/E bas/haut
+          </p>
+        </div>
+      )}
     </div>
   );
 };
