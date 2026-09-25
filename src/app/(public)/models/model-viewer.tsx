@@ -3,6 +3,7 @@
 import { AudioToggle } from "@/components/common/audio-toggle";
 import {
   CameraPosition,
+  CameraSample,
   Model,
   ModelAnnotation,
 } from "@/components/common/model";
@@ -14,7 +15,13 @@ import {
   parseAsString,
   useQueryState,
 } from "nuqs";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 type ModelExtension = "glb" | "ply";
@@ -167,7 +174,7 @@ function AnnotationsPanel({
     setAnnotations([...annotations, { ...emptyAnnotation }]);
 
   return (
-    <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-72 -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
+    <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-72 max-w-[42vw] -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
       <div className="flex items-center justify-between gap-2">
         <span className="text-foreground/70">Annotations</span>
         <button
@@ -264,15 +271,25 @@ function AnnotationsPanel({
 
 const formatCoordinate = (value: number) => Math.round(value * 100) / 100;
 
+const formatVector3 = ([x, y, z]: CameraPosition) =>
+  `${formatCoordinate(x)}, ${formatCoordinate(y)}, ${formatCoordinate(z)}`;
+
+const formatCurveCode = (name: string, points: CameraPosition[]) => {
+  const lines = points
+    .map(([x, y, z]) => `    new THREE.Vector3(${x}, ${y}, ${z}),`)
+    .join("\n");
+  return `const ${name} = new THREE.CatmullRomCurve3(\n  [\n${lines}\n  ],\n  true,\n);`;
+};
+
 function CameraPathPanel({
-  livePosition,
-  capturedPoints,
+  liveSample,
+  capturedSamples,
   onCapture,
   onRemove,
   onClear,
 }: {
-  livePosition: CameraPosition | null;
-  capturedPoints: CameraPosition[];
+  liveSample: CameraSample | null;
+  capturedSamples: CameraSample[];
   onCapture: () => void;
   onRemove: (index: number) => void;
   onClear: () => void;
@@ -280,13 +297,16 @@ function CameraPathPanel({
   const [copied, setCopied] = useState(false);
 
   const copyCode = () => {
-    const points = capturedPoints
-      .map(
-        ([x, y, z]) =>
-          `    new THREE.Vector3(${x}, ${y}, ${z}),`,
-      )
-      .join("\n");
-    const code = `const curve = new THREE.CatmullRomCurve3(\n  [\n${points}\n  ],\n  true,\n);`;
+    const code = [
+      formatCurveCode(
+        "cameraPositions",
+        capturedSamples.map((sample) => sample.position),
+      ),
+      formatCurveCode(
+        "cameraLookAts",
+        capturedSamples.map((sample) => sample.lookAt),
+      ),
+    ].join("\n\n");
     navigator.clipboard.writeText(code).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
@@ -294,43 +314,40 @@ function CameraPathPanel({
   };
 
   return (
-    <div className="absolute right-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-64 -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
+    <div className="absolute right-2 top-[calc(4rem+env(safe-area-inset-top))] z-10 flex max-h-[calc(100dvh-8rem)] w-72 max-w-[42vw] flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
       <div className="flex items-center justify-between gap-2">
         <span className="text-foreground/70">Caméra</span>
         <button
           type="button"
           onClick={onCapture}
-          disabled={!livePosition}
+          disabled={!liveSample}
           className="cursor-pointer border border-foreground px-2 py-0.5 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          + Capturer
+          + Capturer (Ctrl+C)
         </button>
       </div>
-      <div className="flex items-center gap-1 text-foreground/70 normal-case">
-        {livePosition ? (
-          <span className="tabular-nums">
-            x {formatCoordinate(livePosition[0])} · y{" "}
-            {formatCoordinate(livePosition[1])} · z{" "}
-            {formatCoordinate(livePosition[2])}
-          </span>
-        ) : (
-          <span className="text-foreground/50">
-            Active le mode FPS pour suivre la caméra.
-          </span>
-        )}
-      </div>
-      {capturedPoints.length > 0 && (
+      {liveSample ? (
+        <div className="flex flex-col gap-0.5 text-foreground/70 normal-case">
+          <span className="tabular-nums">Pos {formatVector3(liveSample.position)}</span>
+          <span className="tabular-nums">Look {formatVector3(liveSample.lookAt)}</span>
+        </div>
+      ) : (
+        <span className="text-foreground/50 normal-case">
+          Active le mode FPS pour suivre la caméra.
+        </span>
+      )}
+      {capturedSamples.length > 0 && (
         <>
           <div className="flex flex-col gap-1">
-            {capturedPoints.map(([x, y, z], index) => (
+            {capturedSamples.map((sample, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between gap-1 border border-foreground/40 px-1.5 py-1 tabular-nums normal-case"
+                className="flex items-start justify-between gap-1 border border-foreground/40 px-1.5 py-1 normal-case"
               >
-                <span>
-                  {formatCoordinate(x)}, {formatCoordinate(y)},{" "}
-                  {formatCoordinate(z)}
-                </span>
+                <div className="flex flex-col gap-0.5 tabular-nums">
+                  <span>Pos {formatVector3(sample.position)}</span>
+                  <span>Look {formatVector3(sample.lookAt)}</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => onRemove(index)}
@@ -432,10 +449,32 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
     parseAsString.withDefault("false"),
   );
   const [fpsMode, setFpsMode] = useState(false);
-  const [livePosition, setLivePosition] = useState<CameraPosition | null>(
-    null,
-  );
-  const [capturedPoints, setCapturedPoints] = useState<CameraPosition[]>([]);
+  const [liveSample, setLiveSample] = useState<CameraSample | null>(null);
+  const [capturedSamples, setCapturedSamples] = useState<CameraSample[]>([]);
+  const liveSampleRef = useRef<CameraSample | null>(null);
+  liveSampleRef.current = liveSample;
+
+  const captureSample = useCallback(() => {
+    const sample = liveSampleRef.current;
+    if (!sample) return;
+    setCapturedSamples((previous) => [...previous, sample]);
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin || !fpsMode) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!event.ctrlKey || event.code !== "KeyC") return;
+      if (event.target instanceof HTMLElement && event.target.closest("input, textarea")) {
+        return;
+      }
+      event.preventDefault();
+      captureSample();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isAdmin, fpsMode, captureSample]);
   const [pointSize, setPointSize] = useQueryState(
     "pointSize",
     parseAsString.withDefault("0.01"),
@@ -631,18 +670,15 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
       )}
       {isAdmin && (
         <CameraPathPanel
-          livePosition={livePosition}
-          capturedPoints={capturedPoints}
-          onCapture={() =>
-            livePosition &&
-            setCapturedPoints((previous) => [...previous, livePosition])
-          }
+          liveSample={liveSample}
+          capturedSamples={capturedSamples}
+          onCapture={captureSample}
           onRemove={(index) =>
-            setCapturedPoints((previous) =>
+            setCapturedSamples((previous) =>
               previous.filter((_, i) => i !== index),
             )
           }
-          onClear={() => setCapturedPoints([])}
+          onClear={() => setCapturedSamples([])}
         />
       )}
       <div className="relative w-full flex-1 min-h-0">
@@ -669,7 +705,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
                 setCamera(next.map((value) => Math.round(value * 1000) / 1000))
               }
               fpsMode={fpsMode}
-              onCameraFrame={isAdmin ? setLivePosition : undefined}
+              onCameraFrame={isAdmin ? setLiveSample : undefined}
             />
           </ErrorBoundary>
         ) : (

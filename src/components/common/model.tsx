@@ -175,6 +175,11 @@ const Annotation = ({
 
 export type CameraPosition = [number, number, number];
 
+export type CameraSample = {
+  position: CameraPosition;
+  lookAt: CameraPosition;
+};
+
 const CAMERA_SETTLE_DELAY = 400;
 
 const CameraDistance = ({
@@ -250,17 +255,30 @@ const FreeFlyMovement = () => {
   return null;
 };
 
+const LOOK_AT_DISTANCE = 3;
+
 const CameraPositionReporter = ({
   onFrame,
 }: {
-  onFrame: (position: CameraPosition) => void;
+  onFrame: (sample: CameraSample) => void;
 }) => {
   const lastReport = useRef(0);
+  const forward = useRef(new Vector3());
+  const lookAt = useRef(new Vector3());
 
   useFrame(({ camera, clock }) => {
     if (clock.elapsedTime - lastReport.current < CAMERA_REPORT_INTERVAL) return;
     lastReport.current = clock.elapsedTime;
-    onFrame([camera.position.x, camera.position.y, camera.position.z]);
+
+    camera.getWorldDirection(forward.current);
+    lookAt.current
+      .copy(camera.position)
+      .addScaledVector(forward.current, LOOK_AT_DISTANCE);
+
+    onFrame({
+      position: [camera.position.x, camera.position.y, camera.position.z],
+      lookAt: [lookAt.current.x, lookAt.current.y, lookAt.current.z],
+    });
   });
 
   return null;
@@ -352,7 +370,7 @@ export const Model = ({
   cameraPosition?: CameraPosition;
   onCameraChange?: (position: CameraPosition) => void;
   fpsMode?: boolean;
-  onCameraFrame?: (position: CameraPosition) => void;
+  onCameraFrame?: (sample: CameraSample) => void;
 }) => {
   const [isControlling, setIsControlling] = useState(false);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
