@@ -7,14 +7,13 @@ import {
   KeyboardControls,
   Line,
   OrbitControls,
-  PointerLockControls,
   PositionalAudio,
   useKeyboardControls,
 } from "@react-three/drei";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Float32BufferAttribute, Group, Vector3 } from "three";
+import { Camera, Euler, Float32BufferAttribute, Group, Vector3 } from "three";
 import {
   DRACOLoader,
   GLTFLoader,
@@ -284,12 +283,71 @@ const CameraPositionReporter = ({
   return null;
 };
 
-const FpsControls = ({ onLockChange }: { onLockChange: (locked: boolean) => void }) => (
-  <PointerLockControls
-    onLock={() => onLockChange(true)}
-    onUnlock={() => onLockChange(false)}
-  />
-);
+const LOOK_SENSITIVITY = 0.0025;
+const PITCH_LIMIT = Math.PI / 2 - 0.05;
+
+// Click-and-drag look instead of PointerLockControls: pointer lock ties into
+// Safari's fullscreen presentation, so Escape (which browsers never let a
+// page intercept) drops the whole window out of fullscreen there. Dragging
+// avoids requesting pointer lock at all, at the cost of the look no longer
+// being unbounded past the screen edge.
+const DragLookControls = ({
+  onDraggingChange,
+}: {
+  onDraggingChange: (dragging: boolean) => void;
+}) => {
+  const { gl, camera } = useThree();
+  const isDragging = useRef(false);
+  const lastPointer = useRef({ x: 0, y: 0 });
+  const euler = useRef(new Euler(0, 0, 0, "YXZ"));
+
+  useEffect(() => {
+    const domElement = gl.domElement;
+
+    const onPointerDown = (event: PointerEvent) => {
+      isDragging.current = true;
+      lastPointer.current = { x: event.clientX, y: event.clientY };
+      domElement.setPointerCapture(event.pointerId);
+      onDraggingChange(true);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!isDragging.current) return;
+      const deltaX = event.clientX - lastPointer.current.x;
+      const deltaY = event.clientY - lastPointer.current.y;
+      lastPointer.current = { x: event.clientX, y: event.clientY };
+
+      euler.current.setFromQuaternion(camera.quaternion);
+      euler.current.y -= deltaX * LOOK_SENSITIVITY;
+      euler.current.x -= deltaY * LOOK_SENSITIVITY;
+      euler.current.x = Math.max(
+        -PITCH_LIMIT,
+        Math.min(PITCH_LIMIT, euler.current.x),
+      );
+      camera.quaternion.setFromEuler(euler.current);
+    };
+
+    const onPointerUp = (event: PointerEvent) => {
+      isDragging.current = false;
+      domElement.releasePointerCapture(event.pointerId);
+      onDraggingChange(false);
+    };
+
+    domElement.addEventListener("pointerdown", onPointerDown);
+    domElement.addEventListener("pointermove", onPointerMove);
+    domElement.addEventListener("pointerup", onPointerUp);
+    domElement.addEventListener("pointercancel", onPointerUp);
+
+    return () => {
+      domElement.removeEventListener("pointerdown", onPointerDown);
+      domElement.removeEventListener("pointermove", onPointerMove);
+      domElement.removeEventListener("pointerup", onPointerUp);
+      domElement.removeEventListener("pointercancel", onPointerUp);
+    };
+  }, [gl, camera, onDraggingChange]);
+
+  return null;
+};
 
 const ModelAudio = ({ url, distance }: { url: string; distance: number }) => {
   const enabled = useAudio((state) => state.enabled);
@@ -373,7 +431,7 @@ export const Model = ({
   onCameraFrame?: (sample: CameraSample) => void;
 }) => {
   const [isControlling, setIsControlling] = useState(false);
-  const [isPointerLocked, setIsPointerLocked] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const initialCameraPosition = useRef(cameraPosition);
   const settleTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
   const cameraRef = useRef<Camera>(null);
@@ -394,7 +452,13 @@ export const Model = ({
     <div className="relative w-full h-full min-h-0">
       <KeyboardControls map={fpsKeyboardMap}>
         <Canvas
-          className={fpsMode ? "cursor-crosshair" : "cursor-move"}
+          className={
+            fpsMode
+              ? isDragging
+                ? "cursor-grabbing"
+                : "cursor-grab"
+              : "cursor-move"
+          }
           style={{ position: "absolute", inset: 0 }}
           onCreated={({ camera }) => {
             cameraRef.current = camera;
@@ -433,7 +497,7 @@ export const Model = ({
           {fpsMode ? (
             <>
               <FreeFlyMovement />
-              <FpsControls onLockChange={setIsPointerLocked} />
+              <DragLookControls onDraggingChange={setIsDragging} />
             </>
           ) : (
             <OrbitControls
@@ -462,10 +526,10 @@ export const Model = ({
           {onCameraFrame && <CameraPositionReporter onFrame={onCameraFrame} />}
         </Canvas>
       </KeyboardControls>
-      {fpsMode && !isPointerLocked && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      {fpsMode && !isDragging && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 flex items-center justify-center">
           <p className="border border-foreground bg-background/60 px-3 py-1.5 font-mono text-xs uppercase shadow-md backdrop-blur-sm">
-            Cliquer pour naviguer · WASD + souris · Q/E bas/haut
+            Cliquer-glisser pour regarder · WASD · Q/E bas/haut
           </p>
         </div>
       )}
