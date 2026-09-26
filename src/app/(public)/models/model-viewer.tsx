@@ -2,6 +2,10 @@
 
 import { AudioToggle } from "@/components/common/audio-toggle";
 import {
+  parseAnnotations,
+  resolveAnnotationAssets,
+} from "@/components/common/annotations";
+import {
   CameraPosition,
   CameraSample,
   Model,
@@ -25,48 +29,6 @@ import {
 import { ErrorBoundary } from "react-error-boundary";
 
 type ModelExtension = "glb" | "ply";
-
-const isVector3 = (value: unknown): value is [number, number, number] =>
-  Array.isArray(value) &&
-  value.length === 3 &&
-  value.every((coordinate) => typeof coordinate === "number");
-
-const parseAnnotations = (value: unknown): ModelAnnotation[] | null => {
-  if (!Array.isArray(value)) return null;
-
-  const annotations: ModelAnnotation[] = [];
-  for (const item of value) {
-    if (
-      typeof item !== "object" ||
-      item === null ||
-      typeof (item as { text?: unknown }).text !== "string" ||
-      !isVector3((item as { point?: unknown }).point)
-    ) {
-      return null;
-    }
-
-    const labelOffset = (item as { labelOffset?: unknown }).labelOffset;
-    if (labelOffset !== undefined && !isVector3(labelOffset)) return null;
-
-    const labelModel = (item as { labelModel?: unknown }).labelModel;
-    if (labelModel !== undefined && typeof labelModel !== "string") return null;
-
-    const labelModelScale = (item as { labelModelScale?: unknown })
-      .labelModelScale;
-    if (labelModelScale !== undefined && typeof labelModelScale !== "number")
-      return null;
-
-    annotations.push({
-      text: (item as { text: string }).text,
-      point: (item as { point: [number, number, number] }).point,
-      labelOffset: labelOffset as [number, number, number] | undefined,
-      labelModel: labelModel as string | undefined,
-      labelModelScale: labelModelScale as number | undefined,
-    });
-  }
-
-  return annotations;
-};
 
 const emptyAnnotation: ModelAnnotation = {
   text: "Nouvelle annotation",
@@ -173,6 +135,15 @@ function AnnotationsPanel({
   const addAnnotation = () =>
     setAnnotations([...annotations, { ...emptyAnnotation }]);
 
+  const [copied, setCopied] = useState(false);
+
+  const copyAnnotations = () => {
+    navigator.clipboard.writeText(JSON.stringify(annotations)).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    });
+  };
+
   return (
     <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-72 max-w-[42vw] -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
       <div className="flex items-center justify-between gap-2">
@@ -185,6 +156,15 @@ function AnnotationsPanel({
           + Ajouter
         </button>
       </div>
+      {annotations.length > 0 && (
+        <button
+          type="button"
+          onClick={copyAnnotations}
+          className="cursor-pointer border border-foreground px-2 py-0.5"
+        >
+          {copied ? "Copié !" : "Copier"}
+        </button>
+      )}
       {annotations.length === 0 && (
         <p className="text-foreground/50 normal-case">
           Aucune annotation pour ce modèle.
@@ -506,14 +486,7 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
     ? Math.round((Math.hypot(...cameraPosition) / Math.sqrt(3)) * 10) / 10
     : modelPosition;
 
-  const resolvedAnnotations = annotations.map((annotation) =>
-    annotation.labelModel
-      ? {
-          ...annotation,
-          labelModel: `/api/assets/models/${annotation.labelModel}`,
-        }
-      : annotation,
-  );
+  const resolvedAnnotations = resolveAnnotationAssets(annotations);
 
   return (
     <section className="h-dvh w-screen min-h-0 flex flex-col items-center fixed top-0 left-0 right-0 bottom-0 bg-background">

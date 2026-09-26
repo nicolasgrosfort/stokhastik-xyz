@@ -141,7 +141,7 @@ const AnnotationModelLabel = ({
   );
 };
 
-const Annotation = ({
+export const Annotation = ({
   text,
   point,
   labelOffset = [0.5, 0.5, 0],
