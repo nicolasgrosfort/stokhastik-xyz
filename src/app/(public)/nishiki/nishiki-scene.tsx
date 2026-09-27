@@ -13,7 +13,7 @@ import { useState } from "react";
 const defaultAnnotations: ModelAnnotation[] = [
   {
     text: "Korean Dog",
-    point: [12.937906805620601, 0.8042247661480963, 6.171422808775111],
+    point: [14.26690035879021, 0.8761255030977493, 7.189859153117743],
     labelOffset: [0.27, 0.5, 0],
   },
   {

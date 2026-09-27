@@ -19,20 +19,56 @@ import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader.js";
 // murs/objets ou manque de naturel.
 const cameraPositions = new THREE.CatmullRomCurve3(
   [
-    new THREE.Vector3(15.2212, 1.6042, 8.1181), // Korean Dog
-    new THREE.Vector3(5.6423, 2.2149, 5.1723), // Shishi
-    new THREE.Vector3(-2.1045, 3.276, -5.3486), // Ema
-    new THREE.Vector3(13.0825, 2.2657, 1.1439), // Omikuji machine
+    new THREE.Vector3(
+      20.703749057110425,
+      2.5927876694648977,
+      23.118696180970883,
+    ),
+    new THREE.Vector3(
+      12.606085985851113,
+      1.1858197601757416,
+      9.743085933030645,
+    ),
+    new THREE.Vector3(
+      -1.0240869938894979,
+      1.3006913236175528,
+      -0.010041441163111085,
+    ),
+    new THREE.Vector3(
+      -1.402183367131699,
+      3.904024652036796,
+      -1.8820109468286763,
+    ),
+    new THREE.Vector3(
+      12.099815057120152,
+      1.5918887732706526,
+      4.041013711627714,
+    ),
+    new THREE.Vector3(9.334348530115431, 1.209903387154438, 5.277631221097255),
   ],
   true,
 );
 
 const cameraLookAts = new THREE.CatmullRomCurve3(
   [
-    new THREE.Vector3(12.937906805620601, 0.8042247661480963, 6.171422808775111), // Korean Dog
-    new THREE.Vector3(7.1047785339646055, 1.4149274596081198, 2.5526573561854162), // Shishi
-    new THREE.Vector3(0.3321333239687341, 2.4760233008465846, -3.59870953066046), // Ema
-    new THREE.Vector3(10.095138040616101, 1.465730895485213, 1.4120716703744294), // Omikuji machine
+    new THREE.Vector3(18.93817893978408, 2.3895181751821983, 20.70178830653746),
+    new THREE.Vector3(
+      12.996282324122204,
+      0.6036123708923422,
+      6.826104381243997,
+    ),
+    new THREE.Vector3(
+      1.312463442996378,
+      1.0784560625488608,
+      -1.8785016480249417,
+    ),
+    new THREE.Vector3(
+      0.3453183851518786,
+      1.993405877948177,
+      -3.3971919676528977,
+    ),
+    new THREE.Vector3(10.235771384269784, 0.9932226344838284, 1.76792329548132),
+    new THREE.Vector3(7.487553439029362, 0.8305142193317623, 2.944090617019576),
   ],
   true,
 );
