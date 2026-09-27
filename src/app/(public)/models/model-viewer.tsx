@@ -11,7 +11,7 @@ import {
   Model,
   ModelAnnotation,
 } from "@/components/common/model";
-import { Select, Slider, Toolbar } from "@base-ui/react";
+import { Collapsible, Select, Slider, Toolbar } from "@base-ui/react";
 import {
   parseAsArrayOf,
   parseAsFloat,
@@ -20,6 +20,7 @@ import {
   useQueryState,
 } from "nuqs";
 import {
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -103,12 +104,53 @@ function VectorField({
   );
 }
 
+function SidePanel({
+  side,
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  side: "left" | "right";
+  title: string;
+  defaultOpen?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Collapsible.Root
+      defaultOpen={defaultOpen}
+      className={`absolute inset-y-0 z-10 flex items-stretch ${
+        side === "left" ? "left-0" : "right-0 flex-row-reverse"
+      }`}
+    >
+      <Collapsible.Trigger className="group flex shrink-0 cursor-pointer flex-col items-center justify-center gap-2 border border-foreground bg-background/60 px-1.5 py-4 font-mono text-[10px] uppercase shadow-md backdrop-blur-sm sm:text-xs">
+        <span className="transition-transform group-data-[panel-open]:rotate-180">
+          {side === "left" ? "▸" : "◂"}
+        </span>
+        <span className="[writing-mode:vertical-rl]">{title}</span>
+      </Collapsible.Trigger>
+      <Collapsible.Panel className="h-full w-(--collapsible-panel-width) overflow-hidden transition-[width] duration-200 ease-out data-starting-style:w-0 data-ending-style:w-0">
+        <div className="flex h-full w-72 max-w-[70vw] flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
+          {children}
+        </div>
+      </Collapsible.Panel>
+    </Collapsible.Root>
+  );
+}
+
 function AnnotationsPanel({
   annotations,
   setAnnotations,
+  placing,
+  onTogglePlacing,
+  selectedIndex,
+  onSelectIndex,
 }: {
   annotations: ModelAnnotation[];
   setAnnotations: (annotations: ModelAnnotation[]) => void;
+  placing: boolean;
+  onTogglePlacing: () => void;
+  selectedIndex: number | null;
+  onSelectIndex: (index: number | null) => void;
 }) {
   const updateAnnotation = (index: number, patch: Partial<ModelAnnotation>) =>
     setAnnotations(
@@ -129,8 +171,10 @@ function AnnotationsPanel({
     updateAnnotation(index, { [key]: next });
   };
 
-  const removeAnnotation = (index: number) =>
+  const removeAnnotation = (index: number) => {
     setAnnotations(annotations.filter((_, i) => i !== index));
+    if (selectedIndex === index) onSelectIndex(null);
+  };
 
   const addAnnotation = () =>
     setAnnotations([...annotations, { ...emptyAnnotation }]);
@@ -145,7 +189,7 @@ function AnnotationsPanel({
   };
 
   return (
-    <div className="absolute left-2 top-1/2 z-10 flex max-h-[calc(100dvh-4rem)] w-72 max-w-[42vw] -translate-y-1/2 flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
+    <SidePanel side="left" title="Annotations">
       <div className="flex items-center justify-between gap-2">
         <span className="text-foreground/70">Annotations</span>
         <button
@@ -156,6 +200,15 @@ function AnnotationsPanel({
           + Ajouter
         </button>
       </div>
+      <button
+        type="button"
+        onClick={onTogglePlacing}
+        aria-pressed={placing}
+        data-pressed={placing}
+        className="cursor-pointer border border-foreground px-2 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background"
+      >
+        {placing ? "Cliquer sur le modèle…" : "+ Placer au clic"}
+      </button>
       {annotations.length > 0 && (
         <button
           type="button"
@@ -184,6 +237,18 @@ function AnnotationsPanel({
               }
               className="min-w-0 flex-1 border border-foreground/40 bg-background px-1 py-0.5 normal-case focus:outline-none focus:border-foreground"
             />
+            <button
+              type="button"
+              onClick={() =>
+                onSelectIndex(selectedIndex === index ? null : index)
+              }
+              aria-pressed={selectedIndex === index}
+              data-pressed={selectedIndex === index}
+              aria-label="Déplacer dans l'espace 3D"
+              className="shrink-0 cursor-pointer border border-foreground px-1.5 py-0.5 data-[pressed=true]:bg-foreground data-[pressed=true]:text-background"
+            >
+              ✥
+            </button>
             <button
               type="button"
               onClick={() => removeAnnotation(index)}
@@ -245,7 +310,7 @@ function AnnotationsPanel({
           )}
         </div>
       ))}
-    </div>
+    </SidePanel>
   );
 }
 
@@ -294,7 +359,7 @@ function CameraPathPanel({
   };
 
   return (
-    <div className="absolute right-2 top-[calc(4rem+env(safe-area-inset-top))] z-10 flex max-h-[calc(100dvh-8rem)] w-72 max-w-[42vw] flex-col gap-2 overflow-y-auto border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-2 font-mono text-[10px] uppercase sm:text-xs">
+    <SidePanel side="right" title="Caméra">
       <div className="flex items-center justify-between gap-2">
         <span className="text-foreground/70">Caméra</span>
         <button
@@ -357,7 +422,7 @@ function CameraPathPanel({
           </div>
         </>
       )}
-    </div>
+    </SidePanel>
   );
 }
 
@@ -466,6 +531,32 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
       .withDefault([])
       .withOptions({ history: "replace" }),
   );
+  const [placingAnnotation, setPlacingAnnotation] = useState(false);
+  const [selectedAnnotationIndex, setSelectedAnnotationIndex] = useState<
+    number | null
+  >(null);
+
+  const handlePlaceAnnotation = useCallback(
+    (point: [number, number, number]) => {
+      setAnnotations([...annotations, { ...emptyAnnotation, point }]);
+    },
+    [annotations, setAnnotations],
+  );
+
+  const handleAnnotationPointChange = useCallback(
+    (index: number, point: [number, number, number]) => {
+      setAnnotations(
+        annotations.map((annotation, i) =>
+          i === index ? { ...annotation, point } : annotation,
+        ),
+      );
+    },
+    [annotations, setAnnotations],
+  );
+
+  const handleSelectAnnotation = useCallback((index: number) => {
+    setSelectedAnnotationIndex((previous) => (previous === index ? null : index));
+  }, []);
 
   const stopRotationValue = stopRotation === "true";
   const enablePanValue = enablePan === "true";
@@ -639,6 +730,10 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
         <AnnotationsPanel
           annotations={annotations}
           setAnnotations={(next) => setAnnotations(next)}
+          placing={placingAnnotation}
+          onTogglePlacing={() => setPlacingAnnotation((previous) => !previous)}
+          selectedIndex={selectedAnnotationIndex}
+          onSelectIndex={setSelectedAnnotationIndex}
         />
       )}
       {isAdmin && (
@@ -679,6 +774,13 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
               }
               fpsMode={fpsMode}
               onCameraFrame={isAdmin ? setLiveSample : undefined}
+              placingAnnotation={isAdmin && placingAnnotation}
+              onPlaceAnnotation={isAdmin ? handlePlaceAnnotation : undefined}
+              selectedAnnotationIndex={isAdmin ? selectedAnnotationIndex : null}
+              onSelectAnnotation={isAdmin ? handleSelectAnnotation : undefined}
+              onAnnotationPointChange={
+                isAdmin ? handleAnnotationPointChange : undefined
+              }
             />
           </ErrorBoundary>
         ) : (

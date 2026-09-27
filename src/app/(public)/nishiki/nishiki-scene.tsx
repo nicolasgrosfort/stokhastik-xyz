@@ -9,8 +9,33 @@ import { PlyModel } from "@/components/common/ply-model";
 import { Scene } from "@/components/common/scene";
 import { useState } from "react";
 
+// Récupérées depuis le panneau admin de /models (bouton "Copier").
+const defaultAnnotations: ModelAnnotation[] = [
+  {
+    text: "Korean Dog",
+    point: [12.937906805620601, 0.8042247661480963, 6.171422808775111],
+    labelOffset: [0.27, 0.5, 0],
+  },
+  {
+    text: "Omikuji machine",
+    point: [10.095138040616101, 1.465730895485213, 1.4120716703744294],
+    labelOffset: [-0.35, 0.73, 0],
+  },
+  {
+    text: "Shishi",
+    point: [7.1047785339646055, 1.4149274596081198, 2.5526573561854162],
+    labelOffset: [0.5, 0.5, 0],
+  },
+  {
+    text: "Ema",
+    point: [0.3321333239687341, 2.4760233008465846, -3.59870953066046],
+    labelOffset: [0.5, 0.5, 0],
+  },
+];
+
 export function NishikiScene({ model }: { model: string }) {
-  const [annotations, setAnnotations] = useState<ModelAnnotation[]>([]);
+  const [annotations, setAnnotations] =
+    useState<ModelAnnotation[]>(defaultAnnotations);
   const [pasteFailed, setPasteFailed] = useState(false);
 
   const pasteAnnotations = async () => {

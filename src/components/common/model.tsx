@@ -8,9 +8,16 @@ import {
   Line,
   OrbitControls,
   PositionalAudio,
+  TransformControls,
   useKeyboardControls,
 } from "@react-three/drei";
-import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import {
+  Canvas,
+  ThreeEvent,
+  useFrame,
+  useLoader,
+  useThree,
+} from "@react-three/fiber";
 import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Camera, Euler, Float32BufferAttribute, Group, Vector3 } from "three";
@@ -147,7 +154,16 @@ export const Annotation = ({
   labelOffset = [0.5, 0.5, 0],
   labelModel,
   labelModelScale,
-}: ModelAnnotation) => {
+  selected,
+  onSelect,
+  onPointChange,
+}: ModelAnnotation & {
+  selected?: boolean;
+  onSelect?: () => void;
+  onPointChange?: (point: [number, number, number]) => void;
+}) => {
+  const gizmoTarget = useRef<Group>(null!);
+
   const labelPosition: [number, number, number] = [
     point[0] + labelOffset[0],
     point[1] + labelOffset[1],
@@ -158,8 +174,37 @@ export const Annotation = ({
     <>
       <Line points={[point, labelPosition]} color="white" lineWidth={1.2} />
       <Html position={point} center>
-        <div className="size-2 rounded-full border-2 border-white bg-black" />
+        <div
+          onClick={(event) => {
+            if (!onSelect) return;
+            event.stopPropagation();
+            onSelect();
+          }}
+          className={`size-2 rounded-full border-2 bg-black ${
+            selected
+              ? "border-foreground ring-2 ring-white"
+              : "border-white"
+          } ${onSelect ? "cursor-pointer" : ""}`}
+        />
       </Html>
+      {selected && onPointChange && (
+        <>
+          <group ref={gizmoTarget} position={point} />
+          <TransformControls
+            object={gizmoTarget}
+            mode="translate"
+            onObjectChange={() => {
+              const target = gizmoTarget.current;
+              if (!target) return;
+              onPointChange([
+                target.position.x,
+                target.position.y,
+                target.position.z,
+              ]);
+            }}
+          />
+        </>
+      )}
       <Html position={labelPosition} center>
         <div className="flex flex-col items-center gap-1 border border-foreground bg-background/60 p-2 shadow-md backdrop-blur-sm select-none">
           <span className="font-mono text-xs uppercase">{text}</span>
@@ -369,6 +414,11 @@ const Object = ({
   annotations,
   audio,
   audioDistance,
+  placingAnnotation,
+  onPlaceAnnotation,
+  selectedAnnotationIndex,
+  onSelectAnnotation,
+  onAnnotationPointChange,
 }: {
   model: string;
   rotation: GetStoreItem["rotation"];
@@ -377,6 +427,14 @@ const Object = ({
   annotations?: ModelAnnotation[];
   audio?: string;
   audioDistance: number;
+  placingAnnotation?: boolean;
+  onPlaceAnnotation?: (point: [number, number, number]) => void;
+  selectedAnnotationIndex?: number | null;
+  onSelectAnnotation?: (index: number) => void;
+  onAnnotationPointChange?: (
+    index: number,
+    point: [number, number, number],
+  ) => void;
 }) => {
   const ref = useRef<Group>(null);
 
@@ -386,15 +444,42 @@ const Object = ({
     }
   });
 
+  const handleClick = (event: ThreeEvent<MouseEvent>) => {
+    // event.delta is the pointer travel distance for this click; a large
+    // value means the user was orbiting the camera, not clicking a point.
+    if (!placingAnnotation || !onPlaceAnnotation || event.delta > 2) return;
+    event.stopPropagation();
+
+    const local = ref.current?.worldToLocal(event.point.clone());
+    if (!local) return;
+    onPlaceAnnotation([local.x, local.y, local.z]);
+  };
+
   return (
-    <group ref={ref} rotation={[0, rotation, 0]}>
+    <group
+      ref={ref}
+      rotation={[0, rotation, 0]}
+      onClick={placingAnnotation ? handleClick : undefined}
+    >
       {isPly(model) ? (
         <PlyObject model={model} pointSize={pointSize} />
       ) : (
         <GltfObject model={model} />
       )}
       {annotations?.map((annotation, index) => (
-        <Annotation key={index} {...annotation} />
+        <Annotation
+          key={index}
+          {...annotation}
+          selected={selectedAnnotationIndex === index}
+          onSelect={
+            onSelectAnnotation ? () => onSelectAnnotation(index) : undefined
+          }
+          onPointChange={
+            onAnnotationPointChange
+              ? (point) => onAnnotationPointChange(index, point)
+              : undefined
+          }
+        />
       ))}
       {audio && <ModelAudio url={audio} distance={audioDistance} />}
     </group>
@@ -415,6 +500,11 @@ export const Model = ({
   onCameraChange,
   fpsMode,
   onCameraFrame,
+  placingAnnotation,
+  onPlaceAnnotation,
+  selectedAnnotationIndex,
+  onSelectAnnotation,
+  onAnnotationPointChange,
 }: {
   position: GetStoreItem["position"];
   rotation: GetStoreItem["rotation"];
@@ -429,6 +519,14 @@ export const Model = ({
   onCameraChange?: (position: CameraPosition) => void;
   fpsMode?: boolean;
   onCameraFrame?: (sample: CameraSample) => void;
+  placingAnnotation?: boolean;
+  onPlaceAnnotation?: (point: [number, number, number]) => void;
+  selectedAnnotationIndex?: number | null;
+  onSelectAnnotation?: (index: number) => void;
+  onAnnotationPointChange?: (
+    index: number,
+    point: [number, number, number],
+  ) => void;
 }) => {
   const [isControlling, setIsControlling] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -453,11 +551,13 @@ export const Model = ({
       <KeyboardControls map={fpsKeyboardMap}>
         <Canvas
           className={
-            fpsMode
-              ? isDragging
-                ? "cursor-grabbing"
-                : "cursor-grab"
-              : "cursor-move"
+            placingAnnotation
+              ? "cursor-crosshair"
+              : fpsMode
+                ? isDragging
+                  ? "cursor-grabbing"
+                  : "cursor-grab"
+                : "cursor-move"
           }
           style={{ position: "absolute", inset: 0 }}
           onCreated={({ camera }) => {
@@ -492,6 +592,11 @@ export const Model = ({
               annotations={annotations}
               audio={audio}
               audioDistance={position}
+              placingAnnotation={placingAnnotation}
+              onPlaceAnnotation={onPlaceAnnotation}
+              selectedAnnotationIndex={selectedAnnotationIndex}
+              onSelectAnnotation={onSelectAnnotation}
+              onAnnotationPointChange={onAnnotationPointChange}
             />
           </Suspense>
           {fpsMode ? (
@@ -501,6 +606,7 @@ export const Model = ({
             </>
           ) : (
             <OrbitControls
+              makeDefault
               enablePan={enablePan ?? false}
               onStart={() => {
                 clearTimeout(settleTimeout.current);
