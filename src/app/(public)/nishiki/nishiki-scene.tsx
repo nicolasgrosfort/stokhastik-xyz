@@ -4,7 +4,7 @@ import {
   parseAnnotations,
   resolveAnnotationAssets,
 } from "@/components/common/annotations";
-import { Annotation, ModelAnnotation } from "@/components/common/model";
+import { ModelAnnotation } from "@/components/common/model";
 import { PlyModel } from "@/components/common/ply-model";
 import { Scene } from "@/components/common/scene";
 import { useState } from "react";
@@ -37,6 +37,7 @@ export function NishikiScene({ model }: { model: string }) {
   const [annotations, setAnnotations] =
     useState<ModelAnnotation[]>(defaultAnnotations);
   const [pasteFailed, setPasteFailed] = useState(false);
+  const [freeCamera, setFreeCamera] = useState(false);
 
   const pasteAnnotations = async () => {
     try {
@@ -53,18 +54,30 @@ export function NishikiScene({ model }: { model: string }) {
   return (
     <div className="relative h-full w-full">
       <Scene>
-        <PlyModel model={model} />
-        {resolveAnnotationAssets(annotations).map((annotation, index) => (
-          <Annotation key={index} {...annotation} />
-        ))}
+        <PlyModel
+          model={model}
+          annotations={resolveAnnotationAssets(annotations)}
+          freeCamera={freeCamera}
+        />
       </Scene>
-      <button
-        type="button"
-        onClick={pasteAnnotations}
-        className="absolute right-2 top-[calc(0.5rem+env(safe-area-inset-top))] z-10 cursor-pointer border border-foreground bg-background/60 px-2 py-1 font-mono text-[10px] uppercase shadow-md backdrop-blur-sm sm:text-xs"
-      >
-        {pasteFailed ? "Presse-papier invalide" : "Coller les annotations"}
-      </button>
+      <div className="absolute right-2 top-[calc(0.5rem+env(safe-area-inset-top))] z-10 flex flex-col items-end gap-1">
+        <button
+          type="button"
+          onClick={pasteAnnotations}
+          className="cursor-pointer border border-foreground bg-background/60 px-2 py-1 font-mono text-[10px] uppercase shadow-md backdrop-blur-sm sm:text-xs"
+        >
+          {pasteFailed ? "Presse-papier invalide" : "Coller les annotations"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setFreeCamera((previous) => !previous)}
+          aria-pressed={freeCamera}
+          data-pressed={freeCamera}
+          className="cursor-pointer border border-foreground bg-background/60 px-2 py-1 font-mono text-[10px] uppercase shadow-md backdrop-blur-sm data-[pressed=true]:bg-foreground data-[pressed=true]:text-background sm:text-xs"
+        >
+          {freeCamera ? "Trajet scripté" : "Vue libre (debug)"}
+        </button>
+      </div>
     </div>
   );
 }

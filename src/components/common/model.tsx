@@ -19,7 +19,14 @@ import {
   useThree,
 } from "@react-three/fiber";
 import Image from "next/image";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import {
+  RefObject,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Camera, Euler, Float32BufferAttribute, Group, Vector3 } from "three";
 import {
   DRACOLoader,
@@ -157,10 +164,18 @@ export const Annotation = ({
   selected,
   onSelect,
   onPointChange,
+  htmlPortal,
 }: ModelAnnotation & {
   selected?: boolean;
   onSelect?: () => void;
   onPointChange?: (point: [number, number, number]) => void;
+  // Html normally attaches to whatever DOM node R3F's event system is
+  // "connected" to. Inside a drei <ScrollControls> that's its own scrolling
+  // container, not the fixed viewport, so labels drift with native scroll
+  // while everything drawn in WebGL (the point cloud, the connecting line)
+  // stays put. Pass ScrollControls' `state.fixed` sticky container here to
+  // anchor labels to the actual viewport instead.
+  htmlPortal?: RefObject<HTMLElement>;
 }) => {
   const gizmoTarget = useRef<Group>(null!);
 
@@ -173,7 +188,7 @@ export const Annotation = ({
   return (
     <>
       <Line points={[point, labelPosition]} color="white" lineWidth={1.2} />
-      <Html position={point} center>
+      <Html position={point} center portal={htmlPortal}>
         <div
           onClick={(event) => {
             if (!onSelect) return;
@@ -205,7 +220,7 @@ export const Annotation = ({
           />
         </>
       )}
-      <Html position={labelPosition} center>
+      <Html position={labelPosition} center portal={htmlPortal}>
         <div className="flex flex-col items-center gap-1 border border-foreground bg-background/60 p-2 shadow-md backdrop-blur-sm select-none">
           <span className="font-mono text-xs uppercase">{text}</span>
           {labelModel && (
@@ -243,6 +258,20 @@ const CameraDistance = ({
     lastDistance.current = distance;
     camera.position.set(distance, distance, distance);
   }, [camera, distance]);
+
+  return null;
+};
+
+// Three.js's raycaster defaults to a 1-unit threshold for Points, which is
+// huge for a dense point cloud spanning tens of units: a click can hit a
+// stray point well away from the one under the cursor. Tie it to the
+// rendered point size so click-to-place lands on the point actually clicked.
+const PointsRaycastThreshold = ({ pointSize }: { pointSize: number }) => {
+  const raycaster = useThree((state) => state.raycaster);
+
+  useEffect(() => {
+    raycaster.params.Points = { threshold: pointSize * 2 };
+  }, [raycaster, pointSize]);
 
   return null;
 };
@@ -577,6 +606,7 @@ export const Model = ({
             distance={position}
             keepInitialPosition={!!initialCameraPosition.current}
           />
+          <PointsRaycastThreshold pointSize={pointSize ?? 0.01} />
           <Suspense
             fallback={
               <Html center>
