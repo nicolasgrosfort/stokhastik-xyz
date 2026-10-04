@@ -1652,16 +1652,16 @@
     fflate "~0.8.2"
     meshoptimizer "~1.1.1"
 
-"@types/three@^0.185.4":
-  version "0.185.4"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.185.4.tgz#ad7f25215e401c1c2038ac150e7a3361366b38a7"
-  integrity sha512-gAsBIC07NIFrxjbf7tH2t71c38uulFfk/RFoC7FNBSjMRAQ8J1x/RBvusX0N5PJouaYFJawXQqfCQ0RKUx/1nA==
+"@types/three@^0.186.0":
+  version "0.186.0"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.186.0.tgz#fc936323d7eeb885052fd5de352e3772f488ea99"
+  integrity sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ==
   dependencies:
     "@dimforge/rapier3d-compat" "~0.12.0"
     "@tweenjs/tween.js" "~23.1.3"
     "@types/stats.js" "*"
     "@types/webxr" ">=0.5.17"
-    fflate "~0.8.2"
+    fflate "~0.8.3"
     meshoptimizer "~1.1.1"
 
 "@types/unist@*", "@types/unist@^3.0.0":
@@ -3426,7 +3426,7 @@ fflate@^0.6.9:
   resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.6.10.tgz#5f40f9659205936a2d18abf88b2e7781662b6d43"
   integrity sha512-IQrh3lEPM93wVCEczc9SaAOvkmcoQn/G8Bo1e8ZPlY3X3bnAxWaBdvTdvM1hP62iZp0BXWDy4vTAy4fF0+Dlpg==
 
-fflate@~0.8.2:
+fflate@~0.8.2, fflate@~0.8.3:
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.8.3.tgz#bc27d8eb30343d4d512abb03480202ce65d825fc"
   integrity sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==
@@ -3491,13 +3491,13 @@ foreground-child@3.3.1:
     cross-spawn "^7.0.6"
     signal-exit "^4.0.1"
 
-framer-motion@^13.2.0:
-  version "13.2.0"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-13.2.0.tgz#e531f00950f590d5ac0e905a355b8af4ca3923b0"
-  integrity sha512-9E33ebgMaO33w1nN/jEdW8z3/GO483fMi4rqbMG9rt83XgW9QLKRe4NcmJ8s+fQ3O34++UHrIQwlIWGIWTITjA==
+framer-motion@14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-14.0.0.tgz#d8838c504e56d4982749c633c698e6d584ada181"
+  integrity sha512-QAtHmybrDFSliyW1sexMtSQTQd+1jw2ajibEmzpuI4XdPVzQkn+dAzJMm2sW3pl9MJuSS4xN51djQ7huhlP/VA==
   dependencies:
-    motion-dom "^13.2.0"
-    motion-utils "^13.0.0"
+    motion-dom "14.0.0"
+    motion-utils "14.0.0"
     tslib "^2.4.0"
 
 fsevents@~2.3.2:
@@ -4979,24 +4979,24 @@ minimist@^1.2.0, minimist@^1.2.6:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
-motion-dom@^13.2.0:
-  version "13.2.0"
-  resolved "https://registry.yarnpkg.com/motion-dom/-/motion-dom-13.2.0.tgz#d13d09accabdd6775d3bb981895fa2b8b6c07735"
-  integrity sha512-N6gdSoWRDk0Rh/fVtlqUtLs+fEN3ELFZI3cn3IQE9Mnf3E+Mh8wjO6MstzCOPFh4Yf0L1as5m2eUyYWj8ylVSQ==
+motion-dom@14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/motion-dom/-/motion-dom-14.0.0.tgz#d99ce3f514950c2e456b8fd30483855ba9450e96"
+  integrity sha512-aU3ApXo1yTpeUi3JU+jbDk2TELjxPE3MbBMUP7nZHlARb6RweJK+ojmLjpuB0YsY6zhbBl1YWGo8LMsI1/Llqw==
   dependencies:
-    motion-utils "^13.0.0"
+    motion-utils "14.0.0"
 
-motion-utils@^13.0.0:
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/motion-utils/-/motion-utils-13.0.0.tgz#b2e4dbe21e5488032592f0b0d4e0b7b776466dfa"
-  integrity sha512-7DnN7TmbLcYXcG4RVadXIihWlyuM9afoUww8Y5Agg431kGKiuL2/OMyP4mJ5wLz+pvN3t5ySClLOaVXJ+wekRQ==
+motion-utils@14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/motion-utils/-/motion-utils-14.0.0.tgz#b6e5eacb07248f0a8ed8b1b235f9686777d419d6"
+  integrity sha512-jBsyjVxTTRZNeuvd/v+btVXr90LQkYl4HhRu9T2ARc+PMnvkmjsjRVeAg4Qm10b6TlTw+kykWI8gu/6LuvpLSQ==
 
-motion@^13.2.0:
-  version "13.2.0"
-  resolved "https://registry.yarnpkg.com/motion/-/motion-13.2.0.tgz#c133219098fb28c1b3cd672d987121ff6e250d38"
-  integrity sha512-4Hrb5vD6HhjFstLUiCmWvtpsw+WTpP4R+QXfSDYZBz7+uxE/LrRg3aV0ReJxHrTRffHhbIE6svEqnotngXvesQ==
+motion@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/motion/-/motion-14.0.0.tgz#acb2afa358ab351e72d25d393266dd019d358c58"
+  integrity sha512-oGc2lkge2lkRZCP+J8/JsnYu4NFjqP1MtXirNdetn3QbvK2JqwM9A200EdT4C598KfzDhjLT12zF21xDM4Oilw==
   dependencies:
-    framer-motion "^13.2.0"
+    framer-motion "14.0.0"
     tslib "^2.4.0"
 
 ms@^2.1.1, ms@^2.1.3:
@@ -6198,10 +6198,10 @@ three@^0.170.0:
   resolved "https://registry.yarnpkg.com/three/-/three-0.170.0.tgz#6087f97aab79e9e9312f9c89fcef6808642dfbb7"
   integrity sha512-FQK+LEpYc0fBD+J8g6oSEyyNzjp+Q7Ks1C568WWaoMRLW+TkNNWmenWeGgJjV105Gd+p/2ql1ZcjYvNiPZBhuQ==
 
-three@^0.185.1:
-  version "0.185.1"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.185.1.tgz#63e9e241a17b101e211965121a017b4b4d8054ae"
-  integrity sha512-5aojFCXKwnjBRZvUnt3WFfEcvUJgkN5LlijRFN95hMy8WVkG4I0QNcJE+OuWvuJ0bOdStrbfXn0pkd6/QyiAlg==
+three@^0.186.1:
+  version "0.186.1"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.186.1.tgz#6d50f70c2c437f844179bbb56d6f5b774e1ca38a"
+  integrity sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==
 
 tiny-invariant@1.0.6:
   version "1.0.6"
