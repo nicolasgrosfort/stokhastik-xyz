@@ -80,6 +80,11 @@ export function getScan(id: string) {
   return prisma.scan.findUnique({ where: { id } });
 }
 
+// Même forme que les lignes de la liste (sans le vecteur d'embedding).
+export function getScanForList(id: string) {
+  return prisma.scan.findUnique({ where: { id }, omit: { embedding: true } });
+}
+
 export function updateScan(id: string, data: ScanInput) {
   return prisma.scan.update({
     where: { id },

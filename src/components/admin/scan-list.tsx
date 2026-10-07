@@ -16,6 +16,7 @@ import { useUrlAtom } from "@/components/common/data-grid/use-url-atom";
 import { FormatedDate } from "@/components/common/formated-date";
 import type { ScanListItem } from "@/libs/scans";
 import Image from "next/image";
+import Link from "next/link";
 
 const columnHelper = createAppColumnHelper<ScanListItem>();
 
@@ -88,6 +89,19 @@ const columns = columnHelper.columns([
     sortFn: "basic",
     enableGlobalFilter: false,
     cell: ({ getValue }) => <Badge>{getValue() ? "Généré" : "Manquant"}</Badge>,
+  }),
+  columnHelper.display({
+    id: "actions",
+    header: "",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <Link
+        href={`/admin/scans/${row.original.id}/edit`}
+        className="underline whitespace-nowrap"
+      >
+        Modifier
+      </Link>
+    ),
   }),
 ]);
 
