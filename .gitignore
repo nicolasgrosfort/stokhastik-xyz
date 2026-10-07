@@ -49,6 +49,3 @@ data
 
 # prisma
 /src/generated/prisma
-
-# Rapports d'évaluation de la recherche
-tools/eval/reports/

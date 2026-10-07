@@ -22,7 +22,7 @@ const QUERY_CACHE_SIZE = 100;
 const NAME_BOOST = 0.05;
 const TAG_BOOST = 0.08;
 
-// Sous ce score, un résultat est considéré non pertinent. À régler avec le juge.
+// Sous ce score, un résultat est considéré non pertinent. Réglable via SEARCH_MIN_SCORE.
 export const getMinScore = (): number =>
   Number(process.env.SEARCH_MIN_SCORE) || 0.25;
 
