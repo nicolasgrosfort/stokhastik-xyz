@@ -1,4 +1,4 @@
-import { Embedding } from "@/data/embeddings";
+import type { Embedding } from "@/data/embeddings";
 
 export function cosineSimilarity(a: number[], b: number[]): number {
   if (a.length !== b.length) {
