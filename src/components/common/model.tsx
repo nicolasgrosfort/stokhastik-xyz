@@ -37,10 +37,10 @@ import {
 
 const dracoLoader = new DRACOLoader();
 
-const isPly = (model: string) =>
+export const isPly = (model: string) =>
   model.split(".").pop()?.toLowerCase() === "ply";
 
-const GltfObject = ({ model }: { model: string }) => {
+export const GltfObject = ({ model }: { model: string }) => {
   const result = useLoader(GLTFLoader, model, (loader) => {
     loader.setDRACOLoader(dracoLoader);
   });
@@ -58,7 +58,7 @@ const configurePlyLoader = (loader: PLYLoader) => {
   });
 };
 
-const PlyObject = ({
+export const PlyObject = ({
   model,
   pointSize,
 }: {
