@@ -1,5 +1,6 @@
 import { EmbeddingStatus, getEmbeddingStatus } from "@/libs/embeddings";
 import { prisma } from "@/libs/prisma";
+import { invalidateScanIndex } from "@/libs/scan-search";
 import { Prisma } from "@prisma/client";
 
 export type ScanInput = {
@@ -52,7 +53,9 @@ export function parseScanInput(
 
   const tags = [
     ...new Set(
-      (rawTags as string[]).map((tag) => tag.trim().toLowerCase()).filter(Boolean),
+      (rawTags as string[])
+        .map((tag) => tag.trim().toLowerCase())
+        .filter(Boolean),
     ),
   ];
 
@@ -98,13 +101,14 @@ export async function getScanForList(id: string) {
 }
 
 export async function updateScan(id: string, data: ScanInput) {
-  return withStatus(
-    await prisma.scan.update({
-      where: { id },
-      data,
-      omit: { embedding: true },
-    }),
-  );
+  const scan = await prisma.scan.update({
+    where: { id },
+    data,
+    omit: { embedding: true },
+  });
+  invalidateScanIndex();
+
+  return withStatus(scan);
 }
 
 // Tags déjà utilisés, pour l'autocomplétion du formulaire.

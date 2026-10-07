@@ -5,6 +5,7 @@ import {
 } from "@/libs/embeddings";
 import { embed, getEmbeddingModel } from "@/libs/openrouter";
 import { prisma } from "@/libs/prisma";
+import { invalidateScanIndex } from "@/libs/scan-search";
 
 export type EmbeddingMode = "missing" | "stale" | "all";
 
@@ -79,6 +80,8 @@ export async function generateScanEmbeddings({
       );
     }
   }
+
+  invalidateScanIndex();
 
   return result;
 }
