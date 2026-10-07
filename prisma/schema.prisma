@@ -49,11 +49,53 @@ model StoreItem {
   purchasedAt DateTime?
 
   transactions Transaction[]
+  scans        Scan[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([buyerId])
+}
+
+enum ScanSource {
+  PUBLIC // public/models
+  DATA // data/models (servi par /api/assets/models)
+}
+
+enum ScanKind {
+  GLB
+  PLY
+}
+
+model Scan {
+  id     String     @id @default(cuid())
+  slug   String     @unique
+  file   String
+  source ScanSource
+  kind   ScanKind
+
+  name        String
+  description String?   @db.Text
+  tags        Json
+  category    String?
+  location    String?
+  capturedAt  DateTime?
+  sizeBytes   Int?
+  thumbnail   String?
+
+  storeItemId String?
+  storeItem   StoreItem? @relation(fields: [storeItemId], references: [id], onDelete: SetNull)
+
+  // Embedding texte, généré à la demande depuis l'admin
+  embedding      Json?
+  embeddingModel String?
+  embeddingHash  String? // hash(texte source + modèle) : différent => obsolète
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([source, file])
+  @@index([storeItemId])
 }
 
 enum TransactionStatus {
