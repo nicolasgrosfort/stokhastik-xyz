@@ -74,7 +74,9 @@ export async function generateScanEmbeddings({
       const message =
         error instanceof Error ? error.message : "Erreur inconnue.";
       console.error("Erreur génération embeddings :", error);
-      result.failed.push(...batch.map((scan) => ({ id: scan.id, error: message })));
+      result.failed.push(
+        ...batch.map((scan) => ({ id: scan.id, error: message })),
+      );
     }
   }
 

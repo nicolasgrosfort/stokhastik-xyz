@@ -33,7 +33,10 @@ export async function POST(request: NextRequest) {
 
   if (!validIds && !isEmbeddingMode(mode)) {
     return NextResponse.json(
-      { error: "Fournir `ids` (liste non vide) ou `mode` (missing, stale, all)." },
+      {
+        error:
+          "Fournir `ids` (liste non vide) ou `mode` (missing, stale, all).",
+      },
       { status: 400 },
     );
   }

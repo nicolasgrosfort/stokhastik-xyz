@@ -18,6 +18,8 @@ import type { EmbeddingStatus } from "@/libs/embeddings";
 import type { ScanListItem } from "@/libs/scans";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const columnHelper = createAppColumnHelper<ScanListItem>();
 
@@ -26,6 +28,144 @@ const EMBEDDING_LABELS: Record<EmbeddingStatus, string> = {
   stale: "Obsolète",
   missing: "Manquant",
 };
+
+const BATCH_SIZE = 50;
+
+const buttonClass =
+  "bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 enabled:cursor-pointer enabled:hover:underline disabled:opacity-40";
+
+type GenerateResult = {
+  updated: number;
+  failed: { id: string; error: string }[];
+};
+
+async function requestEmbeddings(ids: string[]): Promise<GenerateResult> {
+  const res = await fetch("/api/admin/scans/embeddings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids }),
+  });
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok && !data.failed) {
+    throw new Error(data.error ?? "Une erreur s'est produite.");
+  }
+
+  return data as GenerateResult;
+}
+
+function GenerateButton({ id }: { id: string }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <span className="flex flex-col items-start gap-1">
+      <button
+        type="button"
+        disabled={loading}
+        className="underline whitespace-nowrap disabled:opacity-40"
+        onClick={async () => {
+          setLoading(true);
+          setError(null);
+
+          try {
+            const result = await requestEmbeddings([id]);
+            if (result.failed.length > 0) setError(result.failed[0].error);
+            else router.refresh();
+          } catch (e) {
+            setError(e instanceof Error ? e.message : "Erreur.");
+          } finally {
+            setLoading(false);
+          }
+        }}
+      >
+        {loading ? "Génération…" : "Générer"}
+      </button>
+      {error && <span className="text-red-500 text-[0.6rem]">{error}</span>}
+    </span>
+  );
+}
+
+function EmbeddingToolbar({ scans }: { scans: ScanListItem[] }) {
+  const router = useRouter();
+  const [progress, setProgress] = useState<{
+    done: number;
+    total: number;
+  } | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const pendingIds = scans
+    .filter((scan) => scan.embeddingStatus !== "fresh")
+    .map((scan) => scan.id);
+
+  const run = async (ids: string[]) => {
+    setMessage(null);
+    setProgress({ done: 0, total: ids.length });
+    let updated = 0;
+    const errors: string[] = [];
+
+    try {
+      for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const chunk = ids.slice(i, i + BATCH_SIZE);
+        const result = await requestEmbeddings(chunk);
+        updated += result.updated;
+        errors.push(...new Set(result.failed.map((f) => f.error)));
+        setProgress({
+          done: Math.min(i + BATCH_SIZE, ids.length),
+          total: ids.length,
+        });
+      }
+    } catch (e) {
+      errors.push(e instanceof Error ? e.message : "Erreur.");
+    }
+
+    setProgress(null);
+    setMessage(
+      errors.length > 0
+        ? `${updated} générés, erreurs : ${errors.join(" · ")}`
+        : `${updated} embedding(s) généré(s).`,
+    );
+    router.refresh();
+  };
+
+  const running = progress !== null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        disabled={running || pendingIds.length === 0}
+        className={buttonClass}
+        onClick={() => run(pendingIds)}
+      >
+        Générer les manquants / obsolètes ({pendingIds.length})
+      </button>
+      <button
+        type="button"
+        disabled={running}
+        className={buttonClass}
+        onClick={() => {
+          if (
+            window.confirm(
+              `Régénérer les embeddings des ${scans.length} scans ? Cela appelle l'API pour chacun.`,
+            )
+          ) {
+            run(scans.map((scan) => scan.id));
+          }
+        }}
+      >
+        Tout régénérer
+      </button>
+      {progress && (
+        <span className="font-mono text-xs">
+          {progress.done} / {progress.total}
+        </span>
+      )}
+      {message && <span className="font-mono text-xs">{message}</span>}
+    </div>
+  );
+}
 
 const tagsOf = (scan: ScanListItem): string[] =>
   Array.isArray(scan.tags)
@@ -101,12 +241,15 @@ const columns = columnHelper.columns([
     header: "",
     enableSorting: false,
     cell: ({ row }) => (
-      <Link
-        href={`/admin/scans/${row.original.id}/edit`}
-        className="underline whitespace-nowrap"
-      >
-        Modifier
-      </Link>
+      <span className="flex items-center gap-3">
+        <Link
+          href={`/admin/scans/${row.original.id}/edit`}
+          className="underline whitespace-nowrap"
+        >
+          Modifier
+        </Link>
+        <GenerateButton id={row.original.id} />
+      </span>
     ),
   }),
 ]);
@@ -141,10 +284,13 @@ export function AdminScanList({ scans }: { scans: ScanListItem[] }) {
   }
 
   return (
-    <DataGrid
-      table={table}
-      emptyMessage="Aucun scan ne correspond à cette recherche."
-      searchPlaceholder="Rechercher un nom, un lieu, un tag…"
-    />
+    <div className="w-full flex flex-col gap-3">
+      <EmbeddingToolbar scans={scans} />
+      <DataGrid
+        table={table}
+        emptyMessage="Aucun scan ne correspond à cette recherche."
+        searchPlaceholder="Rechercher un nom, un lieu, un tag…"
+      />
+    </div>
   );
 }
