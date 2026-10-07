@@ -86,9 +86,9 @@ export function ScanThumbnailTool({
   };
 
   return (
-    <div className="flex w-full max-w-4xl flex-col gap-4 md:flex-row">
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="relative aspect-square w-full max-w-[640px] border border-dark-green bg-background">
+    <div className="flex w-full flex-wrap items-start gap-4">
+      <div className="flex w-72 max-w-full flex-col gap-2">
+        <div className="relative aspect-square w-72 max-w-full border border-dark-green bg-background">
           <ErrorBoundary
             resetKeys={[modelUrl]}
             fallback={
@@ -100,7 +100,7 @@ export function ScanThumbnailTool({
             <Canvas
               key={resetKey}
               gl={{ preserveDrawingBuffer: true, alpha: true }}
-              dpr={[1, 2]}
+              dpr={2}
               camera={{ position: [1, 1, 1], fov: 50 }}
               style={{ position: "absolute", inset: 0 }}
               onCreated={({ gl }) => {
@@ -130,10 +130,10 @@ export function ScanThumbnailTool({
         </p>
       </div>
 
-      <div className="flex w-full flex-col gap-3 md:w-56">
+      <div className="flex w-56 max-w-full flex-col gap-3">
         <div className="flex flex-col gap-1">
           <p className="font-mono text-xs uppercase">Miniature actuelle</p>
-          <div className="relative aspect-square w-full border border-dark-green bg-background">
+          <div className="relative aspect-square w-28 border border-dark-green bg-background">
             {thumbnail ? (
               <Image
                 key={thumbnail}

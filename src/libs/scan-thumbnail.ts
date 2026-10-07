@@ -5,7 +5,7 @@ import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 
-export const THUMBNAIL_SIZE = 1024;
+export const THUMBNAIL_SIZE = 512;
 export const MAX_THUMBNAIL_UPLOAD_BYTES = 15 * 1024 * 1024;
 
 const THUMBNAIL_URL_PREFIX = "/api/assets/thumbnails/";
