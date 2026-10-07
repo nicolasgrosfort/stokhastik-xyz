@@ -108,7 +108,7 @@ function VectorField({
 function SidePanel({
   side,
   title,
-  defaultOpen = true,
+  defaultOpen = false,
   children,
 }: {
   side: "left" | "right";
@@ -684,6 +684,12 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
         </Toolbar.Group>
       </Toolbar.Root>
       <Toolbar.Root className="absolute bottom-[calc(0.5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-10 flex max-w-[calc(100vw-1rem)] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none border border-foreground bg-background/60 shadow-md backdrop-blur-sm p-1 font-mono text-[10px] whitespace-nowrap uppercase sm:text-xs">
+        {isAdmin && (
+          <>
+            <ScanSearch currentFile={file} onSelect={selectSearchResult} />
+            <Toolbar.Separator className="h-4 w-px bg-foreground" />
+          </>
+        )}
         <Toolbar.Group className="flex items-center gap-1">
           <label className="px-1 text-foreground/70">Model</label>
           <Select.Root
@@ -742,9 +748,6 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
           </Toolbar.Button>
         </Toolbar.Group>
       </Toolbar.Root>
-      {isAdmin && (
-        <ScanSearch currentFile={file} onSelect={selectSearchResult} />
-      )}
       {isAdmin && (
         <AnnotationsPanel
           annotations={annotations}

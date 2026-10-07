@@ -2,6 +2,7 @@
 
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import type { ScanSearchResult } from "@/libs/scan-search";
+import { Popover, Toolbar } from "@base-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -37,6 +38,8 @@ export function ScanSearch({
   onSelect: (file: string) => void;
 }) {
   const [query, setQuery] = useState("");
+  const [input, setInput] = useState<HTMLInputElement | null>(null);
+  const [open, setOpen] = useState(false);
   const debouncedQuery = useDebouncedValue(query.trim(), DEBOUNCE_MS);
   const enabled = debouncedQuery.length >= MIN_QUERY_LENGTH;
 
@@ -59,48 +62,81 @@ export function ScanSearch({
   const waiting = query.trim() !== debouncedQuery || isFetching;
 
   return (
-    <div className="absolute top-[calc(3.25rem+env(safe-area-inset-top))] left-1/2 -translate-x-1/2 z-10 flex w-72 max-w-[calc(100vw-1rem)] flex-col gap-1 border border-foreground bg-background/60 p-1 font-mono text-[10px] uppercase shadow-md backdrop-blur-sm sm:text-xs">
-      <input
+    <Toolbar.Group className="flex items-center gap-1">
+      <Toolbar.Input
+        ref={setInput}
         type="search"
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
         onKeyDown={(event) => event.stopPropagation()}
         placeholder="Rechercher un scan…"
         aria-label="Rechercher un scan"
-        className="w-full bg-background p-1 focus:outline focus:-outline-offset-2 focus:outline-foreground"
+        className="w-40 bg-background p-1 font-mono uppercase focus:outline focus:-outline-offset-2 focus:outline-foreground sm:w-56"
       />
 
-      {enabled && (
-        <ul className="flex flex-col">
-          {error ? (
-            <li className="p-1 text-red-500 normal-case">{error.message}</li>
-          ) : data && data.length > 0 ? (
-            data.map((result, index) => (
-              <li key={result.id}>
-                <button
-                  type="button"
-                  onClick={() => onSelect(result.file)}
-                  className={`flex w-full cursor-pointer items-center justify-between gap-2 p-1 text-left hover:bg-foreground hover:text-background ${
-                    result.file === currentFile ? "bg-foreground/20" : ""
-                  }`}
-                >
-                  <span className="truncate">
-                    {index === 0 ? "▸ " : ""}
-                    {result.name}
-                  </span>
-                  <span className="shrink-0 opacity-60">
-                    {result.score.toFixed(2)}
-                  </span>
-                </button>
-              </li>
-            ))
-          ) : waiting ? (
-            <li className="p-1 opacity-60">Recherche…</li>
-          ) : (
-            <li className="p-1 opacity-60">Aucun résultat pertinent</li>
-          )}
-        </ul>
-      )}
-    </div>
+      <Popover.Root
+        open={open && enabled}
+        onOpenChange={(next, details) => {
+          // Cliquer dans le champ ne doit pas fermer la liste.
+          if (!next && details.event?.target === input) return;
+          setOpen(next);
+        }}
+      >
+        <Popover.Portal>
+          <Popover.Positioner
+            anchor={input}
+            side="top"
+            align="start"
+            sideOffset={4}
+            className="z-20 outline-none"
+          >
+            <Popover.Popup
+              initialFocus={false}
+              finalFocus={false}
+              className="max-h-(--available-height) w-72 max-w-[calc(100vw-1rem)] overflow-y-auto border border-foreground bg-background font-mono text-[10px] uppercase sm:text-xs"
+            >
+              <ul className="flex flex-col">
+                {error ? (
+                  <li className="p-2 text-red-500 normal-case">
+                    {error.message}
+                  </li>
+                ) : data && data.length > 0 ? (
+                  data.map((result, index) => (
+                    <li key={result.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onSelect(result.file);
+                          setOpen(false);
+                        }}
+                        className={`flex w-full cursor-pointer items-center justify-between gap-2 px-2 py-1 text-left hover:bg-foreground hover:text-background ${
+                          result.file === currentFile ? "bg-foreground/20" : ""
+                        }`}
+                      >
+                        <span className="truncate">
+                          {index === 0 ? "▸ " : ""}
+                          {result.name}
+                        </span>
+                        <span className="shrink-0 opacity-60">
+                          {result.score.toFixed(2)}
+                        </span>
+                      </button>
+                    </li>
+                  ))
+                ) : waiting ? (
+                  <li className="p-2 opacity-60">Recherche…</li>
+                ) : (
+                  <li className="p-2 opacity-60">Aucun résultat pertinent</li>
+                )}
+              </ul>
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
+    </Toolbar.Group>
   );
 }
