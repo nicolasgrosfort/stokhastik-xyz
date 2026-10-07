@@ -11,12 +11,6 @@ import { ErrorBoundary } from "react-error-boundary";
 const buttonClass =
   "bg-background text-foreground border border-foreground font-mono text-xs uppercase p-1 enabled:cursor-pointer enabled:hover:underline disabled:opacity-40";
 
-// Damier : rend visible la transparence de la capture.
-const checkerboard = {
-  backgroundImage: "conic-gradient(#ccc 25%, #fff 0 50%, #ccc 0 75%, #fff 0)",
-  backgroundSize: "20px 20px",
-};
-
 // Hors du Canvas : un <Html> de drei dans un fallback Suspense crée un second
 // root React qui se démonte pendant le rendu.
 function LoadingOverlay() {
@@ -94,10 +88,7 @@ export function ScanThumbnailTool({
   return (
     <div className="flex w-full max-w-4xl flex-col gap-4 md:flex-row">
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div
-          className="relative aspect-square w-full max-w-[640px] border border-dark-green"
-          style={checkerboard}
-        >
+        <div className="relative aspect-square w-full max-w-[640px] border border-dark-green bg-background">
           <ErrorBoundary
             resetKeys={[modelUrl]}
             fallback={
@@ -135,17 +126,14 @@ export function ScanThumbnailTool({
         </div>
         <p className="font-mono text-[10px] uppercase opacity-60">
           Le carré ci-dessus est exactement ce qui sera capturé. Fond
-          transparent (damier).
+          transparent : tu vois ici le fond du site.
         </p>
       </div>
 
       <div className="flex w-full flex-col gap-3 md:w-56">
         <div className="flex flex-col gap-1">
           <p className="font-mono text-xs uppercase">Miniature actuelle</p>
-          <div
-            className="relative aspect-square w-full border border-dark-green"
-            style={checkerboard}
-          >
+          <div className="relative aspect-square w-full border border-dark-green bg-background">
             {thumbnail ? (
               <Image
                 key={thumbnail}
