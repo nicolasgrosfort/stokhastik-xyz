@@ -33,6 +33,16 @@ export default async function AdminPage() {
         </div>
         <AdminStoreItemList items={storeItems} />
 
+        <div className="w-full flex items-center justify-between">
+          <H4 className="uppercase">Scans</H4>
+          <Link
+            href="/admin/scans"
+            className="font-mono text-xs uppercase underline"
+          >
+            Gérer les scans
+          </Link>
+        </div>
+
         <H4 className="uppercase">Utilisateurs</H4>
         <AdminUserList users={users} />
         <GiftTokens users={users} />
