@@ -1,5 +1,6 @@
 "use client";
 
+import { ScanSearch } from "@/components/admin/scan-search";
 import { AudioToggle } from "@/components/common/audio-toggle";
 import {
   parseAnnotations,
@@ -461,6 +462,21 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
     });
   };
 
+  // Un résultat de recherche doit rester visible même si son format est masqué.
+  const selectSearchResult = useCallback(
+    (selected: string) => {
+      const extension = selected
+        .split(".")
+        .pop()
+        ?.toLowerCase() as ModelExtension;
+      setExtensionFilter((previous) =>
+        previous.has(extension) ? previous : new Set(previous).add(extension),
+      );
+      setFile(selected);
+    },
+    [setFile],
+  );
+
   const filteredModelFiles =
     extensionFilter.size === 0
       ? modelFiles
@@ -726,6 +742,9 @@ export function ModelViewer({ isAdmin }: { isAdmin: boolean }) {
           </Toolbar.Button>
         </Toolbar.Group>
       </Toolbar.Root>
+      {isAdmin && (
+        <ScanSearch currentFile={file} onSelect={selectSearchResult} />
+      )}
       {isAdmin && (
         <AnnotationsPanel
           annotations={annotations}
