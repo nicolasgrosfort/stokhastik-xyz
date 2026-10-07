@@ -10,6 +10,7 @@ import {
   PositionalAudio,
   TransformControls,
   useKeyboardControls,
+  useProgress,
 } from "@react-three/drei";
 import {
   Canvas,
@@ -562,6 +563,7 @@ export const Model = ({
   const initialCameraPosition = useRef(cameraPosition);
   const settleTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
   const cameraRef = useRef<Camera>(null);
+  const { active: isLoading } = useProgress();
 
   useEffect(() => () => clearTimeout(settleTimeout.current), []);
 
@@ -607,13 +609,7 @@ export const Model = ({
             keepInitialPosition={!!initialCameraPosition.current}
           />
           <PointsRaycastThreshold pointSize={pointSize ?? 0.01} />
-          <Suspense
-            fallback={
-              <Html center>
-                <p className="font-mono text-xs uppercase">Chargement...</p>
-              </Html>
-            }
-          >
+          <Suspense fallback={null}>
             <Object
               model={model}
               rotation={rotation}
@@ -662,6 +658,11 @@ export const Model = ({
           {onCameraFrame && <CameraPositionReporter onFrame={onCameraFrame} />}
         </Canvas>
       </KeyboardControls>
+      {isLoading && (
+        <p className="pointer-events-none absolute inset-0 grid place-items-center font-mono text-xs uppercase">
+          Chargement...
+        </p>
+      )}
       {fpsMode && !isDragging && (
         <div className="pointer-events-none absolute inset-x-0 bottom-4 flex items-center justify-center">
           <p className="border border-foreground bg-background/60 px-3 py-1.5 font-mono text-xs uppercase shadow-md backdrop-blur-sm">
