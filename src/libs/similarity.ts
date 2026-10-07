@@ -1,5 +1,3 @@
-import { Embedding } from "@/data/embeddings";
-
 export function cosineSimilarity(a: number[], b: number[]): number {
   if (a.length !== b.length) {
     throw new Error(
@@ -18,30 +16,4 @@ export function cosineSimilarity(a: number[], b: number[]): number {
   }
 
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
-}
-
-export function findClosestEmbedding(
-  vector: number[],
-  candidates: Embedding[],
-): { embedding: Embedding; similarity: number } | null {
-  const scored = candidates.map((c) => ({
-    embedding: c,
-    similarity: cosineSimilarity(vector, c.embedding),
-  }));
-
-  console.log(
-    scored.map(
-      (s) =>
-        `${s.embedding.originalText.slice(0, 25)}... → ${s.similarity.toFixed(4)}`,
-    ),
-  );
-
-  return scored.reduce<{ embedding: Embedding; similarity: number } | null>(
-    (closest, candidate) => {
-      if (!closest || candidate.similarity > closest.similarity)
-        return candidate;
-      return closest;
-    },
-    null,
-  );
 }
