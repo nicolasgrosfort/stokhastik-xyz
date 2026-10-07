@@ -2,6 +2,15 @@
 
 A space made for prototyping and research.
 
+## Update the dependencies.
+
+Automatically with Claude Code:
+
+```base
+    claude
+```
+Then run `/upgrade-deps` command
+
 ## Docker
 
 Run the application with Docker.
