@@ -57,22 +57,16 @@ model StoreItem {
   @@index([buyerId])
 }
 
-enum ScanSource {
-  PUBLIC // public/models
-  DATA // data/models (servi par /api/assets/models)
-}
-
 enum ScanKind {
   GLB
   PLY
 }
 
 model Scan {
-  id     String     @id @default(cuid())
-  slug   String     @unique
-  file   String
-  source ScanSource
-  kind   ScanKind
+  id   String   @id @default(cuid())
+  slug String   @unique
+  file String   @unique // dans data/models, servi par /api/assets/models
+  kind ScanKind
 
   name        String
   description String?   @db.Text
@@ -94,7 +88,6 @@ model Scan {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([source, file])
   @@index([storeItemId])
 }
 

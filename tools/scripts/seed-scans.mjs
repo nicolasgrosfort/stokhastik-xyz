@@ -1,5 +1,5 @@
 // Référence en base les fichiers de data/models (GLB + PLY), servis par /api/assets/models.
-// Idempotent : upsert sur (source, file), les métadonnées éditées ne sont jamais écrasées.
+// Idempotent : les fichiers déjà en base sont ignorés, les métadonnées éditées ne sont jamais écrasées.
 // Usage : yarn seed:scans
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { PrismaClient } from "@prisma/client";
@@ -9,7 +9,7 @@ import path from "node:path";
 import { slugify } from "../../src/libs/utils.ts";
 
 const ROOT = process.cwd();
-const SOURCES = [{ source: "DATA", dir: path.join(ROOT, "data", "models") }];
+const DIR = path.join(ROOT, "data", "models");
 const KINDS = { ".glb": "GLB", ".ply": "PLY" };
 const DATE_PREFIX = /^(\d{4}-\d{2}-\d{2})-(.+)$/;
 
@@ -52,42 +52,38 @@ const listModels = async (dir) => {
 };
 
 const takenSlugs = new Set((await prisma.scan.findMany({ select: { slug: true } })).map((s) => s.slug));
-const existing = await prisma.scan.findMany({ select: { source: true, file: true } });
-const known = new Set(existing.map((s) => `${s.source}:${s.file}`));
+const known = new Set((await prisma.scan.findMany({ select: { file: true } })).map((s) => s.file));
 
 let created = 0;
 let skipped = 0;
 
-for (const { source, dir } of SOURCES) {
-  for (const file of await listModels(dir)) {
-    if (known.has(`${source}:${file}`)) {
-      skipped++;
-      continue;
-    }
-
-    const { slugBase, capturedAt } = parseFile(file);
-    let slug = slugBase;
-    for (let i = 2; takenSlugs.has(slug); i++) slug = `${slugBase}-${i}`;
-    takenSlugs.add(slug);
-
-    const thumbnailPath = `/thumbnails/${slugBase}.avif`;
-    const hasThumbnail = existsSync(path.join(ROOT, "public", thumbnailPath));
-
-    await prisma.scan.create({
-      data: {
-        slug,
-        file,
-        source,
-        kind: KINDS[path.extname(file).toLowerCase()],
-        name: humanize(slugBase),
-        tags: [],
-        capturedAt,
-        sizeBytes: (await stat(path.join(dir, file))).size,
-        thumbnail: hasThumbnail ? thumbnailPath : null,
-      },
-    });
-    created++;
+for (const file of await listModels(DIR)) {
+  if (known.has(file)) {
+    skipped++;
+    continue;
   }
+
+  const { slugBase, capturedAt } = parseFile(file);
+  let slug = slugBase;
+  for (let i = 2; takenSlugs.has(slug); i++) slug = `${slugBase}-${i}`;
+  takenSlugs.add(slug);
+
+  const thumbnailPath = `/thumbnails/${slugBase}.avif`;
+  const hasThumbnail = existsSync(path.join(ROOT, "public", thumbnailPath));
+
+  await prisma.scan.create({
+    data: {
+      slug,
+      file,
+      kind: KINDS[path.extname(file).toLowerCase()],
+      name: humanize(slugBase),
+      tags: [],
+      capturedAt,
+      sizeBytes: (await stat(path.join(DIR, file))).size,
+      thumbnail: hasThumbnail ? thumbnailPath : null,
+    },
+  });
+  created++;
 }
 
 console.log(`Scans créés : ${created}, déjà présents : ${skipped}`);
