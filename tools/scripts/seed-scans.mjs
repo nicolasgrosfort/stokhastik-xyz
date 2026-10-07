@@ -1,4 +1,4 @@
-// Référence en base les fichiers de public/models (GLB) et data/models (GLB + PLY).
+// Référence en base les fichiers de data/models (GLB + PLY), servis par /api/assets/models.
 // Idempotent : upsert sur (source, file), les métadonnées éditées ne sont jamais écrasées.
 // Usage : yarn seed:scans
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
@@ -9,10 +9,7 @@ import path from "node:path";
 import { slugify } from "../../src/libs/utils.ts";
 
 const ROOT = process.cwd();
-const SOURCES = [
-  { source: "PUBLIC", dir: path.join(ROOT, "public", "models") },
-  { source: "DATA", dir: path.join(ROOT, "data", "models") },
-];
+const SOURCES = [{ source: "DATA", dir: path.join(ROOT, "data", "models") }];
 const KINDS = { ".glb": "GLB", ".ply": "PLY" };
 const DATE_PREFIX = /^(\d{4}-\d{2}-\d{2})-(.+)$/;
 
