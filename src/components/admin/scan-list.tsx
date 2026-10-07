@@ -248,12 +248,6 @@ const columns = columnHelper.columns([
         >
           Modifier
         </Link>
-        <Link
-          href={`/admin/scans/${row.original.id}/thumbnail`}
-          className="underline whitespace-nowrap"
-        >
-          Miniature
-        </Link>
         <GenerateButton id={row.original.id} />
       </span>
     ),

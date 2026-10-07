@@ -25,6 +25,36 @@ function LoadingOverlay() {
   );
 }
 
+function CurrentThumbnail({
+  thumbnail,
+  name,
+}: {
+  thumbnail: string | null;
+  name: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="font-mono text-xs uppercase">Miniature actuelle</p>
+      <div className="relative aspect-square w-28 border border-dark-green bg-background">
+        {thumbnail ? (
+          <Image
+            key={thumbnail}
+            src={thumbnail}
+            alt={`Miniature de ${name}`}
+            fill
+            unoptimized
+            className="object-cover"
+          />
+        ) : (
+          <p className="absolute inset-0 flex items-center justify-center bg-background p-2 text-center font-mono text-xs uppercase opacity-60">
+            Pas de miniature
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ScanThumbnailTool({
   scanId,
   file,
@@ -40,6 +70,7 @@ export function ScanThumbnailTool({
   const modelUrl = `/api/assets/models/${file}`;
   const ply = isPly(file);
 
+  const [open, setOpen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [resetKey, setResetKey] = useState(0);
   const [pointSize, setPointSize] = useState(0.01);
@@ -84,6 +115,22 @@ export function ScanThumbnailTool({
       }
     }, "image/png");
   };
+
+  // Le viewer 3D (parfois un gros PLY) ne se charge qu'à la demande.
+  if (!open) {
+    return (
+      <div className="flex items-end gap-4">
+        <CurrentThumbnail thumbnail={thumbnail} name={name} />
+        <button
+          type="button"
+          className={buttonClass}
+          onClick={() => setOpen(true)}
+        >
+          {thumbnail ? "Refaire la miniature" : "Générer la miniature"}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full flex-wrap items-start gap-4">
@@ -131,25 +178,7 @@ export function ScanThumbnailTool({
       </div>
 
       <div className="flex w-56 max-w-full flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <p className="font-mono text-xs uppercase">Miniature actuelle</p>
-          <div className="relative aspect-square w-28 border border-dark-green bg-background">
-            {thumbnail ? (
-              <Image
-                key={thumbnail}
-                src={thumbnail}
-                alt={`Miniature de ${name}`}
-                fill
-                unoptimized
-                className="object-cover"
-              />
-            ) : (
-              <p className="absolute inset-0 flex items-center justify-center bg-background p-2 text-center font-mono text-xs uppercase opacity-60">
-                Pas de miniature
-              </p>
-            )}
-          </div>
-        </div>
+        <CurrentThumbnail thumbnail={thumbnail} name={name} />
 
         {ply && (
           <label className="flex flex-col gap-1 font-mono text-xs uppercase">
