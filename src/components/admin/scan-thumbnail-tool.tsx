@@ -1,7 +1,7 @@
 "use client";
 
 import { GltfObject, isPly, PlyObject } from "@/components/common/model";
-import { Bounds, Center, Html, OrbitControls } from "@react-three/drei";
+import { Bounds, Center, OrbitControls, useProgress } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,20 @@ const checkerboard = {
   backgroundImage: "conic-gradient(#ccc 25%, #fff 0 50%, #ccc 0 75%, #fff 0)",
   backgroundSize: "20px 20px",
 };
+
+// Hors du Canvas : un <Html> de drei dans un fallback Suspense crée un second
+// root React qui se démonte pendant le rendu.
+function LoadingOverlay() {
+  const { active, progress } = useProgress();
+
+  if (!active) return null;
+
+  return (
+    <p className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-1 font-mono text-xs uppercase">
+      Chargement… {Math.round(progress)} %
+    </p>
+  );
+}
 
 export function ScanThumbnailTool({
   scanId,
@@ -103,15 +117,7 @@ export function ScanThumbnailTool({
               }}
             >
               <ambientLight intensity={2} />
-              <Suspense
-                fallback={
-                  <Html center>
-                    <span className="bg-background p-1 font-mono text-xs uppercase">
-                      Chargement…
-                    </span>
-                  </Html>
-                }
-              >
+              <Suspense fallback={null}>
                 <Bounds fit observe margin={1.2}>
                   <Center>
                     {ply ? (
@@ -125,6 +131,7 @@ export function ScanThumbnailTool({
               <OrbitControls makeDefault enableDamping />
             </Canvas>
           </ErrorBoundary>
+          <LoadingOverlay />
         </div>
         <p className="font-mono text-[10px] uppercase opacity-60">
           Le carré ci-dessus est exactement ce qui sera capturé. Fond
