@@ -119,7 +119,7 @@ export function ScanThumbnailTool({
   // Le viewer 3D (parfois un gros PLY) ne se charge qu'à la demande.
   if (!open) {
     return (
-      <div className="flex items-end gap-4">
+      <div className="flex items-end justify-center gap-4">
         <CurrentThumbnail thumbnail={thumbnail} name={name} />
         <button
           type="button"
@@ -133,7 +133,7 @@ export function ScanThumbnailTool({
   }
 
   return (
-    <div className="flex w-full flex-wrap items-start gap-4">
+    <div className="flex w-full flex-wrap items-start justify-center gap-4">
       <div className="flex w-72 max-w-full flex-col gap-2">
         <div className="relative aspect-square w-72 max-w-full border border-dark-green bg-background">
           <ErrorBoundary

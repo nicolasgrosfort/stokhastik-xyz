@@ -19,7 +19,7 @@ export default async function EditScanPage({
   return (
     <section className="text-foreground bg-background h-full w-full min-h-0 flex flex-col items-center gap-4 p-4 overflow-y-auto">
       <H3 className="uppercase">Modifier le scan</H3>
-      <div className="w-full max-w-2xl">
+      <div className="flex w-full max-w-2xl justify-center">
         <ScanThumbnailTool
           scanId={scan.id}
           file={scan.file}
