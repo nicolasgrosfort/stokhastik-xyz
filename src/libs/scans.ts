@@ -1,3 +1,4 @@
+import { EmbeddingStatus, getEmbeddingStatus } from "@/libs/embeddings";
 import { prisma } from "@/libs/prisma";
 import { Prisma } from "@prisma/client";
 
@@ -16,7 +17,13 @@ export const scanListArgs = {
   orderBy: [{ capturedAt: "desc" }, { name: "asc" }],
 } satisfies Prisma.ScanFindManyArgs;
 
-export type ScanListItem = Prisma.ScanGetPayload<typeof scanListArgs>;
+export type ScanListItem = Prisma.ScanGetPayload<typeof scanListArgs> & {
+  embeddingStatus: EmbeddingStatus;
+};
+
+const withStatus = (
+  scan: Prisma.ScanGetPayload<typeof scanListArgs>,
+): ScanListItem => ({ ...scan, embeddingStatus: getEmbeddingStatus(scan) });
 
 const optionalText = (value: unknown): string | null =>
   typeof value === "string" && value.trim() ? value.trim() : null;
@@ -72,8 +79,8 @@ export function parseScanInput(
   };
 }
 
-export function listScans() {
-  return prisma.scan.findMany(scanListArgs);
+export async function listScans(): Promise<ScanListItem[]> {
+  return (await prisma.scan.findMany(scanListArgs)).map(withStatus);
 }
 
 export function getScan(id: string) {
@@ -81,16 +88,23 @@ export function getScan(id: string) {
 }
 
 // Même forme que les lignes de la liste (sans le vecteur d'embedding).
-export function getScanForList(id: string) {
-  return prisma.scan.findUnique({ where: { id }, omit: { embedding: true } });
-}
-
-export function updateScan(id: string, data: ScanInput) {
-  return prisma.scan.update({
+export async function getScanForList(id: string) {
+  const scan = await prisma.scan.findUnique({
     where: { id },
-    data,
     omit: { embedding: true },
   });
+
+  return scan && withStatus(scan);
+}
+
+export async function updateScan(id: string, data: ScanInput) {
+  return withStatus(
+    await prisma.scan.update({
+      where: { id },
+      data,
+      omit: { embedding: true },
+    }),
+  );
 }
 
 // Tags déjà utilisés, pour l'autocomplétion du formulaire.

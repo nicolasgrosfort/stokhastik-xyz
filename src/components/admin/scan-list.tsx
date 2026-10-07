@@ -14,11 +14,18 @@ import {
 } from "@/components/common/data-grid/url-codecs";
 import { useUrlAtom } from "@/components/common/data-grid/use-url-atom";
 import { FormatedDate } from "@/components/common/formated-date";
+import type { EmbeddingStatus } from "@/libs/embeddings";
 import type { ScanListItem } from "@/libs/scans";
 import Image from "next/image";
 import Link from "next/link";
 
 const columnHelper = createAppColumnHelper<ScanListItem>();
+
+const EMBEDDING_LABELS: Record<EmbeddingStatus, string> = {
+  fresh: "À jour",
+  stale: "Obsolète",
+  missing: "Manquant",
+};
 
 const tagsOf = (scan: ScanListItem): string[] =>
   Array.isArray(scan.tags)
@@ -83,12 +90,11 @@ const columns = columnHelper.columns([
       </span>
     ),
   }),
-  columnHelper.accessor("embeddingHash", {
-    id: "embedding",
+  columnHelper.accessor("embeddingStatus", {
     header: "Embedding",
-    sortFn: "basic",
+    sortFn: "alphanumeric",
     enableGlobalFilter: false,
-    cell: ({ getValue }) => <Badge>{getValue() ? "Généré" : "Manquant"}</Badge>,
+    cell: ({ getValue }) => <Badge>{EMBEDDING_LABELS[getValue()]}</Badge>,
   }),
   columnHelper.display({
     id: "actions",
