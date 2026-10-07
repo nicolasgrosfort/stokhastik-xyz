@@ -70,7 +70,6 @@ export function ScanThumbnailTool({
   const modelUrl = `/api/assets/models/${file}`;
   const ply = isPly(file);
 
-  const [open, setOpen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [resetKey, setResetKey] = useState(0);
   const [pointSize, setPointSize] = useState(0.01);
@@ -115,22 +114,6 @@ export function ScanThumbnailTool({
       }
     }, "image/png");
   };
-
-  // Le viewer 3D (parfois un gros PLY) ne se charge qu'à la demande.
-  if (!open) {
-    return (
-      <div className="flex items-end justify-center gap-4">
-        <CurrentThumbnail thumbnail={thumbnail} name={name} />
-        <button
-          type="button"
-          className={buttonClass}
-          onClick={() => setOpen(true)}
-        >
-          {thumbnail ? "Refaire la miniature" : "Générer la miniature"}
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="flex w-full flex-wrap items-start justify-center gap-4">
