@@ -1,7 +1,11 @@
+import { getAssetDir } from "@/libs/assets";
 import { EmbeddingStatus, getEmbeddingStatus } from "@/libs/embeddings";
 import { prisma } from "@/libs/prisma";
 import { invalidateScanIndex } from "@/libs/scan-search";
-import { Prisma } from "@prisma/client";
+import { slugify } from "@/libs/utils";
+import { Prisma, ScanKind } from "@prisma/client";
+import { mkdir, writeFile } from "fs/promises";
+import path from "path";
 
 export type ScanInput = {
   name: string;
@@ -104,6 +108,59 @@ export async function updateScan(id: string, data: ScanInput) {
   const scan = await prisma.scan.update({
     where: { id },
     data,
+    omit: { embedding: true },
+  });
+  invalidateScanIndex();
+
+  return withStatus(scan);
+}
+
+const KINDS: Record<string, ScanKind> = { ".glb": "GLB", ".ply": "PLY" };
+
+/**
+ * Enregistre le fichier dans data/models (sans écraser un fichier existant)
+ * et crée le scan correspondant. Le fichier doit déjà être validé.
+ */
+export async function createScan(
+  upload: File,
+  extension: string,
+  data: ScanInput,
+) {
+  const baseName = slugify(path.basename(upload.name, extension)) || "scan";
+  const [takenSlugs, takenFiles] = await Promise.all([
+    prisma.scan.findMany({ select: { slug: true } }),
+    prisma.scan.findMany({ select: { file: true } }),
+  ]);
+  const slugs = new Set(takenSlugs.map((row) => row.slug));
+  const files = new Set(takenFiles.map((row) => row.file));
+
+  let slug = baseName;
+  let file = `${slug}${extension}`;
+
+  for (let i = 2; slugs.has(slug) || files.has(file); i++) {
+    slug = `${baseName}-${i}`;
+    file = `${slug}${extension}`;
+  }
+
+  const dir = getAssetDir("models");
+  await mkdir(dir, { recursive: true });
+  // "wx" : échoue plutôt que d'écraser un fichier présent sur le disque.
+  await writeFile(
+    path.join(dir, file),
+    Buffer.from(await upload.arrayBuffer()),
+    {
+      flag: "wx",
+    },
+  );
+
+  const scan = await prisma.scan.create({
+    data: {
+      ...data,
+      slug,
+      file,
+      kind: KINDS[extension],
+      sizeBytes: upload.size,
+    },
     omit: { embedding: true },
   });
   invalidateScanIndex();

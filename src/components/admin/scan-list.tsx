@@ -278,7 +278,8 @@ export function AdminScanList({ scans }: { scans: ScanListItem[] }) {
   if (scans.length === 0) {
     return (
       <p className="text-xs">
-        Aucun scan. Lance <code>yarn seed:scans</code> pour les importer.
+        Aucun scan. Ajoutes-en un depuis le lien ci-dessus, ou lance{" "}
+        <code>yarn seed:scans</code> pour importer data/models.
       </p>
     );
   }
