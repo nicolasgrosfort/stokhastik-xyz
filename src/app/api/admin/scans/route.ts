@@ -1,5 +1,4 @@
 import { authOptions } from "@/libs/auth";
-import { validateAssetFile } from "@/libs/assets";
 import {
   createScan,
   listScans,
@@ -37,47 +36,36 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Accès refusé." }, { status: 403 });
   }
 
-  const formData = await request.formData().catch(() => null);
-  const file = formData?.get("file");
+  const body: unknown = await request.json().catch(() => null);
+  const file =
+    typeof body === "object" && body !== null && "file" in body
+      ? body.file
+      : null;
 
-  if (!formData || !(file instanceof File) || file.size === 0) {
+  if (typeof file !== "string" || !file) {
     return NextResponse.json(
-      { error: "Aucun fichier fourni." },
+      { error: "Aucun fichier sélectionné." },
       { status: 400 },
     );
   }
 
-  const validation = validateAssetFile("models", file);
-
-  if ("error" in validation) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
-  }
-
-  let tags: unknown;
-
-  try {
-    tags = JSON.parse(String(formData.get("tags") ?? "[]"));
-  } catch {
-    return NextResponse.json({ error: "Tags invalides." }, { status: 400 });
-  }
-
-  const parsed = parseScanInput({
-    name: formData.get("name"),
-    description: formData.get("description"),
-    category: formData.get("category"),
-    location: formData.get("location"),
-    capturedAt: formData.get("capturedAt"),
-    tags,
-  });
+  const parsed = parseScanInput(body);
 
   if ("error" in parsed) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
   try {
-    const scan = await createScan(file, validation.extension, parsed.data);
+    const result = await createScan(file, parsed.data);
 
-    return NextResponse.json({ ok: true, scan }, { status: 201 });
+    if ("error" in result) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: result.status },
+      );
+    }
+
+    return NextResponse.json({ ok: true, scan: result.scan }, { status: 201 });
   } catch (error) {
     console.error("Erreur création scan :", error);
 

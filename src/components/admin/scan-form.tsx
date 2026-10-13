@@ -4,6 +4,7 @@ import { TagsInput } from "@/components/admin/tags-input";
 import { Form } from "@/components/common/form";
 import { TextField } from "@/components/common/text-field";
 import type { ScanListItem } from "@/libs/scans";
+import { parseModelFileName } from "@/libs/scan-file";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,14 +13,18 @@ import { useState } from "react";
 export function ScanForm({
   scan,
   tagSuggestions,
+  availableFiles = [],
 }: {
-  // Absent : mode création, avec envoi du fichier 3D.
+  // Absent : mode création, avec choix ou envoi du fichier 3D.
   scan?: ScanListItem;
   tagSuggestions: string[];
+  availableFiles?: string[];
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [upload, setUpload] = useState<File | null>(null);
+  const [files, setFiles] = useState(availableFiles);
+  const [file, setFile] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -35,31 +40,20 @@ export function ScanForm({
     onSubmit: async ({ value }) => {
       setError(null);
 
-      if (!scan && !upload) {
-        setError("Choisis un fichier .glb ou .ply.");
+      if (!scan && !file) {
+        setError("Choisis ou téléverse un fichier .glb ou .ply.");
         return;
       }
 
       try {
-        let res: Response;
-
-        if (scan) {
-          res = await fetch(`/api/admin/scans/${scan.id}`, {
-            method: "PATCH",
+        const res = await fetch(
+          scan ? `/api/admin/scans/${scan.id}` : "/api/admin/scans",
+          {
+            method: scan ? "PATCH" : "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(value),
-          });
-        } else {
-          const body = new FormData();
-          body.set("file", upload as File);
-          body.set("name", value.name);
-          body.set("description", value.description);
-          body.set("capturedAt", value.capturedAt);
-          body.set("location", value.location);
-          body.set("category", value.category);
-          body.set("tags", JSON.stringify(value.tags));
-          res = await fetch("/api/admin/scans", { method: "POST", body });
-        }
+            body: JSON.stringify(scan ? value : { ...value, file }),
+          },
+        );
 
         const data = await res.json();
 
@@ -76,34 +70,99 @@ export function ScanForm({
     },
   });
 
+  // Sélectionne un fichier du serveur et préremplit nom et date s'ils sont vides.
+  const selectFile = (name: string) => {
+    setFile(name);
+
+    if (!name) return;
+
+    const parsed = parseModelFileName(name);
+
+    if (!form.getFieldValue("name")) form.setFieldValue("name", parsed.name);
+
+    if (!form.getFieldValue("capturedAt") && parsed.capturedAt) {
+      form.setFieldValue("capturedAt", parsed.capturedAt);
+    }
+  };
+
+  // Téléverse sur le serveur, l'ajoute à la liste et le sélectionne.
+  const uploadFile = async (upload: File) => {
+    setError(null);
+    setUploading(true);
+
+    try {
+      const body = new FormData();
+      body.set("type", "models");
+      body.set("file", upload);
+
+      const res = await fetch("/api/admin/assets", { method: "POST", body });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setError(data.error ?? "Impossible d'envoyer le fichier.");
+        return;
+      }
+
+      const uploaded = String(data.path).split("/").pop() as string;
+      setFiles((current) =>
+        current.includes(uploaded)
+          ? current
+          : [...current, uploaded].sort((a, b) => a.localeCompare(b)),
+      );
+      selectFile(uploaded);
+    } catch {
+      setError("Impossible d'envoyer le fichier.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <Form onSubmit={() => form.handleSubmit()}>
       <div className="flex flex-col gap-4 w-full max-w-md">
         {scan ? (
           <p className="font-mono text-xs break-all opacity-60">{scan.file}</p>
         ) : (
-          <label className="flex flex-col items-start gap-1">
-            <span className="text-xs uppercase font-medium font-mono">
-              Fichier 3D (.glb, .ply)<sup>*</sup>
-            </span>
-            <input
-              type="file"
-              accept=".glb,.ply"
-              required
-              className="font-mono text-xs"
-              onChange={(event) => {
-                const file = event.target.files?.[0] ?? null;
-                setUpload(file);
-
-                if (file && !form.getFieldValue("name")) {
-                  form.setFieldValue(
-                    "name",
-                    file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " "),
-                  );
-                }
-              }}
-            />
-          </label>
+          <div className="flex flex-col items-start gap-2 w-full">
+            <label className="flex w-full flex-col items-start gap-1">
+              <span className="text-xs uppercase font-medium font-mono">
+                Fichier 3D sur le serveur<sup>*</sup>
+              </span>
+              <select
+                value={file}
+                disabled={uploading}
+                onChange={(event) => selectFile(event.target.value)}
+                className="w-full border border-foreground bg-background font-mono text-xs p-1"
+              >
+                <option value="">
+                  {files.length === 0
+                    ? "Aucun fichier disponible"
+                    : "— Choisir un fichier —"}
+                </option>
+                {files.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex flex-col items-start gap-1">
+              <span className="text-xs uppercase font-medium font-mono">
+                {uploading ? "Envoi en cours…" : "Ou téléverser (.glb, .ply)"}
+              </span>
+              <input
+                type="file"
+                accept=".glb,.ply"
+                disabled={uploading}
+                className="font-mono text-xs"
+                onChange={(event) => {
+                  const picked = event.target.files?.[0];
+                  event.target.value = "";
+                  if (picked) uploadFile(picked);
+                }}
+              />
+            </label>
+          </div>
         )}
 
         <form.Field name="name">
@@ -187,7 +246,7 @@ export function ScanForm({
             {(isSubmitting) => (
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploading}
                 className="bg-foreground text-background border border-foreground font-mono text-xs uppercase p-1 block w-full enabled:cursor-pointer text-center enabled:hover:underline"
               >
                 {isSubmitting

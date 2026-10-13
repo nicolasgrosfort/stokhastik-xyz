@@ -1,10 +1,10 @@
-import { getAssetDir } from "@/libs/assets";
+import { getAssetDir, listAssetFiles } from "@/libs/assets";
 import { EmbeddingStatus, getEmbeddingStatus } from "@/libs/embeddings";
 import { prisma } from "@/libs/prisma";
 import { invalidateScanIndex } from "@/libs/scan-search";
-import { slugify } from "@/libs/utils";
+import { parseModelFileName } from "@/libs/scan-file";
 import { Prisma, ScanKind } from "@prisma/client";
-import { mkdir, writeFile } from "fs/promises";
+import { stat } from "fs/promises";
 import path from "path";
 
 export type ScanInput = {
@@ -117,55 +117,58 @@ export async function updateScan(id: string, data: ScanInput) {
 
 const KINDS: Record<string, ScanKind> = { ".glb": "GLB", ".ply": "PLY" };
 
-/**
- * Enregistre le fichier dans data/models (sans écraser un fichier existant)
- * et crée le scan correspondant. Le fichier doit déjà être validé.
- */
-export async function createScan(
-  upload: File,
-  extension: string,
-  data: ScanInput,
-) {
-  const baseName = slugify(path.basename(upload.name, extension)) || "scan";
-  const [takenSlugs, takenFiles] = await Promise.all([
-    prisma.scan.findMany({ select: { slug: true } }),
+// Fichiers de data/models qu'aucun scan ne référence encore.
+export async function listAvailableModelFiles(): Promise<string[]> {
+  const [files, rows] = await Promise.all([
+    listAssetFiles("models"),
     prisma.scan.findMany({ select: { file: true } }),
   ]);
-  const slugs = new Set(takenSlugs.map((row) => row.slug));
-  const files = new Set(takenFiles.map((row) => row.file));
+  const known = new Set(rows.map((row) => row.file));
 
-  let slug = baseName;
-  let file = `${slug}${extension}`;
+  return files.filter((file) => !known.has(file));
+}
 
-  for (let i = 2; slugs.has(slug) || files.has(file); i++) {
-    slug = `${baseName}-${i}`;
-    file = `${slug}${extension}`;
+/** Crée un scan pour un fichier déjà présent dans data/models. */
+export async function createScan(
+  file: string,
+  data: ScanInput,
+): Promise<{ scan: ScanListItem } | { error: string; status: number }> {
+  const extension = path.extname(file).toLowerCase();
+
+  if (!(extension in KINDS) || path.basename(file) !== file) {
+    return { error: "Fichier invalide.", status: 400 };
   }
 
-  const dir = getAssetDir("models");
-  await mkdir(dir, { recursive: true });
-  // "wx" : échoue plutôt que d'écraser un fichier présent sur le disque.
-  await writeFile(
-    path.join(dir, file),
-    Buffer.from(await upload.arrayBuffer()),
-    {
-      flag: "wx",
-    },
-  );
+  const size = await stat(path.join(getAssetDir("models"), file))
+    .then((info) => info.size)
+    .catch(() => null);
+
+  if (size === null) {
+    return { error: "Fichier introuvable sur le serveur.", status: 404 };
+  }
+
+  const [slugRows, existing] = await Promise.all([
+    prisma.scan.findMany({ select: { slug: true } }),
+    prisma.scan.findUnique({ where: { file }, select: { id: true } }),
+  ]);
+
+  if (existing) {
+    return { error: "Ce fichier est déjà utilisé par un scan.", status: 409 };
+  }
+
+  const taken = new Set(slugRows.map((row) => row.slug));
+  const { slugBase } = parseModelFileName(file);
+  let slug = slugBase;
+
+  for (let i = 2; taken.has(slug); i++) slug = `${slugBase}-${i}`;
 
   const scan = await prisma.scan.create({
-    data: {
-      ...data,
-      slug,
-      file,
-      kind: KINDS[extension],
-      sizeBytes: upload.size,
-    },
+    data: { ...data, slug, file, kind: KINDS[extension], sizeBytes: size },
     omit: { embedding: true },
   });
   invalidateScanIndex();
 
-  return withStatus(scan);
+  return { scan: withStatus(scan) };
 }
 
 // Tags déjà utilisés, pour l'autocomplétion du formulaire.

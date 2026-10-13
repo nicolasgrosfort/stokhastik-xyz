@@ -82,10 +82,21 @@ export async function saveAssetFile(
   await mkdir(dir, { recursive: true });
 
   const baseName = slugify(path.basename(file.name, extension)) || "fichier";
-  const filename = `${baseName}${extension}`;
-
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, filename), buffer);
+  let filename = `${baseName}${extension}`;
+
+  // Les modèles sont référencés par les scans : on n'écrase jamais l'un d'eux.
+  for (let i = 2; ; i++) {
+    try {
+      await writeFile(path.join(dir, filename), buffer, {
+        flag: type === "models" ? "wx" : "w",
+      });
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      filename = `${baseName}-${i}${extension}`;
+    }
+  }
 
   return `/api/assets/${type}/${filename}`;
 }
