@@ -73,8 +73,7 @@ const write = async (question, passages, luck) => {
       {
         role: "system",
         content:
-          "Tu écris des omikuji, ces papiers de fortune des sanctuaires japonais. " +
-          "Écris dans la langue de la question (français, anglais, etc.), y compris les intitulés « Réponse » et « Conseil » ; les passages peuvent être dans une autre langue, traduis leurs images. " +
+          "Tu écris des omikuji, ces papiers de fortune des sanctuaires japonais, en français. " +
           "Appuie-toi uniquement sur les passages fournis : reprends leurs images, ne rien inventer d'étranger à eux. " +
           "Le rang de chance est imposé, ne le change pas. Sois bref, sobre, poétique, sans emoji.",
       },
@@ -82,8 +81,43 @@ const write = async (question, passages, luck) => {
         role: "user",
         content:
           `Question : ${question}\nRang imposé : ${luck.name} (${luck.label})\n\nPassages :\n${context}\n\n` +
-          "Format :\n1. un poème de trois lignes\n2. « Réponse : » deux phrases qui répondent à la question\n3. « Conseil : » une phrase\n\nLangue de la réponse : celle de la question ci-dessus.",
+          "Format :\n1. un poème de trois lignes\n2. « Réponse : » deux phrases qui répondent à la question\n3. « Conseil : » une phrase",
       },
+    ],
+  });
+  return message.content.trim();
+};
+
+// Détecte la langue de la question ; renvoie son nom en anglais ("French", "English"...).
+const detectLanguage = async (text) => {
+  const { message } = await post("/api/chat", {
+    model: WRITE_MODEL,
+    stream: false,
+    think: false,
+    options: { temperature: 0 },
+    messages: [
+      {
+        role: "user",
+        content: `Name the language of the following text. Answer with the English name of the language only, one word.\n\nText: ${text}`,
+      },
+    ],
+  });
+  return message.content.trim().replace(/[^A-Za-z -]/g, "");
+};
+
+// Traduit l'omikuji rédigé en français vers la langue de la question, en gardant la mise en forme.
+const translate = async (body, language) => {
+  const { message } = await post("/api/chat", {
+    model: WRITE_MODEL,
+    stream: false,
+    think: false,
+    options: { temperature: 0 },
+    messages: [
+      {
+        role: "system",
+        content: `You translate French text into ${language}. Keep the line breaks and the structure (the three-line poem, then the "Réponse :" and "Conseil :" parts, whose labels must be translated too). Keep it sober and poetic. Output only the translation.`,
+      },
+      { role: "user", content: body },
     ],
   });
   return message.content.trim();
@@ -103,7 +137,9 @@ const { items } = JSON.parse(await readFile(EMBEDDINGS_FILE, "utf8"));
 const passages = await retrieve(items, question);
 const code = await classify(question, passages);
 const luck = LUCK[code];
-const body = await write(question, passages, luck);
+const written = await write(question, passages, luck);
+const language = await detectLanguage(question);
+const body = /^french$/i.test(language) ? written : await translate(written, language);
 
 const slug = question
   .normalize("NFD")
