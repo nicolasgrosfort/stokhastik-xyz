@@ -11,8 +11,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "omikuji:index": "node tools/scripts/omikuji/index.mjs",
-    "omikuji": "node tools/scripts/omikuji/ask.mjs",
+    "omikuji:index": "node --env-file-if-exists=.env tools/scripts/omikuji/index.mjs",
+    "omikuji": "node --env-file-if-exists=.env tools/scripts/omikuji/ask.mjs",
     "seed:scans": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env tools/scripts/seed-scans.mjs"
   },
   "dependencies": {

@@ -1,5 +1,5 @@
 // Génère l'index d'embeddings à partir d'un dossier de fichiers markdown (récursif).
-// Usage : yarn omikuji:index /chemin/absolu   (ou OMIKUJI_CORPUS=/chemin/absolu yarn omikuji:index)
+// Usage : yarn omikuji:index [/chemin/absolu]   (sans argument, le chemin vient de OMIKUJI_CORPUS, lu dans .env)
 // Les passages inchangés réutilisent leur vecteur de l'index précédent.
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
@@ -86,7 +86,7 @@ const chunkFile = (file, body) => {
 
 const corpus = process.argv[2] ?? process.env.OMIKUJI_CORPUS;
 if (!corpus || !path.isAbsolute(corpus) || !existsSync(corpus)) {
-  console.error("Usage : yarn omikuji:index /chemin/absolu/vers/les/md");
+  console.error("Usage : yarn omikuji:index [/chemin/absolu/vers/les/md] (ou définir OMIKUJI_CORPUS dans .env)");
   process.exit(1);
 }
 

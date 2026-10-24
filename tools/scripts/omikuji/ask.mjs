@@ -3,7 +3,7 @@
 // Chaque tirage est enregistré dans data/omikuji/draws/ (un fichier markdown par omikuji).
 // Prérequis : Ollama lancé en local. Usage : yarn omikuji "Dois-je changer de travail ?"
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { DRAWS_DIR, EMBEDDINGS_FILE, embed, post } from "./shared.mjs";
 
@@ -75,7 +75,8 @@ const write = async (question, passages, luck) => {
         content:
           "Tu écris des omikuji, ces papiers de fortune des sanctuaires japonais, en français. " +
           "Appuie-toi uniquement sur les passages fournis : reprends leurs images, ne rien inventer d'étranger à eux. " +
-          "Le rang de chance est imposé, ne le change pas. Sois bref, sobre, poétique, sans emoji.",
+          "Le rang de chance est imposé, ne le change pas, mais ne le nomme ni ne le répète dans le texte : il est déjà affiché ailleurs. " +
+          "Pas de titre ni d'en-tête. Sois bref, sobre, poétique, sans emoji.",
       },
       {
         role: "user",
@@ -123,6 +124,84 @@ const translate = async (body, language) => {
   return message.content.trim();
 };
 
+// Largeur d'affichage : les caractères CJK occupent deux colonnes.
+const cells = (str) => [...str].reduce((n, c) => n + (/[\u1100-\u115f\u2e80-\ua4cf\uac00-\ud7a3\uf900-\ufaff\uff00-\uff60]/.test(c) ? 2 : 1), 0);
+const pad = (str, width) => str + " ".repeat(Math.max(0, width - cells(str)));
+
+const wrap = (text, width) => {
+  const lines = [];
+  for (const raw of text.split("\n")) {
+    let line = "";
+    for (const word of raw.split(/\s+/).filter(Boolean)) {
+      if (line && cells(`${line} ${word}`) > width) {
+        lines.push(line);
+        line = word;
+      } else line = line ? `${line} ${word}` : word;
+    }
+    lines.push(line);
+  }
+  return lines;
+};
+
+const KANJI = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+const kanjiNumber = (n) => {
+  if (n >= 100) return String(n);
+  const tens = Math.floor(n / 10);
+  return `${tens > 1 ? KANJI[tens] : ""}${tens ? "十" : ""}${KANJI[n % 10]}`;
+};
+
+// Mise en page d'un omikuji de sanctuaire : une bordure épaisse dessine le papier. De haut en bas :
+// le numéro (hors cadre), le premier cadre fin (rang et type de chance), le second (corps du texte,
+// dont les blocs sont séparés par un court filet), puis le nom du sanctuaire (hors cadre).
+const SHRINE = "stokhastik";
+
+const box = (lines, width, margin) => {
+  const row = (text) => `│${pad(`${" ".repeat(margin)}${text}`, width)}│`;
+  return [`┌${"─".repeat(width)}┐`, row(""), ...lines.map(row), row(""), `└${"─".repeat(width)}┘`];
+};
+
+const center = (text, width) => " ".repeat(Math.max(0, Math.floor((width - cells(text)) / 2))) + text;
+
+const frame = (number, luck, body, width = 34) => {
+  const margin = 3;
+  const inner = width - 2 * margin;
+  const [romaji, kanji] = luck.name.split(" ");
+  const blocks = body.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
+
+  const head = [
+    center(kanji.split("").join(" "), inner),
+    "",
+    ...wrap(`${romaji} · ${luck.label}`, inner).map((l) => center(l, inner)),
+  ];
+  const text = blocks.flatMap((block, i) => [
+    ...(i ? ["", center("╌ ".repeat(7).trim(), inner), ""] : []),
+    ...wrap(block, inner),
+  ]);
+
+  const gap = 2;
+  const content = [
+    center(`おみくじ　第${kanjiNumber(number)}番`, width + 2),
+    "",
+    ...box(head, width, margin),
+    "",
+    "",
+    "",
+    ...box(text, width, margin),
+    "",
+    center(SHRINE, width + 2),
+  ];
+  const outerWidth = width + 2 + 2 * gap;
+  const edge = " ".repeat(gap);
+  const blank = `┃${" ".repeat(outerWidth)}┃`;
+  return [
+    `┏${"━".repeat(outerWidth)}┓`,
+    blank,
+    ...content.map((line) => `┃${edge}${pad(line, width + 2)}${edge}┃`),
+    blank,
+    `┗${"━".repeat(outerWidth)}┛`,
+  ].join("\n");
+};
+
 const question = process.argv.slice(2).join(" ").trim();
 if (!question) {
   console.error('Usage : yarn omikuji "ta question"');
@@ -157,7 +236,8 @@ await writeFile(
   `---\ndate: ${now.toISOString()}\nquestion: ${JSON.stringify(question)}\nfortune: ${JSON.stringify(luck.name)}\nsources: ${JSON.stringify(sources)}\n---\n\n# ${luck.name}\n\n${body}\n`,
 );
 
-console.log(`\n  ${luck.name}\n  ${"—".repeat(14)}\n\n${body}\n`);
+const number = (await readdir(DRAWS_DIR)).filter((f) => f.endsWith(".md")).length;
+console.log(`\n${frame(number, luck, body)}\n`);
 console.error(`Enregistré : ${path.relative(process.cwd(), file)}`);
 if (process.env.DEBUG) {
   console.error("Passages :", passages.map((p) => `${p.score.toFixed(3)} ${p.source}`).join(" | "));
