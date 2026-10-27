@@ -84,7 +84,7 @@ Obsidian syntax is resolved when writing the plain-text files: transclusions (`!
 yarn omikuji "Should I change jobs this spring?"
 ```
 
-The source files of the retrieved passages are listed under the omikuji. Each draw is saved as its own markdown file in `data/omikuji/draws/` (`<date>-<question>.md`, with the question, fortune and sources in the frontmatter).
+The source files of the retrieved passages are listed under the omikuji. Each draw is saved as its own markdown file in `data/omikuji/draws/` (`<date>-<question>.md`, with `création`, `fortune`, `fragments` (wikilinks to the source notes) and `question` in the frontmatter).
 
 Use `DEBUG=1` to print the retrieved passages and their scores. `OLLAMA_HOST` overrides the default `http://localhost:11434`.
 
