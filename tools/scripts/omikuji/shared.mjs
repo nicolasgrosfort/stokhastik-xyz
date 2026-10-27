@@ -5,6 +5,7 @@ export const OLLAMA = process.env.OLLAMA_HOST ?? "http://localhost:11434";
 export const EMBED_MODEL = "embeddinggemma-2:latest";
 export const OMIKUJI_DIR = path.join(process.cwd(), "data", "omikuji");
 export const EMBEDDINGS_FILE = path.join(OMIKUJI_DIR, "embeddings.json");
+export const CLEAR_DIR = path.join(OMIKUJI_DIR, "clear");
 export const DRAWS_DIR = path.join(OMIKUJI_DIR, "draws");
 
 export const post = async (route, body) => {

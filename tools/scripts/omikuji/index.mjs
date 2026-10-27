@@ -3,9 +3,9 @@
 // Les passages inchangés réutilisent leur vecteur de l'index précédent.
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { EMBED_MODEL, EMBEDDINGS_FILE, embed } from "./shared.mjs";
+import { CLEAR_DIR, EMBED_MODEL, EMBEDDINGS_FILE, embed } from "./shared.mjs";
 
 const CHUNK_SIZE = 700;
 const BATCH_SIZE = 32;
@@ -20,6 +20,9 @@ const listMarkdown = async (dir) => {
     .sort();
 };
 
+// Les noms de fichiers macOS sont en NFD, les liens Obsidian en NFC : on compare des clés normalisées.
+const noteKey = (name) => name.normalize("NFC").trim().toLowerCase().replace(/\.md$/, "");
+
 const stripFrontmatter = (raw) => raw.replace(/^---\n[\s\S]*?\n---\n/, "");
 
 // Extrait d'une note la section d'un intertitre (jusqu'au prochain intertitre de même niveau ou supérieur)
@@ -27,8 +30,13 @@ const stripFrontmatter = (raw) => raw.replace(/^---\n[\s\S]*?\n---\n/, "");
 const extract = (body, fragment) => {
   if (!fragment) return body;
   if (fragment.startsWith("^")) {
-    const block = body.split(/\n{2,}/).find((b) => b.trimEnd().endsWith(fragment));
-    return block ?? "";
+    // Le bloc est le paragraphe qui se termine par l'identifiant (il peut être collé à l'intertitre suivant).
+    const lines = body.split("\n");
+    const end = lines.findIndex((l) => l.trimEnd().endsWith(fragment));
+    if (end < 0) return "";
+    let start = end;
+    while (start > 0 && lines[start - 1].trim() && !/^#{1,6}\s/.test(lines[start - 1])) start--;
+    return lines.slice(start, end + 1).join("\n");
   }
   const lines = body.split("\n");
   const level = (line) => line.match(/^(#{1,6})\s/)?.[1].length ?? 0;
@@ -46,8 +54,8 @@ const resolveObsidian = (raw, notes, trail = []) => {
   const text = stripFrontmatter(raw)
     .replace(/%%[\s\S]*?%%/g, "")
     .replace(/!\[\[([^\]|#]+)(?:#([^\]|]+))?(?:\|[^\]]*)?\]\]/g, (_, target, fragment) => {
-      const name = target.trim().toLowerCase().replace(/\.md$/, "");
-      const note = notes.get(name);
+      const name = noteKey(target);
+      const note = notes.get(name) ?? notes.get(`${name}.md`);
       if (!note || trail.includes(name) || trail.length >= MAX_DEPTH) return "";
       const body = resolveObsidian(note, notes, [...trail, name]);
       return `\n\n${extract(body, fragment).trim()}\n\n`;
@@ -60,8 +68,7 @@ const resolveObsidian = (raw, notes, trail = []) => {
 
 // Découpe un fichier en passages : paragraphes regroupés jusqu'à CHUNK_SIZE caractères,
 // chacun préfixé du dernier intertitre rencontré.
-const chunkFile = (file, body) => {
-  const source = path.basename(file, ".md");
+const chunkFile = (source, body) => {
   const chunks = [];
   let heading = "";
   let current = "";
@@ -96,13 +103,31 @@ if (!files.length) {
   process.exit(1);
 }
 // Les notes sont indexées par nom (insensible à la casse) pour résoudre les [[liens]] Obsidian, quel que soit leur dossier.
+// Les transclusions pointent souvent hors du dossier indexé : on cherche les notes dans tout le coffre
+// (premier dossier parent contenant .obsidian), à défaut dans le dossier seul.
+const vaultRoot = (dir) => {
+  for (let d = dir; d !== path.dirname(d); d = path.dirname(d)) if (existsSync(path.join(d, ".obsidian"))) return d;
+  return dir;
+};
 const notes = new Map();
-for (const file of files) notes.set(path.basename(file, ".md").toLowerCase(), await readFile(file, "utf8"));
-const chunks = [];
+for (const file of await listMarkdown(vaultRoot(corpus))) notes.set(noteKey(path.basename(file)), await readFile(file, "utf8"));
+
+// Étape 1 : recrée les fichiers en clair (transclusions résolues) dans CLEAR_DIR, en reproduisant l'arborescence.
+await rm(CLEAR_DIR, { recursive: true, force: true });
+const sources = [];
 for (const file of files) {
-  const raw = notes.get(path.basename(file, ".md").toLowerCase());
-  chunks.push(...chunkFile(file, resolveObsidian(raw, notes, [path.basename(file, ".md").toLowerCase()]).replace(/ \^[\w-]+$/gm, "")));
+  const key = noteKey(path.basename(file));
+  const clear = resolveObsidian(notes.get(key), notes, [key]).replace(/ \^[\w-]+$/gm, "").trim();
+  const relative = path.relative(corpus, file);
+  const target = path.join(CLEAR_DIR, relative);
+  await mkdir(path.dirname(target), { recursive: true });
+  await writeFile(target, `${clear}\n`);
+  sources.push(relative);
 }
+
+// Étape 2 : les passages et leurs embeddings sont construits à partir des fichiers en clair.
+const chunks = [];
+for (const source of sources) chunks.push(...chunkFile(source, await readFile(path.join(CLEAR_DIR, source), "utf8")));
 
 const previous = existsSync(EMBEDDINGS_FILE) ? JSON.parse(await readFile(EMBEDDINGS_FILE, "utf8")) : null;
 const known = new Map();

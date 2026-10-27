@@ -238,6 +238,7 @@ await writeFile(
 
 const number = (await readdir(DRAWS_DIR)).filter((f) => f.endsWith(".md")).length;
 console.log(`\n${frame(number, luck, body)}\n`);
+console.log(`Sources :\n${sources.map((s) => `  - ${s}`).join("\n")}\n`);
 console.error(`Enregistré : ${path.relative(process.cwd(), file)}`);
 if (process.env.DEBUG) {
   console.error("Passages :", passages.map((p) => `${p.score.toFixed(3)} ${p.source}`).join(" | "));
