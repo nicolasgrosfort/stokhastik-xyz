@@ -25,6 +25,17 @@ const noteKey = (name) => name.normalize("NFC").trim().toLowerCase().replace(/\.
 
 const stripFrontmatter = (raw) => raw.replace(/^---\n[\s\S]*?\n---\n/, "");
 
+// Lit les tags du frontmatter (liste YAML « - tag », ou « tags: [a, b] » / « tags: a, b »).
+const parseTags = (raw) => {
+  const front = raw.match(/^---\n([\s\S]*?)\n---/)?.[1];
+  const block = front?.match(/^tags:[ \t]*(.*(?:\n[ \t]+-.*|\n-.*)*)/m)?.[1];
+  if (!block) return [];
+  const items = block.includes("\n") || block.trimStart().startsWith("-")
+    ? block.split("\n").map((l) => l.replace(/^\s*-\s*/, ""))
+    : block.replace(/^\[|\]$/g, "").split(",");
+  return items.map((t) => t.trim().replace(/^["']|["']$/g, "").replace(/^#/, "")).filter(Boolean);
+};
+
 // Extrait d'une note la section d'un intertitre (jusqu'au prochain intertitre de même niveau ou supérieur)
 // ou le paragraphe portant un identifiant de bloc (^id).
 const extract = (body, fragment) => {
@@ -40,7 +51,9 @@ const extract = (body, fragment) => {
   }
   const lines = body.split("\n");
   const level = (line) => line.match(/^(#{1,6})\s/)?.[1].length ?? 0;
-  const start = lines.findIndex((l) => level(l) && l.replace(/^#+\s*/, "").trim().toLowerCase() === fragment.trim().toLowerCase());
+  // Comparaison souple, comme Obsidian : crochets et ponctuation ignorés (le lien [[N#Titre [FR]]] est coupé au premier ]]).
+  const norm = (t) => t.replace(/[\[\]#^|:]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+  const start = lines.findIndex((l) => level(l) && norm(l.replace(/^#+\s*/, "")) === norm(fragment));
   if (start < 0) return "";
   const end = lines.findIndex((l, i) => i > start && level(l) && level(l) <= level(lines[start]));
   return lines.slice(start, end < 0 ? undefined : end).join("\n");
@@ -68,12 +81,15 @@ const resolveObsidian = (raw, notes, trail = []) => {
 
 // Découpe un fichier en passages : paragraphes regroupés jusqu'à CHUNK_SIZE caractères,
 // chacun préfixé du dernier intertitre rencontré.
-const chunkFile = (source, body) => {
+const chunkFile = (source, raw) => {
+  const tags = parseTags(raw);
+  const body = stripFrontmatter(raw);
+  const prefix = tags.length ? `Tags : ${tags.join(", ")}\n` : "";
   const chunks = [];
   let heading = "";
   let current = "";
   const flush = () => {
-    if (current.trim()) chunks.push({ source, text: `${heading ? `${heading}\n` : ""}${current.trim()}` });
+    if (current.trim()) chunks.push({ source, text: `${prefix}${heading ? `${heading}\n` : ""}${current.trim()}` });
     current = "";
   };
   for (const block of body.split(/\n{2,}/)) {
@@ -117,11 +133,12 @@ await rm(CLEAR_DIR, { recursive: true, force: true });
 const sources = [];
 for (const file of files) {
   const key = noteKey(path.basename(file));
-  const clear = resolveObsidian(notes.get(key), notes, [key]).replace(/ \^[\w-]+$/gm, "").trim();
+  const clear = resolveObsidian(notes.get(key), notes, [key]).replace(/ \^[\w-]+$/gm, "").replace(/^\^[\w-]+$/gm, "").replace(/[ \t]+$/gm, "").replace(/\n{3,}/g, "\n\n").trim();
   const relative = path.relative(corpus, file);
   const target = path.join(CLEAR_DIR, relative);
   await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(target, `${clear}\n`);
+  const tags = parseTags(notes.get(key));
+  await writeFile(target, `${tags.length ? `---\ntags:\n${tags.map((t) => `  - ${t}`).join("\n")}\n---\n\n` : ""}${clear}\n`);
   sources.push(relative);
 }
 

@@ -76,7 +76,7 @@ yarn omikuji:index /absolute/path/to/markdown/folder
 
 The path can also be set with `OMIKUJI_CORPUS`.
 
-Obsidian syntax is resolved when writing the plain-text files: transclusions (`![[Note]]`, `![[Note#Heading]]`, `![[Note#^block]]`) are replaced by the embedded content (recursively, cycles ignored), notes are found by name anywhere in the folder, `[[Note|alias]]` keeps only its text, and non-markdown embeds and `%%comments%%` are dropped.
+Obsidian syntax is resolved when writing the plain-text files: transclusions (`![[Note]]`, `![[Note#Heading]]`, `![[Note#^block]]`) are replaced by the embedded content (recursively, cycles ignored), notes are found by name anywhere in the folder, `[[Note|alias]]` keeps only its text, and non-markdown embeds and `%%comments%%` are dropped. The note's frontmatter `tags` are kept in the plain-text file and prepended (`Tags : a, b`) to each of its passages, so they are part of the embeddings.
 
 ### Draw an omikuji
 
