@@ -233,7 +233,7 @@ const sources = [...new Set(passages.map((p) => p.source))];
 await mkdir(DRAWS_DIR, { recursive: true });
 await writeFile(
   file,
-  `---\ncréation: ${now.toISOString().slice(0, 10)}\nfortune: ${luck.name}\nfragments:\n${sources.map((s) => `  - ${JSON.stringify(`[[${path.basename(s, ".md")}]]`)}`).join("\n")}\nquestion: ${JSON.stringify(question)}\n---\n# ${luck.name}\n\n${body}\n`,
+  `---\ncréation: ${now.toISOString().slice(0, 10)}\nfortune: ${luck.name}\nfragments:\n${sources.map((s) => `  - ${JSON.stringify(`[[${path.basename(s, ".md")}]]`)}`).join("\n")}\nquestion: ${JSON.stringify(question)}\n---\n# ${luck.label[0].toUpperCase()}${luck.label.slice(1)}\n\n${body}\n`,
 );
 
 const number = (await readdir(DRAWS_DIR)).filter((f) => f.endsWith(".md")).length;
