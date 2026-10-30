@@ -4,7 +4,8 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { EMBEDDINGS_FILE, cosine, embed } from "./shared.mjs";
+import { pathToFileURL } from "node:url";
+import { CLEAR_DIR, EMBEDDINGS_FILE, cosine, embed } from "./shared.mjs";
 
 const args = process.argv.slice(2);
 const flag = args.findIndex((a) => a === "-n" || a === "--top");
@@ -22,6 +23,9 @@ if (!existsSync(EMBEDDINGS_FILE)) {
 const { items } = JSON.parse(await readFile(EMBEDDINGS_FILE, "utf8"));
 const [query] = await embed([question]);
 
+// Lien file:// vers la copie en clair de la note (cliquable dans le terminal de VS Code).
+const link = (source) => pathToFileURL(path.join(CLEAR_DIR, source)).href;
+
 const best = new Map();
 for (const item of items) {
   const score = cosine(query, item.vector);
@@ -34,5 +38,6 @@ ranked.forEach((hit, i) => {
   const [tags, ...rest] = hit.text.startsWith("Tags : ") ? hit.text.split("\n") : ["", hit.text];
   console.log(`${i + 1}. ${path.basename(hit.source, ".md")}  (${hit.score.toFixed(3)})`);
   if (tags) console.log(`   ${tags.replace("Tags : ", "#").replaceAll(", ", " #")}`);
+  console.log(`   ${link(hit.source)}`);
   console.log(`   ${rest.join(" ").replace(/\s+/g, " ").trim()}\n`);
 });
