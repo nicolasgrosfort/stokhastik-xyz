@@ -17,6 +17,7 @@ import { useUrlAtom } from "@/components/common/data-grid/use-url-atom";
 import { FormatedDate } from "@/components/common/formated-date";
 import { formatSwissNumber } from "@/libs/utils";
 import { GetUser } from "@/libs/user";
+import Link from "next/link";
 
 const roleLabels = {
   USER: "Utilisateur",
@@ -76,6 +77,19 @@ const columns = columnHelper.columns([
     sortFn: "datetime",
     enableGlobalFilter: false,
     cell: ({ getValue }) => <FormatedDate date={getValue()} />,
+  }),
+  columnHelper.display({
+    id: "actions",
+    header: "",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <Link
+        href={`/admin/users/${row.original.id}/edit`}
+        className="underline whitespace-nowrap"
+      >
+        Modifier
+      </Link>
+    ),
   }),
 ]);
 
