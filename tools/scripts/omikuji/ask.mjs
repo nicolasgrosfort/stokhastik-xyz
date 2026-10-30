@@ -5,7 +5,7 @@
 import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { DRAWS_DIR, EMBEDDINGS_FILE, embed, post } from "./shared.mjs";
+import { DRAWS_DIR, EMBEDDINGS_FILE, cosine, embed, post } from "./shared.mjs";
 
 const CLASSIFY_MODEL = "nimble:latest";
 const WRITE_MODEL = "gemma4:31b-mlx";
@@ -19,18 +19,6 @@ const LUCK = {
   E: { name: "Sue-kichi 末吉", label: "future bénédiction" },
   F: { name: "Sue-shō-kichi 末小吉", label: "future petite bénédiction" },
   G: { name: "Kyō 凶", label: "malheur" },
-};
-
-const cosine = (a, b) => {
-  let dot = 0;
-  let na = 0;
-  let nb = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    na += a[i] * a[i];
-    nb += b[i] * b[i];
-  }
-  return dot / (Math.sqrt(na) * Math.sqrt(nb));
 };
 
 const retrieve = async (items, question) => {

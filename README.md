@@ -88,6 +88,14 @@ The source files of the retrieved passages are listed under the omikuji. Each dr
 
 Use `DEBUG=1` to print the retrieved passages and their scores. `OLLAMA_HOST` overrides the default `http://localhost:11434`.
 
+### Search the fragments
+
+```bash
+yarn omikuji:search "how do we try to rule the world with technology?" [-n 5]
+```
+
+Prints the `n` fragments (default 5) closest to the question, best first. Each fragment is scored by its best-matching passage, shown with its tags. No text is generated and nothing is saved.
+
 ## Tools
 
 - [Convert PNG to AVIF](https://cloudconvert.com/png-to-avif)

@@ -1,4 +1,4 @@
-// Éléments communs aux commandes omikuji:index et omikuji.
+// Éléments communs aux commandes omikuji:index, omikuji et omikuji:search.
 import path from "node:path";
 
 export const OLLAMA = process.env.OLLAMA_HOST ?? "http://localhost:11434";
@@ -19,3 +19,15 @@ export const post = async (route, body) => {
 };
 
 export const embed = async (input) => (await post("/api/embed", { model: EMBED_MODEL, input })).embeddings;
+
+export const cosine = (a, b) => {
+  let dot = 0;
+  let na = 0;
+  let nb = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    na += a[i] * a[i];
+    nb += b[i] * b[i];
+  }
+  return dot / (Math.sqrt(na) * Math.sqrt(nb));
+};
