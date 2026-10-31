@@ -62,7 +62,7 @@ curl -X POST http://localhost:3000/api/stripe/create-payment-intent \
 
 ## Omikuji
 
-Omikuji machine running locally with [Ollama](https://ollama.com). Ask a question, get an omikuji grounded (RAG) in a folder of markdown files.
+Omikuji machine running locally with [Ollama](https://ollama.com). Ask a question, get an omikuji grounded (RAG) in a folder of markdown files (the fragments).
 
 Models: `embeddinggemma-2` (retrieval), `nimble` (luck rank), `gemma4:31b-mlx` (writing).
 
@@ -74,7 +74,7 @@ Reads every `.md` file of the folder (recursively), first rewrites them in plain
 yarn omikuji:index /absolute/path/to/markdown/folder
 ```
 
-The path can also be set with `OMIKUJI_CORPUS`.
+The path can also be set with `FRAGMENTS_DIR`.
 
 Obsidian syntax is resolved when writing the plain-text files: transclusions (`![[Note]]`, `![[Note#Heading]]`, `![[Note#^block]]`) are replaced by the embedded content (recursively, cycles ignored), notes are found by name anywhere in the folder, `[[Note|alias]]` keeps only its text, and non-markdown embeds and `%%comments%%` are dropped. The note's frontmatter `tags` are kept in the plain-text file and prepended (`Tags : a, b`) to each of its passages, so they are part of the embeddings.
 
@@ -91,10 +91,18 @@ Use `DEBUG=1` to print the retrieved passages and their scores. `OLLAMA_HOST` ov
 ### Search the fragments
 
 ```bash
-yarn omikuji:search "how do we try to rule the world with technology?" [-n 5]
+yarn search "how do we try to rule the world with technology?" [-n 5]
 ```
 
 Prints the `n` fragments (default 5) closest to the question, best first. Each fragment is scored by its best-matching passage, shown with its tags. No text is generated and nothing is saved.
+
+### List the sources
+
+```bash
+yarn source [/absolute/path/to/fragments]
+```
+
+Reads the `source` wikilink in the frontmatter of every fragment and writes one file per source (no duplicates) in `data/sources/`. Each file takes the `apa` field of the source note and lists the fragments citing it (`fragments` in the frontmatter and as a list in the body). Sources without `apa` or without a note are reported at the end.
 
 ## Tools
 

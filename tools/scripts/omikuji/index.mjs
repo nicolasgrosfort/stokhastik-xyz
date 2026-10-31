@@ -1,27 +1,16 @@
 // Génère l'index d'embeddings à partir d'un dossier de fichiers markdown (récursif).
-// Usage : yarn omikuji:index [/chemin/absolu]   (sans argument, le chemin vient de OMIKUJI_CORPUS, lu dans .env)
+// Usage : yarn omikuji:index [/chemin/absolu]   (sans argument, le chemin vient de FRAGMENTS_DIR, lu dans .env)
 // Les passages inchangés réutilisent leur vecteur de l'index précédent.
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { CLEAR_DIR, EMBED_MODEL, EMBEDDINGS_FILE, embed } from "./shared.mjs";
+import { CLEAR_DIR, EMBED_MODEL, EMBEDDINGS_FILE, embed, fragmentsDir, listMarkdown, noteKey, vaultRoot } from "./shared.mjs";
 
 const CHUNK_SIZE = 700;
 const BATCH_SIZE = 32;
 
 const sha = (text) => createHash("sha1").update(text).digest("hex");
-
-const listMarkdown = async (dir) => {
-  const entries = await readdir(dir, { withFileTypes: true, recursive: true });
-  return entries
-    .filter((e) => e.isFile() && e.name.endsWith(".md"))
-    .map((e) => path.join(e.parentPath, e.name))
-    .sort();
-};
-
-// Les noms de fichiers macOS sont en NFD, les liens Obsidian en NFC : on compare des clés normalisées.
-const noteKey = (name) => name.normalize("NFC").trim().toLowerCase().replace(/\.md$/, "");
 
 const stripFrontmatter = (raw) => raw.replace(/^---\n[\s\S]*?\n---\n/, "");
 
@@ -107,26 +96,20 @@ const chunkFile = (source, raw) => {
   return chunks;
 };
 
-const corpus = process.argv[2] ?? process.env.OMIKUJI_CORPUS;
-if (!corpus || !path.isAbsolute(corpus) || !existsSync(corpus)) {
-  console.error("Usage : yarn omikuji:index [/chemin/absolu/vers/les/md] (ou définir OMIKUJI_CORPUS dans .env)");
+const fragments = fragmentsDir();
+if (!fragments || !path.isAbsolute(fragments) || !existsSync(fragments)) {
+  console.error("Usage : yarn omikuji:index [/chemin/absolu/vers/les/md] (ou définir FRAGMENTS_DIR dans .env)");
   process.exit(1);
 }
 
-const files = await listMarkdown(corpus);
+const files = await listMarkdown(fragments);
 if (!files.length) {
-  console.error(`Aucun fichier .md trouvé dans ${corpus}`);
+  console.error(`Aucun fichier .md trouvé dans ${fragments}`);
   process.exit(1);
 }
 // Les notes sont indexées par nom (insensible à la casse) pour résoudre les [[liens]] Obsidian, quel que soit leur dossier.
-// Les transclusions pointent souvent hors du dossier indexé : on cherche les notes dans tout le coffre
-// (premier dossier parent contenant .obsidian), à défaut dans le dossier seul.
-const vaultRoot = (dir) => {
-  for (let d = dir; d !== path.dirname(d); d = path.dirname(d)) if (existsSync(path.join(d, ".obsidian"))) return d;
-  return dir;
-};
 const notes = new Map();
-for (const file of await listMarkdown(vaultRoot(corpus))) notes.set(noteKey(path.basename(file)), await readFile(file, "utf8"));
+for (const file of await listMarkdown(vaultRoot(fragments))) notes.set(noteKey(path.basename(file)), await readFile(file, "utf8"));
 
 // Étape 1 : recrée les fichiers en clair (transclusions résolues) dans CLEAR_DIR, en reproduisant l'arborescence.
 await rm(CLEAR_DIR, { recursive: true, force: true });
@@ -134,7 +117,7 @@ const sources = [];
 for (const file of files) {
   const key = noteKey(path.basename(file));
   const clear = resolveObsidian(notes.get(key), notes, [key]).replace(/ \^[\w-]+$/gm, "").replace(/^\^[\w-]+$/gm, "").replace(/[ \t]+$/gm, "").replace(/\n{3,}/g, "\n\n").trim();
-  const relative = path.relative(corpus, file);
+  const relative = path.relative(fragments, file);
   const target = path.join(CLEAR_DIR, relative);
   await mkdir(path.dirname(target), { recursive: true });
   const tags = parseTags(notes.get(key));
@@ -161,5 +144,5 @@ for (let i = 0; i < todo.length; i += BATCH_SIZE) {
 
 const items = chunks.map((c) => ({ ...c, vector: known.get(sha(c.text)) }));
 await mkdir(path.dirname(EMBEDDINGS_FILE), { recursive: true });
-await writeFile(EMBEDDINGS_FILE, JSON.stringify({ model: EMBED_MODEL, corpus, createdAt: new Date().toISOString(), items }));
+await writeFile(EMBEDDINGS_FILE, JSON.stringify({ model: EMBED_MODEL, fragments, createdAt: new Date().toISOString(), items }));
 console.error(`Index écrit : ${path.relative(process.cwd(), EMBEDDINGS_FILE)}`);

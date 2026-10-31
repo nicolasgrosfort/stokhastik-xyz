@@ -1,6 +1,6 @@
 // Interroge les fragments indexés par omikuji:index : renvoie ceux qui répondent le mieux à une question.
 // Un fragment est une note entière ; son score est celui de son passage le plus proche de la question.
-// Prérequis : Ollama lancé en local. Usage : yarn omikuji:search "comment on tente de dominer le monde par la technologie" [-n 5]
+// Prérequis : Ollama lancé en local. Usage : yarn search "comment on tente de dominer le monde par la technologie" [-n 5]
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -12,7 +12,7 @@ const flag = args.findIndex((a) => a === "-n" || a === "--top");
 const top = flag >= 0 ? Number(args.splice(flag, 2)[1]) : 5;
 const question = args.join(" ").trim();
 if (!question || !Number.isInteger(top) || top < 1) {
-  console.error('Usage : yarn omikuji:search "ta question" [-n 5]');
+  console.error('Usage : yarn search "ta question" [-n 5]');
   process.exit(1);
 }
 if (!existsSync(EMBEDDINGS_FILE)) {

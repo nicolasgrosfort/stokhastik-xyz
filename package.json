@@ -13,7 +13,8 @@
     "lint": "eslint",
     "omikuji:index": "node --env-file-if-exists=.env tools/scripts/omikuji/index.mjs",
     "omikuji": "node --env-file-if-exists=.env tools/scripts/omikuji/ask.mjs",
-    "omikuji:search": "node --env-file-if-exists=.env tools/scripts/omikuji/search.mjs",
+    "search": "node --env-file-if-exists=.env tools/scripts/omikuji/search.mjs",
+    "source": "node --env-file-if-exists=.env tools/scripts/source/source.mjs",
     "seed:scans": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env tools/scripts/seed-scans.mjs"
   },
   "dependencies": {
