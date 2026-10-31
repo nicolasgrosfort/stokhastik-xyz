@@ -68,10 +68,10 @@ Models: `embeddinggemma-2` (retrieval), `nimble` (luck rank), `gemma4:31b-mlx` (
 
 ### Build the index
 
-Reads every `.md` file of the folder (recursively), first rewrites them in plain text (Obsidian syntax resolved) in `data/omikuji/clear/`, then splits those files into passages and stores their embeddings in `data/omikuji/embeddings.json`. Unchanged passages are not embedded again. Run it again whenever the markdown files change.
+Reads every `.md` file of the folder (recursively), first rewrites them in plain text (Obsidian syntax resolved) in `data/fragments/`, then splits those files into passages and stores their embeddings in `data/omikuji/embeddings.json`. Unchanged passages are not embedded again. Run it again whenever the markdown files change.
 
 ```bash
-yarn omikuji:index /absolute/path/to/markdown/folder
+yarn fragment:index /absolute/path/to/markdown/folder
 ```
 
 The path can also be set with `FRAGMENTS_DIR`.

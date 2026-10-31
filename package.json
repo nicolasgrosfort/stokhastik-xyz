@@ -11,7 +11,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "omikuji:index": "node --env-file-if-exists=.env tools/scripts/omikuji/index.mjs",
+    "fragment:index": "node --env-file-if-exists=.env tools/scripts/omikuji/index.mjs",
     "omikuji": "node --env-file-if-exists=.env tools/scripts/omikuji/ask.mjs",
     "search": "node --env-file-if-exists=.env tools/scripts/omikuji/search.mjs",
     "source": "node --env-file-if-exists=.env tools/scripts/source/source.mjs",

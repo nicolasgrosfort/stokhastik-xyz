@@ -1,4 +1,4 @@
-// Interroge les fragments indexés par omikuji:index : renvoie ceux qui répondent le mieux à une question.
+// Interroge les fragments indexés par fragment:index : renvoie ceux qui répondent le mieux à une question.
 // Un fragment est une note entière ; son score est celui de son passage le plus proche de la question.
 // Prérequis : Ollama lancé en local. Usage : yarn search "comment on tente de dominer le monde par la technologie" [-n 5]
 import { existsSync } from "node:fs";
@@ -16,7 +16,7 @@ if (!question || !Number.isInteger(top) || top < 1) {
   process.exit(1);
 }
 if (!existsSync(EMBEDDINGS_FILE)) {
-  console.error("Embeddings introuvables : lance d'abord `yarn omikuji:index /chemin/absolu`");
+  console.error("Embeddings introuvables : lance d'abord `yarn fragment:index /chemin/absolu`");
   process.exit(1);
 }
 

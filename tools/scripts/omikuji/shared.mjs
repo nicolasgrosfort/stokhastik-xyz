@@ -1,4 +1,4 @@
-// Éléments communs aux commandes omikuji:index, omikuji, search et source.
+// Éléments communs aux commandes fragment:index, omikuji, search et source.
 import { existsSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
@@ -7,7 +7,7 @@ export const OLLAMA = process.env.OLLAMA_HOST ?? "http://localhost:11434";
 export const EMBED_MODEL = "embeddinggemma-2:latest";
 export const OMIKUJI_DIR = path.join(process.cwd(), "data", "omikuji");
 export const EMBEDDINGS_FILE = path.join(OMIKUJI_DIR, "embeddings.json");
-export const CLEAR_DIR = path.join(OMIKUJI_DIR, "clear");
+export const CLEAR_DIR = path.join(process.cwd(), "data", "fragments");
 export const DRAWS_DIR = path.join(OMIKUJI_DIR, "draws");
 export const SOURCES_DIR = path.join(process.cwd(), "data", "sources");
 

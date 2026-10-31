@@ -1,4 +1,4 @@
-// Tire un omikuji à partir d'une question, en s'appuyant sur les embeddings générés par omikuji:index.
+// Tire un omikuji à partir d'une question, en s'appuyant sur les embeddings générés par fragment:index.
 // Pipeline : embeddinggemma-2 (récupération) -> nimble (rang de chance) -> gemma4 (rédaction).
 // Chaque tirage est enregistré dans data/omikuji/draws/ (un fichier markdown par omikuji).
 // Prérequis : Ollama lancé en local. Usage : yarn omikuji "Dois-je changer de travail ?"
@@ -196,7 +196,7 @@ if (!question) {
   process.exit(1);
 }
 if (!existsSync(EMBEDDINGS_FILE)) {
-  console.error("Embeddings introuvables : lance d'abord `yarn omikuji:index /chemin/absolu`");
+  console.error("Embeddings introuvables : lance d'abord `yarn fragment:index /chemin/absolu`");
   process.exit(1);
 }
 

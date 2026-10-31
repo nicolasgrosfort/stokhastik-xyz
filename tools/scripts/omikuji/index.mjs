@@ -1,5 +1,5 @@
 // Génère l'index d'embeddings à partir d'un dossier de fichiers markdown (récursif).
-// Usage : yarn omikuji:index [/chemin/absolu]   (sans argument, le chemin vient de FRAGMENTS_DIR, lu dans .env)
+// Usage : yarn fragment:index [/chemin/absolu]   (sans argument, le chemin vient de FRAGMENTS_DIR, lu dans .env)
 // Les passages inchangés réutilisent leur vecteur de l'index précédent.
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
@@ -98,7 +98,7 @@ const chunkFile = (source, raw) => {
 
 const fragments = fragmentsDir();
 if (!fragments || !path.isAbsolute(fragments) || !existsSync(fragments)) {
-  console.error("Usage : yarn omikuji:index [/chemin/absolu/vers/les/md] (ou définir FRAGMENTS_DIR dans .env)");
+  console.error("Usage : yarn fragment:index [/chemin/absolu/vers/les/md] (ou définir FRAGMENTS_DIR dans .env)");
   process.exit(1);
 }
 
